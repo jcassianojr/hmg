@@ -1,0 +1,8 @@
+incpaths=c:\develop\harbour\sefazclass\include\
+libpaths=
+libs=
+gt=
+mt=no
+instpaths=
+inc=yes
+head=native
