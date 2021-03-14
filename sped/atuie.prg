@@ -562,10 +562,10 @@ WHILE .NOT. HB_FEof()
 
           
     CASE cUF="TODASPB"      
-//IE|NOME|CNPJ|SITUACAO|REGIME|CNAE|AtivEcon|TipoLogr|NomeLogr|NUm|Compl|Bairro|CIDADE|UF|CEP|ENDERECONC    
+//IE|NOME|CNPJ|SITUACAO|REGIME|CNAE|AtivEcon|TipoLogr|NomeLogre|NUm|Compl|Bairro|CIDADE|UF|CEP|ENDERECONCe|NUm|Compl|Bairro|CIDADE|UF|CEP|ENDERECONC    
 //1  2    3    4        5      6    7        8        9        10  11    12     13     14 15  16
           aCAMPOS:=HB_ATokens(LINHA,"|")          
-          if len(aCAMPOS)>=0  //O Txt as vezes tem linhas em branco
+          if len(aCAMPOS)>=15  //O Txt as vezes tem linhas em branco
              CIE:=        Acampos[1]
              CNOME:=      Acampos[2]
              cCNPJ:=      Acampos[3]
@@ -597,6 +597,13 @@ WHILE .NOT. HB_FEof()
 
           
     Case cUF="PE"
+	
+	     //10826063000155000000272BAIXADO   2011-01-141
+         //12345678901234567890123456789012345678901235
+         //         1         2         3         4
+         //              5        4         4         4
+
+	
          cCNPJ:=SUBSTR(LINHA,1,14)
          cIE:=SUBSTR(LINHA,15,9)
          cSITUACAO:=SUBSTR(LINHA,24,1)  //0 = Habilitado1 = NÆo Habilitado
@@ -791,6 +798,8 @@ WHILE .NOT. HB_FEof()
                   {"CIDADE","C",5,0},;
                   {"SEP05","C",1,0},;
                   {"CNAE","C",7,0}}
+				  
+		//0990002363;44367522000525;200708;98260109;61794;4635402		  
        aCAMPOS:=HB_ATokens(LINHA,";")
        if len(aCAMPOS)>=6  //O Txt as vezes tem linhas em branco
            cIE:=  Acampos[1]
@@ -910,9 +919,10 @@ WHILE .NOT. HB_FEof()
                   .OR. cUF="BAIXARS" .OR. cUF="SE" .OR. cUF="BAIXAPR"
              field->DATA:=cDATA
           ENDIF	 //campos data tipo date abaixo
-          IF cUF="RO" .OR. cUF="ES" .OR. cUF="MS" .OR. cUF="RS" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="TODASPB" //.OR.cUF="PE"
-             field->UF:=cESTADO
-          ENDIF	
+		  //grava so ibge para diminuir tamanho dos arquivos
+          //IF cUF="RO" .OR. cUF="ES" .OR. cUF="MS" .OR. cUF="RS" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="TODASPB" //.OR.cUF="PE"
+          //   field->UF:=cESTADO
+          //ENDIF	
           IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="BAIXAPR"  .OR. cUF="TODASPB" 
             FIELD->CNAE:=cCNAE
             IF VAL(FIELD->CNAE)=0
@@ -920,11 +930,12 @@ WHILE .NOT. HB_FEof()
             ENDIF
           ENDIF
           cIBGE:=""
-          IF cUF="GO".OR.cUF="PB".OR.cUF="SC" .OR. cUF="TODASPB" 
-             FIELD->MUNICIPIO:=cCIDADE                                        
-          ENDIF	
-          IF cUF="PR".OR.cUF="BAIXAPR"             
-             FIELD->MUNICIPIO:=cCIDADE 
+		  //grava so ibge diminuir tamanho arquivos
+          //IF cUF="GO".OR.cUF="PB".OR.cUF="SC" .OR. cUF="TODASPB" .OR.cUF="SC"
+          //   FIELD->MUNICIPIO:=cCIDADE                                        
+          //ENDIF	
+          IF cUF="PR" .OR. cUF="BAIXAPR"   //grava so ibge diminuir tamanho arquivos          
+             //FIELD->MUNICIPIO:=cCIDADE 
              dbselectar('prcid')
              dbgotop()
              if dbseek(cCIDADE)
@@ -938,11 +949,11 @@ WHILE .NOT. HB_FEof()
              dbselectar(carqdbf)
           ENDIF	          
           IF cUF="SC"
-             FIELD->IRRF:=cCIDADE                                        
+             //FIELD->IRRF:=cCIDADE  //grava so ibge diminuir tamanho arquivos                                      
              cIBGE:=IRRFIBGE(cCIDADE)
              FIELD->IBGE:=cIBGE                      
           ENDIF	
-          IF cUF="GO" .OR. cUF="PB"  .OR. cUF="TODASPB" 
+          IF cUF="GO" .OR. cUF="PB"  .OR. cUF="TODASPB" .OR. cUF="PB"
              IF  cUF="TODASPB"                           
                  cIBGE:=BUSCAIBGE(cESTADO+cCIDADE)
              ELSE
@@ -987,6 +998,7 @@ enddo
 HB_FUse()
 //FCLOSE(nHANDLE)
 
+/*
 IF cUF="PE"
    nHANDLE:=FCREATE("PEIE.TXT")
    dbgotop()
@@ -996,6 +1008,9 @@ IF cUF="PE"
    enddo
    FCLOSE(nHANDLE)
 ENDIF
+*/
+
+/*ja grava o ibge na importacao
 dbselectar(carqdbf)
 IF cUF="GO" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="PR" .OR. cUF="BAIXAPR"             
    dbgotop()
@@ -1035,7 +1050,10 @@ IF cUF="GO" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="PR" .OR. cUF="BAIXAPR"
       dbskip()
    enddo
 endif
+*/
+
 dbcloseall()
+
 MDS("...")
 ferase(cARQTXT)
 RETURN .T.

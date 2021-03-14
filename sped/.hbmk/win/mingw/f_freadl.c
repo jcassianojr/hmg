@@ -1,0 +1,72 @@
+/*
+ * Harbour 3.2.0dev (r2011030937)
+ * MinGW GNU C 7.3 (32-bit)
+ * Generated C source from "c:\develop\harbour\objmgw\f_freadl.prg"
+ */
+
+#include "hbvmpub.h"
+#include "hbinit.h"
+
+
+HB_FUNC( FREADLINE );
+HB_FUNC_EXTERN( VALTYPE );
+HB_FUNC_EXTERN( SPACE );
+HB_FUNC_EXTERN( FREAD );
+HB_FUNC_EXTERN( AT );
+HB_FUNC_EXTERN( FSEEK );
+HB_FUNC_EXTERN( SUBSTR );
+HB_FUNC_EXTERN( RANGEREPL );
+
+
+HB_INIT_SYMBOLS_BEGIN( hb_vm_SymbolInit_F_FREADL )
+{ "FREADLINE", {HB_FS_PUBLIC | HB_FS_FIRST | HB_FS_LOCAL}, {HB_FUNCNAME( FREADLINE )}, NULL },
+{ "VALTYPE", {HB_FS_PUBLIC}, {HB_FUNCNAME( VALTYPE )}, NULL },
+{ "SPACE", {HB_FS_PUBLIC}, {HB_FUNCNAME( SPACE )}, NULL },
+{ "FREAD", {HB_FS_PUBLIC}, {HB_FUNCNAME( FREAD )}, NULL },
+{ "AT", {HB_FS_PUBLIC}, {HB_FUNCNAME( AT )}, NULL },
+{ "FSEEK", {HB_FS_PUBLIC}, {HB_FUNCNAME( FSEEK )}, NULL },
+{ "SUBSTR", {HB_FS_PUBLIC}, {HB_FUNCNAME( SUBSTR )}, NULL },
+{ "CRETU", {HB_FS_PUBLIC | HB_FS_MEMVAR}, {NULL}, NULL },
+{ "RANGEREPL", {HB_FS_PUBLIC}, {HB_FUNCNAME( RANGEREPL )}, NULL }
+HB_INIT_SYMBOLS_EX_END( hb_vm_SymbolInit_F_FREADL, "c:\\develop\\harbour\\objmgw\\f_freadl.prg", 0x0, 0x0003 )
+
+#if defined( HB_PRAGMA_STARTUP )
+   #pragma startup hb_vm_SymbolInit_F_FREADL
+#elif defined( HB_DATASEG_STARTUP )
+   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( hb_vm_SymbolInit_F_FREADL )
+   #include "hbiniseg.h"
+#endif
+
+HB_FUNC( FREADLINE )
+{
+	static const HB_BYTE pcode[] =
+	{
+		13,3,4,36,20,0,176,1,0,95,2,12,1,106,
+		2,78,0,69,28,10,36,21,0,93,0,4,80,2,
+		36,23,0,176,1,0,95,3,12,1,106,2,76,0,
+		69,28,8,36,24,0,120,80,3,36,26,0,176,1,
+		0,95,4,12,1,106,2,67,0,69,28,12,36,27,
+		0,106,3,13,10,0,80,4,36,30,0,176,2,0,
+		95,2,12,1,80,5,36,32,0,176,3,0,95,1,
+		96,5,0,95,2,12,3,80,7,36,34,0,176,4,
+		0,95,4,95,5,12,2,80,6,36,35,0,95,6,
+		121,5,28,30,36,38,0,176,5,0,95,1,121,20,
+		2,36,39,0,106,10,95,95,70,73,78,65,76,95,
+		95,0,110,7,36,42,0,176,5,0,95,1,95,7,
+		92,255,65,95,6,72,122,72,122,20,3,36,44,0,
+		95,3,29,133,0,36,45,0,176,6,0,95,5,122,
+		95,6,122,49,12,3,83,7,0,36,46,0,176,8,
+		0,106,2,0,0,106,2,9,0,109,7,0,106,2,
+		32,0,12,4,83,7,0,36,47,0,176,8,0,106,
+		2,11,0,106,2,12,0,109,7,0,106,2,32,0,
+		12,4,83,7,0,36,48,0,176,8,0,106,2,14,
+		0,106,2,31,0,109,7,0,106,2,32,0,12,4,
+		83,7,0,36,49,0,176,8,0,106,2,127,0,106,
+		2,255,0,109,7,0,106,2,32,0,12,4,83,7,
+		0,36,50,0,109,7,0,110,7,36,52,0,176,6,
+		0,95,5,122,95,6,122,49,20,3,7
+	};
+
+	hb_vmExecute( pcode, symbols );
+}
+
