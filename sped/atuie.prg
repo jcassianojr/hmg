@@ -270,7 +270,7 @@ endif
 //apagar baixados dos ativos MA/RS/GO/PR
 IF MDG("Cruzar Ativos#Baixados")
     cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
-    for y=1 to 4
+    for y=1 to 5
         DO CASE
            CASE y=1
                cUF="MA"
@@ -280,8 +280,10 @@ IF MDG("Cruzar Ativos#Baixados")
                cUF="GO"
            CASE y=4
                cUF="PR"
+          CASE y=5
+               cUF="MG"
         ENDCASE
-        if file(cCAM+"CNPJIE"+cUF+".DBF").and.file(CCAM+"BAIXA"+cUF+".DBF")
+        if file(cCAM+"CNPJIE"+cUF+".DBF") .and. file(CCAM+"BAIXA"+cUF+".DBF")
            if NETUSE(cCAM+"CNPJIE"+cUF)
               if NETUSE(cCAM+"BAIXA"+cUF)
                  MDS("BX"+cUF)
@@ -469,6 +471,12 @@ IF ! netuse(Ccam+cARQDBF)
    dbcloseall()
    return .f.
 endif
+IF cUF="MG"
+	IF ! netuse(Ccam+"BAIXAMG")
+	   dbcloseall()
+	   return .f.
+	endif
+ENDIF
 
 
 
@@ -539,6 +547,9 @@ WHILE .NOT. HB_FEof()
 
 
     Case cUF="MG" //LIMITADOR LINUX
+//0011949720055 00000000000000  JOSE ANTONIO DE FARIA e outro(s)                             H	
+//1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+//         1         2         3         4         5         6         7         8         9
          cIE:=SUBSTR(LINHA,1,13)
          cCNPJ:=SUBSTR(LINHA,15,14)
          cNOME:=SUBSTR(LINHA,31,60)
@@ -897,7 +908,14 @@ WHILE .NOT. HB_FEof()
    cNOME:=STRTRAN(cNOME,"  ","") //tirar duplo espaco
    
    if  ! empty(cCNPJ) .AND. ! EMPTY(cIE) .AND. ((VALCGC( cCNPJ,,.F.) .and. ValIE( cIE, cUF2 , , .f. , .f. ) ) .or. Valcpf( cCNPJ ,.f.))         //VALIEOLD(cIE, cUF2,.F.))
-        dbgotop()
+		IF cUF="MG" 
+           IF cSITUACAO="H"	
+              DBSELECTAR("CNPJIEMG")		   
+		   ELSE
+		      DBSELECTAR("BAIXAMG")
+		   ENDIF
+	    ENDIF
+	   dbgotop()
         IF ! dbseek(cCNPJ)
           netrecapp()
           FIELD->CNPJ:=cCNPJ
@@ -929,38 +947,39 @@ WHILE .NOT. HB_FEof()
                FIELD->CNAE:=""
             ENDIF
           ENDIF
-          cIBGE:=""
 		  //grava so ibge diminuir tamanho arquivos
-          //IF cUF="GO".OR.cUF="PB".OR.cUF="SC" .OR. cUF="TODASPB" .OR.cUF="SC"
-          //   FIELD->MUNICIPIO:=cCIDADE                                        
-          //ENDIF	
-          IF cUF="PR" .OR. cUF="BAIXAPR"   //grava so ibge diminuir tamanho arquivos          
-             //FIELD->MUNICIPIO:=cCIDADE 
+          cIBGE:=""
+          IF cUF="PR" .OR. cUF="BAIXAPR" //no parana nao usa nem ibge nem irrf e sim codificacao propria da tabela prcid 
              dbselectar('prcid')
              dbgotop()
              if dbseek(cCIDADE)
-                cCIDADE:=MUNICIPIO
+                cCIDADE:=PRCID->MUNICIPIO
                 cIBGE:=BUSCAIBGE('PR'+cCIDADE)
-                dbselectar(carqdbf)
-                if ! empty(cIBGE)
-                    FIELD->IBGE:=cIBGE                      
-                ENDIF    
+			 ELSE
+                cCIDADE:="" //zera a cidade para evitar erros			 
              endif
              dbselectar(carqdbf)
           ENDIF	          
           IF cUF="SC"
-             //FIELD->IRRF:=cCIDADE  //grava so ibge diminuir tamanho arquivos                                      
-             cIBGE:=IRRFIBGE(cCIDADE)
-             FIELD->IBGE:=cIBGE                      
+             //em sc   ccidade esta com o codigo do irrf da cidade                             
+             cIBGE:=IRRFIBGE(cCIDADE) //retorna o ibge passando ccidade=codigoirrf
           ENDIF	
-          IF cUF="GO" .OR. cUF="PB"  .OR. cUF="TODASPB" .OR. cUF="PB"
-             IF  cUF="TODASPB"                           
-                 cIBGE:=BUSCAIBGE(cESTADO+cCIDADE)
-             ELSE
-                 cIBGE:=BUSCAIBGE(cUF+cCIDADE)
-             ENDIF             
-             FIELD->IBGE:=cIBGE                      
-          ENDIF	          
+          
+          IF cUF="TODASPB"    //Pode ser substitutivo por isso usa estado aqui                       
+             cIBGE:=BUSCAIBGE(cESTADO+cCIDADE)                  
+          ENDIF	 
+		  
+		  IF Empty(cIBGE) .AND. ! Empty(cCIDADE) 
+		     cIBGE:=BUSCAIBGE(cUF+cCIDADE)
+		  ENDIF	
+
+		 IF .NOT. EMPTY(cIBGE)     
+			//SU SUFRAMA   YY ajustes
+			 IF cUF="GO" .OR. cUF="PB" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR" .OR. cUF="BAIXAPR" .OR. cUF="YY"
+				oORI:FIELDPUTE("IBGE",cIBGE)
+			 ENDIF	
+		  ENDIF	
+		  
           IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="TODASPB" 
              FIELD->NOME:=cNOME
           ENDIF	
