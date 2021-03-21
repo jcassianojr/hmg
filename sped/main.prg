@@ -2,25 +2,25 @@
 #include "adordd.ch"                           
 #include "try.ch"
 
-
-REQUEST HB_LANG_PT
+REQUEST HB_CODEPAGE_PTISO
 REQUEST DBFCDX
 
+//REQUEST HB_LANG_PT
 
 Function Main
 
 	HB_IDLESTATE()  
-	HB_LANGSELECT('PT')       
+	Set( _SET_CODEPAGE, "PTISO" )
 	rddsetdefault( "DBFCDX" )
-	SET OPTIMIZE ON
-	set deleted on
-	set softseek on
-	set date BRITI
-   
-//hb_setUpdateEpoch(YEAR(DATE())-60)   
+	Set( _SET_OPTIMIZE, .t.)
+	Set( _SET_DELETED, .t.)
+	Set( _SET_SOFTSEEK, .t.)
+	__SetCentury( .t. )
+	Set( _SET_EPOCH, year( date() ) - 60 )
+	Set( _SET_DATEFORMAT, "dd/mm/yyyy" )
 
-	set epoch to year( date() ) - 60
-	set century on
+
+	
    makedir('script')
    aCNPJITA:={"61381323000248","61381323000167","61381323000329","61381323000400","61381323000590"}
    

@@ -16,26 +16,34 @@
 #include "dbinfo.ch"
 
 
+REQUEST HB_CODEPAGE_PTISO
 
-REQUEST HB_LANG_PT
-REQUEST HB_CODEPAGE_PT850
+//REQUEST HB_LANG_PT
+//REQUEST HB_CODEPAGE_PT850
 REQUEST DBFCDX
 
 
 Function Main
 
   HB_IDLESTATE()  
-  HB_LANGSELECT('PT')       
-  HB_SETCODEPAGE('PT850')
-  hb_cdpSelect( "PT850" )
+  Set( _SET_CODEPAGE, "PTISO" )
+ // HB_LANGSELECT('PT')       
+ // HB_SETCODEPAGE('PT850')
+//  hb_cdpSelect( "PT850" )
   
   rddsetdefault( "DBFCDX" )
-  SET OPTIMIZE ON
-  set deleted on
-  set softseek on
-  set date BRITI
-  set epoch to year( date() ) - 60
-  set century on
+	Set( _SET_OPTIMIZE, .t.)
+	Set( _SET_DELETED, .t.)
+	Set( _SET_SOFTSEEK, .t.)
+
+__SetCentury( .t. )
+Set( _SET_EPOCH, year( date() ) - 60 )
+Set( _SET_DATEFORMAT, "dd/mm/yyyy" )
+
+//  set century on
+//  set date BRITI
+//  set epoch to year( date() ) - 60
+ 
   
   public oSEFAZ  
   
