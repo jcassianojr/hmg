@@ -150,7 +150,6 @@ while ! eof()
       cBUSCA:=cnpjxml->UF+ALLTRIM(cnpjxml->cidade)
       cCODIBGE:=""      
       dbselectar("MD10")
-      set filter to cortip="M" //municipios
       DBsetorder(1)
  	   dbselectar("MD10")
 	   dbgotop()
@@ -392,7 +391,6 @@ IF (empty(cnpjxml->cidade) .OR. EMPTY(cnpjxml->UF)) .and. ! empty(cnpjxml->CODIB
       cUF:=""
       cCIDADE:=""
       dbselectar("MD10")
-      set filter to cortip="M" //municipios
       DBsetorder(3)
  	   dbselectar("MD10")
 	   dbgotop()
