@@ -344,8 +344,28 @@ FUNCTION imptxt(cTIPO)
 		      cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
 		   endif
 
+           lZAP:=.T.
+		   //case para upgrade tabelas padrao LZAP:=.F. virara false para nao apagar os dados existente
+		   DO CASE
+		      CASE cARQUIVO="MD10"
+			       lZAP:=.F.
+		      CASE cARQUIVO="PAISES"
+			       lZAP:=.F.
+		      CASE cARQUIVO="MD04"
+			       lZAP:=.F.
+		      CASE cARQUIVO="MD05"
+			       lZAP:=.F.
+		      CASE cARQUIVO="MD05X"
+			       lZAP:=.F.
+		      CASE cARQUIVO="FO_CNAE2"
+			       lZAP:=.F.
+		      CASE cARQUIVO="SINTDOC"
+			       lZAP:=.F.
+		      CASE cARQUIVO="NFECRET"
+			       lZAP:=.F.
+		   ENDCASE
 			   
-            IF netzap(cCAM+cARQUIVO)
+            IF if(lZAP,netzap(cCAM+cARQUIVO),.t.) //se nao for zerar entra 
                IF NETUSE(cCAM+cARQUIVO)    
                    nGRV:=FCREATE(cARQUIVO+".SQL")
                    cCRIASQL:="CREATE TABLE "+cARQUIVO
@@ -367,7 +387,7 @@ FUNCTION imptxt(cTIPO)
                                cCRIASQL+="DECIMAL ("+ALLTRIM(STR(aUSO[K][3]))+","+ALLTRIM(STR(aUSO[K][4]))+")"                                
                        ENDCASE
                        cCRIASQL+=" ," 
-                   NEXT K
+                   NEXT 
                    cCRIASQL+="HASH      BIGINT"
                    cCRIASQL+="); "
                    
@@ -1118,6 +1138,7 @@ return
 
 FUNCTION GravaRegEFD(cALIAS,nINI) //,aEFD)
 LOCAL nFIM
+LOCAL eBUSCA
 IF VALTYPE(cALIAS)#"C"
    cALIAS:="REG"+cREG
 ENDIF   
@@ -1129,15 +1150,56 @@ lTEMBLOCO:=.T.
 IF cREG="C500".AND.LEN(Acampos)=16
    cALIAS:="REGC500cb"
 ENDIF    
+lINCLUI:=.T.
 dbselectar(cALIAS)
 aEFD:=DBSTRUCT()
-netrecapp()
 nFIM:=LEN(aEFD)
+cALIAS:=UPPER(cALIAS)
+//case para upgrade cnae cfo ncm cidades paises outros podera ter return ou array adequada linclui podera virar false nFIM ajustado
+//criar seek e escolher ordem
+	   DO CASE
+		      CASE cALIAS="MD10"
+			       lINCLUI:=.F.  
+				    dbsetorder(3) // codigo ibge c7
+  	         CASE cALIAS="PAISES"
+			       lINCLUI:=.F.
+				   dbsetorder(5) //bacen n4
+				   //analisar pois gera duas tabelas uma com codigo bacen e outra com outra codificacao
+		      CASE cALIAS="MD04"
+			       lINCLUI:=.F.
+		      CASE cALIAS="MD05"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // uf
+		      CASE cALIAS="MD05X"
+			       lINCLUI:=.F.
+				   dbsetorder(3) // uficms ufdest
+		      CASE cALIAS="FO_CNAE2"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+		      CASE cALIAS="SINTDOC"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+		      CASE cALIAS="NFECRET"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+		   ENDCASE
+IF lINCLUI=.F. //as tabelas padrao 
+	nini:=1 //codigo na tabela tem que ser campo 1 
+	nfim:=2  //nome ou descricao na tabela tem que ser campo 1
+ENDIF
+		   
+		   
+
+
+//aCAMPOS VEM do hb_atokens tem os campos dos registros
+IF lINCLUI
+	netrecapp()
+ENDIF	
 IF nINI=2 .AND. LEN(aCAMPOS)<nFIM   
    fwrite(nLOGERRO,cREG+" Erro Qtde Campos linha:"+STRVAL(hb_FRecNo())+" "+str(len(Acampos))+"/"+str(nfim)+HB_OSNEWLINE())
    nFIM:=LEN(aCAMPOS)
 ENDIF
-FOR X=nINI TO nFIM //LEN(aEFD)   
+FOR X=nINI TO nFIM 
    cCAMPO:=aEFD[X][1]
    eVALOR:=aCAMPOS[X]
    IF aEFD[X][2]="N"
