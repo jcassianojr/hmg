@@ -221,15 +221,16 @@ FUNCTION imptxt(cTIPO)
                HB_FSkip(1)			   
 			   cLINH2:=UPPER(HB_FREADLN())	
      	       HB_FUse()
-			   IF At("NOME_MUN",cLINHA)>0
-			      cARQUIVO:="municipios"
+			   IF At("NOME_MUN,",cLINHA)>0
+			      cARQUIVO:="MD10"
 			   endif			   
-			   IF At("CODCNAE",cLINHA)>0
-			      cARQUIVO:="cod_cnae"
+			   IF At("CODCNAE,",cLINHA)>0
+			      cARQUIVO:="FO_CNAE2"
 			   endif
 			   IF At("OFICIAL GENERAL",cLINH2)>0
 			      cARQUIVO:="ESOCIAL_CBO"
 			   endif
+			   
                DO CASE
 					CASE cARQUIVO="TB1205"
 						cARQUIVO:="esocial_tab01" //    Categorias de Trabalhadores - eSocial
@@ -242,13 +243,17 @@ FUNCTION imptxt(cTIPO)
 					CASE cARQUIVO="TB1209"
 						cARQUIVO:="esocial_tab05" //    Tipos de Inscrição - eSocial
 					CASE cARQUIVO="TB1210"
-						cARQUIVO:="paises_sped"         //"esocial_tab06" //    Tabela de Países do eSocial
+					    IF At("1|CANADA",cLINH2)>0
+						    cARQUIVO:="paises_sped"     //"esocial_tab06" //    Tabela de Países do eSocial //usa codigo proprio
+						ELSE
+						    cARQUIVO:="paises" //usa codigo bacen importa
+                        ENDIF						
 					CASE cARQUIVO="TB1211"
 						cARQUIVO:="esocial_tab07" //    Resultado da Monitoração Biológica - eSocial 
 					CASE cARQUIVO="TB1212"
 						cARQUIVO:="esocial_tab08" // - Classificação Tributária - eSocial
 					CASE cARQUIVO="TB12038"
-						cARQUIVO:="esocial_tab09" // - Tipos de Arquivo - eSocial
+						cARQUIVO:="esocial_tab09" // - Tipos de Arquivo - eSCocial
 					CASE cARQUIVO="TB1214"
 						cARQUIVO:="esocial_tab10" // - Tipos de Lotação - eSocial
 					CASE cARQUIVO="TB1215"
@@ -292,7 +297,8 @@ FUNCTION imptxt(cTIPO)
 					CASE cARQUIVO="TB1407"
 						cARQUIVO:="esocial_tab55" //    Compatibilidade - Categoria x Classificação Tributária x Motivo do Desligamento - eSocial
 					CASE cARQUIVO="TB1234"
-						cARQUIVO:="cod_cnae" //esocial_tab56" //    Tabela de Classificação Nacional de Atividades Econômicas (CNAE) - eSocial
+						//cARQUIVO:="cod_cnae" //esocial_tab56" //    Tabela de Classificação Nacional de Atividades Econômicas (CNAE) - eSocial
+						cARQUIVO:="fo_cnae2"
 					CASE cARQUIVO="TB11957"
 						cARQUIVO:="esocial_tab57" //    Tabela para Cálculo da Contribuição Previdenciária do Empregado - eSocial
 					CASE cARQUIVO="TB1236"
@@ -343,29 +349,32 @@ FUNCTION imptxt(cTIPO)
 		   if at("ESOCIAL_TAB",UPPER(cARQUIVO))>0
 		      cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
 		   endif
+		   if carquivo="fo_cnae2"
+		      cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
+		   endif
 
            lZAP:=.T.
 		   //case para upgrade tabelas padrao LZAP:=.F. virara false para nao apagar os dados existente
 		   DO CASE
-		      CASE cARQUIVO="MD10"
+		      CASE upper(cARQUIVO)="MD10"
 			       lZAP:=.F.
-		      CASE cARQUIVO="PAISES"
+		      CASE upper(cARQUIVO)="PAISES"
 			       lZAP:=.F.
-		      CASE cARQUIVO="MD04"
+		      CASE upper(cARQUIVO)="MD04"
 			       lZAP:=.F.
-		      CASE cARQUIVO="MD05"
+		      CASE upper(cARQUIVO)="MD05"
 			       lZAP:=.F.
-		      CASE cARQUIVO="MD05X"
+		      CASE upper(cARQUIVO)="MD05X"
 			       lZAP:=.F.
-		      CASE cARQUIVO="FO_CNAE2"
+		      CASE upper(cARQUIVO)="FO_CNAE2"
 			       lZAP:=.F.
-		      CASE cARQUIVO="SINTDOC"
+		      CASE upper(cARQUIVO="SINTDOC"
 			       lZAP:=.F.
-		      CASE cARQUIVO="NFECRET"
+		      CASE upper(cARQUIVO="NFECRET"
 			       lZAP:=.F.
 		   ENDCASE
 			   
-            IF if(lZAP,netzap(cCAM+cARQUIVO),.t.) //se nao for zerar entra 
+            IF if(lZAP,netzap(cCAM+cARQUIVO),.t.) //if lzap zera o arquivo caso contrario entra na rotina de importacao
                IF NETUSE(cCAM+cARQUIVO)    
                    nGRV:=FCREATE(cARQUIVO+".SQL")
                    cCRIASQL:="CREATE TABLE "+cARQUIVO
@@ -1136,18 +1145,18 @@ aBLQTD:={}
       
 return
 
-FUNCTION GravaRegEFD(cALIAS,nINI) //,aEFD)
+FUNCTION GravaRegEFD(cALIAS,nINI) //,aEFD 
 LOCAL nFIM
 LOCAL eBUSCA
 IF VALTYPE(cALIAS)#"C"
    cALIAS:="REG"+cREG
 ENDIF   
-IF VALTYPE(nINI)#"N"
+IF VALTYPE(nINI)#"N" //nos sped o primeiro campo e codigo do registro por isso iniia na 2
    nINI:=2
    aCAMPOS[2]:=cREG                 
 ENDIF
 lTEMBLOCO:=.T.   
-IF cREG="C500".AND.LEN(Acampos)=16
+IF cREG="C500" .AND.LEN (Acampos)=16 //variacao no registro conforme o tipo do sped e versao pode variar quantidade campos
    cALIAS:="REGC500cb"
 ENDIF    
 lINCLUI:=.T.
@@ -1163,8 +1172,8 @@ cALIAS:=UPPER(cALIAS)
 				    dbsetorder(3) // codigo ibge c7
   	         CASE cALIAS="PAISES"
 			       lINCLUI:=.F.
-				   dbsetorder(5) //bacen n4
-				   //analisar pois gera duas tabelas uma com codigo bacen e outra com outra codificacao
+				   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
+				   //analisado acima na escolha do arquivo pois gera duas tabelas uma com codigo bacen e outra com outra codificacao
 		      CASE cALIAS="MD04"
 			       lINCLUI:=.F.
 		      CASE cALIAS="MD05"
@@ -1184,16 +1193,22 @@ cALIAS:=UPPER(cALIAS)
 				   dbsetorder(1) // codigo
 		   ENDCASE
 IF lINCLUI=.F. //as tabelas padrao 
-	nini:=1 //codigo na tabela tem que ser campo 1 
-	nfim:=2  //nome ou descricao na tabela tem que ser campo 1
+	nini:=1 //codigo na tabela tem que ser campo 1 grava checa inclui e grava
+	nfim:=2  //nome ou descricao na tabela tem que ser campo 1 grava se a descricao esta vazia
 ENDIF
-		   
-		   
-
 
 //aCAMPOS VEM do hb_atokens tem os campos dos registros
 IF lINCLUI
 	netrecapp()
+else
+   eVALOR:=aCAMPOS[X]
+   IF cALIAS="PAISES"
+      eVALOR:=VAL(eVALOR)
+   ENDIF
+   dbgotop()
+   if ! dbseek(aCAMPOS[X])
+      netrecapp()
+   endif
 ENDIF	
 IF nINI=2 .AND. LEN(aCAMPOS)<nFIM   
    fwrite(nLOGERRO,cREG+" Erro Qtde Campos linha:"+STRVAL(hb_FRecNo())+" "+str(len(Acampos))+"/"+str(nfim)+HB_OSNEWLINE())
