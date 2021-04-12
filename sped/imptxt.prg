@@ -1166,35 +1166,49 @@ nFIM:=LEN(aEFD)
 cALIAS:=UPPER(cALIAS)
 //case para upgrade cnae cfo ncm cidades paises outros podera ter return ou array adequada linclui podera virar false nFIM ajustado
 //criar seek e escolher ordem
+//cria so estrutura necessaria
 	   DO CASE
 		      CASE cALIAS="MD10"
 			       lINCLUI:=.F.  
-				    dbsetorder(3) // codigo ibge c7
+				   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
+				   aCAMPOS[3]:=coduf(aCAMPO[1],"UF")  //tras o codigo da uf pelos 2 digitos do codigo ibge
+				   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
   	         CASE cALIAS="PAISES"
 			       lINCLUI:=.F.
 				   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
 				   //analisado acima na escolha do arquivo pois gera duas tabelas uma com codigo bacen e outra com outra codificacao
+		           aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0}}
 		      CASE cALIAS="MD04"
 			       lINCLUI:=.F.
+				   aEFD:={{"CFONEW","C", 4,0},{"DESCRICAO" ,"C",150,0}}
+				   dbsetorder(2) // cfonew
 		      CASE cALIAS="MD05"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // uf
+				   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}}
 		      CASE cALIAS="MD05X"
 			       lINCLUI:=.F.
 				   dbsetorder(3) // uficms ufdest
+				   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}} //checar furamente inclusao por md05 como ufdest **
 		      CASE cALIAS="FO_CNAE2"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 7,0},{"DESRICAO" ,"C",100,0}}			   
 		      CASE cALIAS="SINTDOC"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",60,0}}
 		      CASE cALIAS="NFECRET"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",120,0}}
 		   ENDCASE
 IF lINCLUI=.F. //as tabelas padrao 
 	nini:=1 //codigo na tabela tem que ser campo 1 grava checa inclui e grava
 	nfim:=2  //nome ou descricao na tabela tem que ser campo 1 grava se a descricao esta vazia
+ENDIF
+IF cALIAS="MD10" //tras o codigo da uf pelos 2 digitos do codigo ibge
+   nFIM:=3
 ENDIF
 
 //aCAMPOS VEM do hb_atokens tem os campos dos registros
@@ -1240,7 +1254,7 @@ FOR X=nINI TO nFIM
           cSUBLINHA+="'"+STRTRAN(eVALOR,"'","")+"'"
    END CASE
    cSUBLINHA+=","
-   IF EMPTY(&cCAMPO.).AND.! EMPTY(eVALOR)
+   IF EMPTY(&cCAMPO.) .AND. ! EMPTY(eVALOR)
       field->&cCAMPO.:=eVALOR
    ENDIF
 NEXT X
