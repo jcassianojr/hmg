@@ -150,8 +150,7 @@ FUNCTION imptxt(cTIPO)
 
        cFOLDER:=GetFolder ( 'Pasta Arquivos tabelas auxiliares sped' )
        cFOLDER+="\"
-	   //alert(cFOLDER)
-       mListaArq := Directory(cFOLDER+"*.*") //,"D")    include diretorios                       
+	   mListaArq := Directory(cFOLDER+"*.*") //,"D")    include diretorios                       
        //mListaArq := Directory(cFOLDER+"*.txt","D")     //efinance nao tem sped no txt                      
        nLENX:=LEN(mListaArq)
        aCNPJ:={}
@@ -214,22 +213,54 @@ FUNCTION imptxt(cTIPO)
             END CASE
               
 			//esocial sao tbs   
-		  
+		    lCHECTB:=.T.
 		   if LEFT(cARQUIVO,2)="TB"
+		       
+		   
                nFile := HB_FUse(cARQIMP)	
                cLINHA:=UPPER(HB_FREADLN())	
                HB_FSkip(1)			   
 			   cLINH2:=UPPER(HB_FREADLN())	
      	       HB_FUse()
-			   IF At("NOME_MUN,",cLINHA)>0
+			   
+			   
+			   
+			   ALTD()
+			   
+			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0
 			      cARQUIVO:="MD10"
+				  lCHECTB:=.F.
 			   endif			   
 			   IF At("CODCNAE,",cLINHA)>0
 			      cARQUIVO:="FO_CNAE2"
+				  lCHECTB:=.F.
 			   endif
+			   IF At("DESC_CFOP,",cLINHA)>0
+			      cARQUIVO:="MD04"
+				  lCHECTB:=.F.
+			   endif
+			   
 			   IF At("OFICIAL GENERAL",cLINH2)>0
 			      cARQUIVO:="ESOCIAL_CBO"
+				  lCHECTB:=.F.
 			   endif
+			   IF At("COD_PAIS,",cLINHA)>0
+					    DO CASE
+						   CASE At("1|CANADA",cLINH2)>0
+						       cARQUIVO:="PAIS_SISCOMEX"   
+							CASE At("ABU DHABI",cLINH2)>0
+						       cARQUIVO:="PAISES_SPED" 
+						   OTHERWISE
+						    cARQUIVO:="PAISES" //usa codigo bacen importa
+                        ENDCASE					
+				  lCHECTB:=.F.
+			   endif
+			   
+			   IF cARQUIVO="PAISES"
+			      ALTD()
+			   ENDIF
+			   
+			   
 			   
                DO CASE
 					CASE cARQUIVO="TB1205"
@@ -243,11 +274,14 @@ FUNCTION imptxt(cTIPO)
 					CASE cARQUIVO="TB1209"
 						cARQUIVO:="esocial_tab05" //    Tipos de Inscrição - eSocial
 					CASE cARQUIVO="TB1210"
-					    IF At("1|CANADA",cLINH2)>0
-						    cARQUIVO:="paises_sped"     //"esocial_tab06" //    Tabela de Países do eSocial //usa codigo proprio
-						ELSE
-						    cARQUIVO:="paises" //usa codigo bacen importa
-                        ENDIF						
+					    DO CASE
+						   CASE At("1|CANADA",cLINH2)>0
+						       cARQUIVO:="PAIS_SISCOMEX"   
+							CASE At("ABU DHABI",cLINH2)>0
+						       cARQUIVO:="PAISES_SPED" 
+						   OTHERWISE
+						    cARQUIVO:="PAISES" //usa codigo bacen importa
+                        ENDCASE
 					CASE cARQUIVO="TB1211"
 						cARQUIVO:="esocial_tab07" //    Resultado da Monitoração Biológica - eSocial 
 					CASE cARQUIVO="TB1212"
@@ -344,12 +378,10 @@ FUNCTION imptxt(cTIPO)
 			  ENDCASE 
 		   Endif	   
                
+			   
 
            cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
 		   if at("ESOCIAL_TAB",UPPER(cARQUIVO))>0
-		      cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
-		   endif
-		   if carquivo="fo_cnae2"
 		      cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
 		   endif
 
@@ -358,20 +390,31 @@ FUNCTION imptxt(cTIPO)
 		   DO CASE
 		      CASE upper(cARQUIVO)="MD10"
 			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
+		      CASE upper(cARQUIVO)="PAISES_SPED" .OR. upper(cARQUIVO)="PAIS_SISCOMEX" 
+			       lZAP:=.T.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
 		      CASE upper(cARQUIVO)="PAISES"
 			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
 		      CASE upper(cARQUIVO)="MD04"
 			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="MD05"
 			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
 		      CASE upper(cARQUIVO)="MD05X"
 			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="FO_CNAE2"
 			       lZAP:=.F.
-		      CASE upper(cARQUIVO="SINTDOC"
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
+		      CASE upper(cARQUIVO)="SINTDOC"
 			       lZAP:=.F.
-		      CASE upper(cARQUIVO="NFECRET"
+				   cCAM   := PROFILESTRING( "sped.ini","SINTEGRA","FOLHA",HB_CWD())
+		      CASE upper(cARQUIVO)="NFECRET"
 			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","NFECNPJ",HB_CWD())
 		   ENDCASE
 			   
             IF if(lZAP,netzap(cCAM+cARQUIVO),.t.) //if lzap zera o arquivo caso contrario entra na rotina de importacao
@@ -1171,13 +1214,21 @@ cALIAS:=UPPER(cALIAS)
 		      CASE cALIAS="MD10"
 			       lINCLUI:=.F.  
 				   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
-				   aCAMPOS[3]:=coduf(aCAMPO[1],"UF")  //tras o codigo da uf pelos 2 digitos do codigo ibge
+				   IF LEN(aCAMPOS)>=3
+				       aCAMPOS[3]:=coduf(aCAMPOS[1],"UF")  //tras o codigo da uf pelos 2 digitos do codigo ibge
+				   ELSE
+				       AADD(aCAMPOS,coduf(aCAMPOS[1],"UF"))
+                   ENDIF				   
 				   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
   	         CASE cALIAS="PAISES"
 			       lINCLUI:=.F.
 				   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
-				   //analisado acima na escolha do arquivo pois gera duas tabelas uma com codigo bacen e outra com outra codificacao
-		           aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0}}
+				   IF LEN(aCAMPOS)>=3
+				       aCAMPOS[3]:="EX" 
+				   ELSE
+				       AADD(aCAMPOS,"EX")
+                   ENDIF
+		           aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
 		      CASE cALIAS="MD04"
 			       lINCLUI:=.F.
 				   aEFD:={{"CFONEW","C", 4,0},{"DESCRICAO" ,"C",150,0}}
@@ -1207,7 +1258,7 @@ IF lINCLUI=.F. //as tabelas padrao
 	nini:=1 //codigo na tabela tem que ser campo 1 grava checa inclui e grava
 	nfim:=2  //nome ou descricao na tabela tem que ser campo 1 grava se a descricao esta vazia
 ENDIF
-IF cALIAS="MD10" //tras o codigo da uf pelos 2 digitos do codigo ibge
+IF cALIAS="MD10" .OR. cALIAS="PAISES" //tras o codigo da uf pelos 2 digitos do codigo ibge
    nFIM:=3
 ENDIF
 
@@ -1215,13 +1266,15 @@ ENDIF
 IF lINCLUI
 	netrecapp()
 else
-   eVALOR:=aCAMPOS[X]
+   eVALOR:=aCAMPOS[1]
    IF cALIAS="PAISES"
       eVALOR:=VAL(eVALOR)
    ENDIF
    dbgotop()
-   if ! dbseek(aCAMPOS[X])
+   if ! dbseek(eVALOR)
       netrecapp()
+   else 
+      dbrlock()   
    endif
 ENDIF	
 IF nINI=2 .AND. LEN(aCAMPOS)<nFIM   
