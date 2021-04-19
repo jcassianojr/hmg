@@ -132,24 +132,24 @@ mNOME     := strtran( mNOME, "?", "C" )               //tirar os ?
 mNOME     := strtran( mNOME, "?", "c" )               //tirar os ?
 mNOME     := strtran( mNOME, "  ", " " )              //tirar os duplos espacos
 IF lANSI
-   mNOME     := HB_ansitooem(mNOME)
+   mNOME     := win_ansitooem(mNOME)  //HB_ansitooem(mNOME)
 ENDIF
 IF lACEN
+   mNOME     := TIRACE2(mNOME)
 //   mNOME     := TIRACE(mNOME)
-   mNOME     := strtran( mNOME, "∂", "A" )
-   mNOME     := strtran( mNOME, "ê", "E" )
-   mNOME     := strtran( mNOME, "µ", "A" )
-   mNOME     := strtran( mNOME, "÷", "I" )
-   mNOME     := strtran( mNOME, "µ", "A" )
-   mNOME     := strtran( mNOME, "‡", "O" )
-   mNOME     := strtran( mNOME, "«", "A" )
-   mNOME     := strtran( mNOME, "‚", "O" )
-   mNOME     := strtran( mNOME, "Ä", "C" )
-   mNOME     := strtran( mNOME, "È", "U" )
-   mNOME     := strtran( mNOME, "“", "E" )
-   mNOME     := strtran( mNOME, "Â", "O" )
-
-      //mNOME     := strtran( mNOME, "", "" )
+//   mNOME     := strtran( mNOME, "∂", "A" )
+//   mNOME     := strtran( mNOME, "ê", "E" )
+//   mNOME     := strtran( mNOME, "µ", "A" )
+//   mNOME     := strtran( mNOME, "÷", "I" )
+//   mNOME     := strtran( mNOME, "µ", "A" )
+//   mNOME     := strtran( mNOME, "‡", "O" )
+//   mNOME     := strtran( mNOME, "«", "A" )
+//   mNOME     := strtran( mNOME, "‚", "O" )
+//   mNOME     := strtran( mNOME, "Ä", "C" )
+//   mNOME     := strtran( mNOME, "È", "U" )
+//   mNOME     := strtran( mNOME, "“", "E" )
+//   mNOME     := strtran( mNOME, "Â", "O" )
+    //mNOME     := strtran( mNOME, "", "" )
 ENDIF
 mNOME     := ALLTRIM(UPPER(mNOME))
 RETUrn mNOME
