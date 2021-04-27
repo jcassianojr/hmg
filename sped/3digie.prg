@@ -1,5 +1,8 @@
 FUNCTION gera3digie()
+ALERTX("As IE podem possuem agora 3dig diferentes na mesma cidade")
 
+
+/*
 cCAMINHO   := PROFILESTRING( "sped.ini","SINTCERT.DBF","CAMINHO",HB_CWD())+"SINTCERT"
 IF ! NETUSE(cCAMINHO)
    RETURN
@@ -59,6 +62,7 @@ NEXT X
 fclose(nHANDLE)
 
 msginfo("Concluido")
+*/
 
 /*
 dbselectar("sintcert")
