@@ -205,3 +205,6 @@ IF filecopy(cARQ,HB_CWD()+"script\"+cARQ)>0
    filedelete(cARQ)
 ENDIF   
 return
+
+function vertxt()
+return .t.

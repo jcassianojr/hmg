@@ -181,32 +181,6 @@ DEFINE WINDOW TEMPLATE AT 195 , 508 WIDTH 667 HEIGHT 350 VIRTUAL WIDTH Nil VIRTU
         PICTALIGNMENT TOP
     END BUTTON
 
-    DEFINE BUTTON Button_7
-        ROW    140
-        COL    20
-        WIDTH  140
-        HEIGHT 30
-        ACTION gera3digie()
-        CAPTION "Gera3Dig"
-        FONTNAME "Arial"
-        FONTSIZE 9
-        TOOLTIP ""
-        FONTBOLD .F.
-        FONTITALIC .F.
-        FONTUNDERLINE .F.
-        FONTSTRIKEOUT .F.
-        ONGOTFOCUS Nil
-        ONLOSTFOCUS Nil
-        HELPID Nil
-        FLAT .F.
-        TABSTOP .T.
-        VISIBLE .T.
-        TRANSPARENT .F.
-        MULTILINE .F.
-        PICTURE Nil
-        PICTALIGNMENT TOP
-    END BUTTON
-
     DEFINE BUTTON Button_8
         ROW    60
         COL    310

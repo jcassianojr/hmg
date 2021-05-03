@@ -176,7 +176,8 @@ FUNCTION imptxt(cTIPO)
                  cARQUIVO:=SUBSTR(cARQUIVO,1,nPOS-1)
               ENDIF                 
            ENDIF
-		   
+		   ALTD()
+           
            DO CASE //diFerencas nomes pis/confins
                CASE cARQUIVO="CL_CONS_AGUA"
                     cARQUIVO:="CONSUMO_AGUA"
@@ -207,15 +208,16 @@ FUNCTION imptxt(cTIPO)
                CASE cARQUIVO="SIT_TRIB_PIS"
                     cARQUIVO:="CST_PIS"
                CASE cARQUIVO="SIT_TRIB_COFINS"
-                    cARQUIVO:="CST_COFINS" 
-               CASE cARQUIVO="PAISES"
-                    cARQUIVO:="PAISES_SPED" 
+                    cARQUIVO:="CST_COFINS"
+               CASE cARQUIVO="PAIS_SISCOMEX"
+                    cARQUIVO:="SISCOMEX_PAISES"
+                     
             END CASE
               
 			//esocial sao tbs   
 		    lCHECTB:=.T.
-		   if LEFT(cARQUIVO,2)="TB"
-		       
+            
+		   if LEFT(cARQUIVO,2)="TB"  .OR. AT("MUNICIPIOS",cARQUIVO)>0  // .OR. AT("PAISES",cARQUIVO)>0  		       
 		   
                nFile := HB_FUse(cARQIMP)	
                cLINHA:=UPPER(HB_FREADLN())	
@@ -223,9 +225,6 @@ FUNCTION imptxt(cTIPO)
 			   cLINH2:=UPPER(HB_FREADLN())	
      	       HB_FUse()
 			   
-			   
-			   
-			   ALTD()
 			   
 			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0
 			      cARQUIVO:="MD10"
@@ -247,20 +246,14 @@ FUNCTION imptxt(cTIPO)
 			   IF At("COD_PAIS,",cLINHA)>0
 					    DO CASE
 						   CASE At("1|CANADA",cLINH2)>0
-						       cARQUIVO:="PAIS_SISCOMEX"   
+						       cARQUIVO:="SISCOMEX_PAISES"   
 							CASE At("ABU DHABI",cLINH2)>0
-						       cARQUIVO:="PAISES_SPED" 
+						       cARQUIVO:="SPED_PAISES" 
 						   OTHERWISE
 						    cARQUIVO:="PAISES" //usa codigo bacen importa
                         ENDCASE					
 				  lCHECTB:=.F.
 			   endif
-			   
-			   IF cARQUIVO="PAISES"
-			      ALTD()
-			   ENDIF
-			   
-			   
 			   
                DO CASE
 					CASE cARQUIVO="TB1205"
@@ -276,9 +269,9 @@ FUNCTION imptxt(cTIPO)
 					CASE cARQUIVO="TB1210"
 					    DO CASE
 						   CASE At("1|CANADA",cLINH2)>0
-						       cARQUIVO:="PAIS_SISCOMEX"   
+						       cARQUIVO:="SISCOMEX_PAISES"   
 							CASE At("ABU DHABI",cLINH2)>0
-						       cARQUIVO:="PAISES_SPED" 
+						       cARQUIVO:="SPED_PAISES" 
 						   OTHERWISE
 						    cARQUIVO:="PAISES" //usa codigo bacen importa
                         ENDCASE
@@ -384,6 +377,10 @@ FUNCTION imptxt(cTIPO)
 		   if at("ESOCIAL_TAB",UPPER(cARQUIVO))>0
 		      cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
 		   endif
+           
+           IF SUBSTR(cARQUIVO,3,1)="_" .and. ASCAN(aUF,LEFT(cARQUIVO,2))>0
+              cCAM+=LEFT(cARQUIVO,2)+"\"
+           endif
 
            lZAP:=.T.
 		   //case para upgrade tabelas padrao LZAP:=.F. virara false para nao apagar os dados existente
@@ -391,7 +388,7 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="MD10"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
-		      CASE upper(cARQUIVO)="PAISES_SPED" .OR. upper(cARQUIVO)="PAIS_SISCOMEX" 
+		      CASE upper(cARQUIVO)="SPED_PAISES" .OR. upper(cARQUIVO)="SISCOMEX_PAISES" 
 			       lZAP:=.T.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
 		      CASE upper(cARQUIVO)="PAISES"
