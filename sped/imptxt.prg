@@ -215,6 +215,9 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="FO_CNAE2"
                 CASE cARQUIVO="COD_CEST"
                     cARQUIVO:="CEST"
+                CASE cARQUIVO="CBC_MOEDA"
+                    cARQUIVO:="MOEDA"
+
             END CASE
               
 			//esocial sao tbs   
@@ -430,6 +433,9 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="NFECRET"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","NFECNPJ",HB_CWD())
+		      CASE upper(cARQUIVO)="MOEDA"  
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
 		   ENDCASE
 			   
            
@@ -1241,7 +1247,7 @@ cALIAS:=UPPER(cALIAS)
 				       AADD(aCAMPOS,coduf(aCAMPOS[1],"UF"))
                    ENDIF				   
 				   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
-  	         CASE cALIAS="PAISES"
+  	         CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
 			       lINCLUI:=.F.
 				   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
 				   IF LEN(aCAMPOS)>=3
@@ -1250,6 +1256,15 @@ cALIAS:=UPPER(cALIAS)
 				       AADD(aCAMPOS,"EX")
                    ENDIF
 		           aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
+  	         CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)>0 //COD_PAIS, NOM_PAIS, DT_INI, DT_FIM
+			       lINCLUI:=.F.
+				   dbsetorder(1) //ISO3166A
+				   IF LEN(aCAMPOS)>=3
+				       aCAMPOS[3]:="EX" 
+				   ELSE
+				       AADD(aCAMPOS,"EX")
+                   ENDIF
+		           aEFD:={{"ISO3166A","C", 2,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
 		      CASE cALIAS="MD04"
 			       lINCLUI:=.F.
 				   aEFD:={{"CFONEW","C", 4,0},{"DESCRICAO" ,"C",150,0}}
@@ -1278,6 +1293,14 @@ cALIAS:=UPPER(cALIAS)
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
 				   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",120,0}}
+		      CASE cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)>0 //versão=1 TIP_MOEDA, Nome, DT_INI, DT_FIM, PAIS
+			       lINCLUI:=.F.
+				   dbsetorder(2) // simboro
+				   aEFD:={{"SIMBOLO","C", 3,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0},{"PAIS" ,"C",20,0}}
+		      CASE cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 //versão=1 CODIGO, DESCRICAO, DT_INI, DT_FIM
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","N", 4,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0}}
 		   ENDCASE
 IF lINCLUI=.F. //as tabelas padrao 
 	nini:=1 //codigo na tabela tem que ser campo 1 grava checa inclui e grava
@@ -1286,14 +1309,26 @@ ENDIF
 IF cALIAS="MD10" .OR. cALIAS="PAISES" //tras o codigo da uf pelos 2 digitos do codigo ibge
    nFIM:=3
 ENDIF
+IF cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)>0 //versão=1 TIP_MOEDA, Nome, DT_INI, DT_FIM, PAIS
+    nFIM:=5
+ENDIF
+IF cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 //versão=1 CODIGO, DESCRICAO, DT_INI, DT_FIM
+   nFIM:=4
+ENDIF
 
 //aCAMPOS VEM do hb_atokens tem os campos dos registros
 IF lINCLUI
 	netrecapp()
 else
    eVALOR:=aCAMPOS[1]
-   IF cALIAS="PAISES"
+   IF cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
       eVALOR:=VAL(eVALOR)
+   ENDIF
+   IF cALIAS="PAISES"
+      aCAMPOS[2]:=UPPER(TIRACE(aCAMPOS[2])) //Nome maiusculas sem acentuacao
+   ENDIF
+   IF cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 
+     eVALOR:=VAL(eVALOR)
    ENDIF
    dbgotop()
    if ! dbseek(eVALOR)
