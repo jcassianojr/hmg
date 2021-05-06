@@ -156,7 +156,8 @@ FUNCTION imptxt(cTIPO)
        aCNPJ:={}
        cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
        FOR I= 1 TO nLENX       
-           cARQUIVO:= UPPER(mListaArq[i,1])  
+           cARQUIVO:= UPPER(mListaArq[i,1])
+           cNOMEORI:= cARQUIVO  
            cARQIMP:=cFOLDER+cARQUIVO
            cARQUIVO:=STRTRAN(cARQUIVO,"SPEDCONTABIL_GLOBAL$SPEDCONTABIL_UF$","SPEDCONTABIL_GLOBAL$SPEDCONTABIL_UF_SIGLA_NOME$")
            cARQUIVO:=STRTRAN(cARQUIVO,"SPEDPISCOFINS_","")
@@ -431,6 +432,12 @@ FUNCTION imptxt(cTIPO)
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","NFECNPJ",HB_CWD())
 		   ENDCASE
 			   
+           
+            IF ! FILE(cCAM+cARQUIVO+".DBF") .AND. mdg("Criar: "+cCAM+cARQUIVO)
+               criatabelasped(cARQIMP,cCAM+cARQUIVO)
+            ENDIF
+               
+               
             IF if(lZAP,netzap(cCAM+cARQUIVO),.t.) //if lzap zera o arquivo caso contrario entra na rotina de importacao
                IF NETUSE(cCAM+cARQUIVO)    
                    nGRV:=FCREATE(cARQUIVO+".SQL")
@@ -1375,3 +1382,66 @@ RETURN .T.
 
 FUNCTION IDNAOIEB(cCHAVE)
 RETURN AT("61381323000248",cCHAVE)=0 .AND. AT("61381323000167",cCHAVE)=0 .AND. AT("61381323000329",cCHAVE)=0 .AND. AT("61381323000400",cCHAVE)=0 .AND. AT("61381323000590",cCHAVE)=0
+
+
+function criatabelasped(cARQTXT,cARQDBF)
+LOCAL nFILE
+LOCAL cLINHA,cCAMPO
+LOCAL aCAMPOS,aTAMANHO,aTIPOS,aVALORES,aDB
+LOCAL nFIM,I,nPOS,nLEN
+
+IF ! FILE(cARQTXT)
+   ALERT(cARQTXT)
+   RETURN .F.
+ENDIF
+nFile := HB_FUse(cARQTXT)	
+cLINHA:=UPPER(HB_FREADLN())	
+cLINHA:=TIRAOUT(cLINHA)
+aCAMPOS:=HB_ATOKENS(cLINHA,',')
+aTAMANHO:={}
+aTIPOS  :={}
+//'versão=1 TIP_MOEDA, Nome, DT_INI, DT_FIM, PAIS
+nFIM:=LEN(aCAMPOS)
+nPOS:=AT(" ",aCAMPOS[1])
+IF nPOS>0  //versão=1 TIP_MOEDA
+  aCAMPOS[1]:=SUBSTR(aCAMPOS[1],nPOS+1) //TIP_MOEDA
+ENDIF
+FOR I:=1 TO nFIM
+   aCAMPOS[I]:=STRTRAN(UPPER(ALLTRIM(aCAMPOS[I]))," ","")
+   IF aCAMPOS[I]="DT_INI" .OR. aCAMPOS[I]="DT_FIM" .OR. aCAMPOS[I]="DATAINCIO" .OR. aCAMPOS[I]="DATAFIM"
+     AADD(aTAMANHO,8)
+     AADD(aTIPOS,"D")
+   ELSE
+     AADD(aTAMANHO,8)
+     AADD(aTIPOS,"C")
+   ENDIF  
+NEXT I
+
+HB_FSkip(1) //1o. linha reader
+DO WHILE .NOT. HB_FEof()
+  cLINHA:=HB_FREADLN()  
+  aVALORES:=HB_ATokens(cLINHA,"|")    
+  FOR I:=1 TO nFIM
+      nLEN:=LEN(aVALORES[i])
+      if nLEN>aTAMANHO[I] .AND. nLEN<255
+         aTAMANHO[I]:=nLEN
+      ENDIF
+  NEXT X                        
+  HB_FSkip(1)
+ENDDO
+HB_FUse()
+
+aDB:={}
+FOR I:=1 TO nFIM
+    AADD(aDB,{aCAMPOS[I],aTIPOS[I],aTAMANHO[I],0})
+NEXT I
+IF EMPTY(aDB)
+   ALERT("adb create vazia")
+   RETURN .F.
+ENDIF
+DBCREATE(cARQDBF,aDB)
+cCAMPO:=aCAMPOS[1]
+use &CARQDBF new exclusive
+index on &cCAMPO tag chave
+dbclosearea()
+return .T.
