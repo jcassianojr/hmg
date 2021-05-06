@@ -176,7 +176,6 @@ FUNCTION imptxt(cTIPO)
                  cARQUIVO:=SUBSTR(cARQUIVO,1,nPOS-1)
               ENDIF                 
            ENDIF
-		   ALTD()
            
            DO CASE //diFerencas nomes pis/confins
                CASE cARQUIVO="CL_CONS_AGUA"
@@ -211,39 +210,50 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="CST_COFINS"
                CASE cARQUIVO="PAIS_SISCOMEX"
                     cARQUIVO:="SISCOMEX_PAISES"
-                     
+                CASE cARQUIVO="CNAE21"
+                    cARQUIVO:="FO_CNAE2"
+                CASE cARQUIVO="COD_CEST"
+                    cARQUIVO:="CEST"
             END CASE
               
 			//esocial sao tbs   
 		    lCHECTB:=.T.
-            
-		   if LEFT(cARQUIVO,2)="TB"  .OR. AT("MUNICIPIOS",cARQUIVO)>0  // .OR. AT("PAISES",cARQUIVO)>0  		       
-		   
-               nFile := HB_FUse(cARQIMP)	
-               cLINHA:=UPPER(HB_FREADLN())	
-               HB_FSkip(1)			   
-			   cLINH2:=UPPER(HB_FREADLN())	
-     	       HB_FUse()
+
+            nFile := HB_FUse(cARQIMP)	
+            cLINHA:=UPPER(HB_FREADLN())	
+            HB_FSkip(1)			   
+			cLINH2:=UPPER(HB_FREADLN())	
+     	    HB_FUse()
 			   
-			   
+		    IF AT("MUNICIPIOS",cARQUIVO)>0	   
 			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0
 			      cARQUIVO:="MD10"
 				  lCHECTB:=.F.
 			   endif			   
+            ENDIF
+               
+            IF AT("CNAE",cARQUIVO)>0   
 			   IF At("CODCNAE,",cLINHA)>0
 			      cARQUIVO:="FO_CNAE2"
 				  lCHECTB:=.F.
 			   endif
+            ENDIF   
+
+            IF AT("CFOP",cARQUIVO)>0 .AND. LEN(cARQUIVO)=4 //len evita cfop complemntares como cfop_creditos
 			   IF At("DESC_CFOP,",cLINHA)>0
 			      cARQUIVO:="MD04"
 				  lCHECTB:=.F.
 			   endif
+            ENDIF
+            
 			   
 			   IF At("OFICIAL GENERAL",cLINH2)>0
 			      cARQUIVO:="ESOCIAL_CBO"
 				  lCHECTB:=.F.
 			   endif
-			   IF At("COD_PAIS,",cLINHA)>0
+	
+            IF AT("PAISES",cARQUIVO)>0
+    		   IF At("COD_PAIS,",cLINHA)>0
 					    DO CASE
 						   CASE At("1|CANADA",cLINH2)>0
 						       cARQUIVO:="SISCOMEX_PAISES"   
@@ -254,7 +264,11 @@ FUNCTION imptxt(cTIPO)
                         ENDCASE					
 				  lCHECTB:=.F.
 			   endif
-			   
+		    ENDIF	   
+
+
+            
+		   if LEFT(cARQUIVO,2)="TB"    		       
                DO CASE
 					CASE cARQUIVO="TB1205"
 						cARQUIVO:="esocial_tab01" //    Categorias de Trabalhadores - eSocial
@@ -401,6 +415,9 @@ FUNCTION imptxt(cTIPO)
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
 		      CASE upper(cARQUIVO)="MD05X"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+		      CASE upper(cARQUIVO)="CEST"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="FO_CNAE2"
@@ -1238,10 +1255,14 @@ cALIAS:=UPPER(cALIAS)
 			       lINCLUI:=.F.
 				   dbsetorder(3) // uficms ufdest
 				   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}} //checar furamente inclusao por md05 como ufdest **
+		      CASE cALIAS="CEST"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 7,0},{"DESCRICAO" ,"M",255,0}}			   
 		      CASE cALIAS="FO_CNAE2"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 7,0},{"DESRICAO" ,"C",100,0}}			   
+				   aEFD:={{"CODIGO","C", 7,0},{"DESCRICAO" ,"C",100,0}}			   
 		      CASE cALIAS="SINTDOC"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
