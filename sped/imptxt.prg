@@ -186,7 +186,7 @@ FUNCTION imptxt(cTIPO)
                CASE cARQUIVO="CL_CONS_ENERGIA"
                     cARQUIVO:="CONSUMO_ENERGIA"                                               
                CASE cARQUIVO="MOD_DOC"
-                    cARQUIVO:="MODELOS"
+                    cARQUIVO:="SINTDOC"
                CASE cARQUIVO="UF_COD_SIG"
                     cARQUIVO:="UF_CODIGO_SIGLA"
                CASE cARQUIVO="UNIDADES_DA_FEDERACAO"
@@ -217,7 +217,8 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="CEST"
                 CASE cARQUIVO="CBC_MOEDA"
                     cARQUIVO:="MOEDA"
-
+               CASE cARQUIVO="MODELOS"
+                    cARQUIVO:="SINTDOC"
             END CASE
               
 			//esocial sao tbs   
@@ -415,6 +416,21 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="MD04"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+		      CASE upper(cARQUIVO)="CST_COFINS"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+		      CASE upper(cARQUIVO)="CST_PIS"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+		      CASE upper(cARQUIVO)="CST_IPI"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+		      CASE upper(cARQUIVO)="CST_ICMS"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","SINTEGRA",HB_CWD())
+		      CASE upper(cARQUIVO)="SINTDOC"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="MD05"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
@@ -427,9 +443,6 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="FO_CNAE2"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FOLHA",HB_CWD())
-		      CASE upper(cARQUIVO)="SINTDOC"
-			       lZAP:=.F.
-				   cCAM   := PROFILESTRING( "sped.ini","SINTEGRA","FOLHA",HB_CWD())
 		      CASE upper(cARQUIVO)="NFECRET"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","NFECNPJ",HB_CWD())
@@ -1288,7 +1301,23 @@ cALIAS:=UPPER(cALIAS)
 		      CASE cALIAS="SINTDOC"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",60,0}}
+				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",70,0}}
+		      CASE cALIAS="CST_COFINS"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
+		      CASE cALIAS="CST_IPI"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
+		      CASE cALIAS="CST_ICMS"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 3,0},{"NOME" ,"C",150,0}}
+		      CASE cALIAS="CST_PIS"
+			       lINCLUI:=.F.
+				   dbsetorder(1) // codigo
+				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
 		      CASE cALIAS="NFECRET"
 			       lINCLUI:=.F.
 				   dbsetorder(1) // codigo
