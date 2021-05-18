@@ -502,6 +502,7 @@ WHILE .NOT. HB_FEof()
    cCNAE    :=  ""
    cIBGE    :=""
    cBAIRRO  :=""
+   cENDERECO:=""
    cCEP     := ""
    cREGIME  :=""
    cESTADO  :="" //difere de cUF(Passado funcao) para evitar erros pode ser ST subistituto tributario
@@ -977,14 +978,15 @@ WHILE .NOT. HB_FEof()
 		 IF .NOT. EMPTY(cIBGE)     
 			//SU SUFRAMA   YY ajustes
 			 IF cUF="GO" .OR. cUF="PB" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR" .OR. cUF="BAIXAPR" .OR. cUF="YY"
-				oORI:FIELDPUTE("IBGE",cIBGE)
+				FIELD->"IBGE":=cIBGE
 			 ENDIF	
 		  ENDIF	
-		  
-          IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="TODASPB" 
-             FIELD->NOME:=cNOME
-          ENDIF	
-          IF cUF=="RS" .OR. cUF=="BA" .OR. cUF=="CPFBA" .OR. cUF=="SE" 
+		  IF ! EMTPY(cNOME)
+             IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="TODASPB" 
+               FIELD->NOME:=cNOME
+             ENDIF
+          ENDIF
+           IF cUF=="RS" .OR. cUF=="BA" .OR. cUF=="CPFBA" .OR. cUF=="SE" 
              FIELD->CATEGORIA:=cCATEGORIA
           ENDIF
           IF cUF="PA" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="SC"
