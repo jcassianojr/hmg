@@ -99,8 +99,9 @@ endif
 
 
 if file("cadastro.txt")
+    cDELIM:=FDELIM ("cadastro.txt",1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
     nHANDLE:=FOPEN("cadastro.txt")
-    cLINHA := ALLTRIM(FREADLINE( nHANDLE ))
+    cLINHA := ALLTRIM(FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ))
 	fclose(Nhandle)	
     if at(";",cLINHA)>0
        frename("cadastro.txt","al.txt")
@@ -167,9 +168,13 @@ FOR Y=1 TO 7
            mds("atualizando situacao")
            nLASTREC:=FLINECOUNT(cTXTBA)
            zei_fort( nLASTREC,,,0)
+           cDELIM:=FDELIM (cTXTBA,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
            nHANDLE:=FOPEN(cTXTBA)
-           LINHA := ALLTRIM(FREADLINE( nHANDLE ))
            while .T.
+              LINHA := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM  ) )
+              IF LINHA = "__FINAL__"
+                 exit
+              endif
               MDS(LEFT(linha,16)   )
               IF lCPF
                  cCNPJ:=SUBSTR(LINHA,1,11)
@@ -183,10 +188,6 @@ FOR Y=1 TO 7
                  if cSITUACAO="A".OR.cSITUACAO="I"
                     netgrvcam("SITUACAO",cSITUACAO)
                  endif   
-              endif
-              LINHA := alltrim( FREADLINE( nHANDLE ) )
-              IF LINHA = "__FINAL__"
-                 exit
               endif
               zei_fort(nLASTREC,,,1)
            enddo
@@ -242,10 +243,14 @@ IF file("PrestadoresNFe.txt")
        mds("Atualizando CCMSP")
        nLASTREC:=FLINECOUNT("PrestadoresNFe.txt")
        zei_fort( nLASTREC,,,0)
+       cDELIM:=FDELIM ("PrestadoresNFe.txt",1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
        nHANDLE:=FOPEN("PrestadoresNFe.txt")
-       LINHA := ALLTRIM(FREADLINE( nHANDLE ))
        nLINHA:=1
        while .T.
+          LINHA := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM  ) )
+          IF LINHA = "__FINAL__"
+             exit
+          endif
           MDS(linha+STR(nLINHA)+"/"+STR(nLASTREC))          
           cCNPJ:=TIRAOUT(LINHA)
           dbgotop()
@@ -253,10 +258,6 @@ IF file("PrestadoresNFe.txt")
              netrecapp()
              CCMSP->cnpj:=cCNPJ             
              dbunlock()
-          endif
-          LINHA := alltrim( FREADLINE( nHANDLE ) )
-          IF LINHA = "__FINAL__"
-             exit
           endif
           zei_fort(nLASTREC,,,1)
           nLINHA++
@@ -485,12 +486,19 @@ nLASTREC:=FLINECOUNT(cARQtxt)
 nLINHA:=1
 zei_fort( nLASTREC,,,0)
 MDS(PADR(cARQTXT+"->"+cARQDBF,40))
-//nHANDLE:=FOPEN(cARQTXT)
-//LINHA := ALLTRIM(FREADLINE( nHANDLE ))
-nFile := HB_FUse(cARQTXT)
-LINHA:=HB_FREADLN()  
-WHILE .NOT. HB_FEof()   
-//while .T.
+cDELIM:=FDELIM (cARQTXT,1024)
+nHANDLE:=FOPEN(cARQTXT)
+//nFile := HB_FUse(cARQTXT)
+//LINHA:=HB_FREADLN()  
+//WHILE .NOT. HB_FEof()   
+while .T.
+
+   LINHA := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ) )
+   IF LINHA = "__FINAL__"
+      exit
+   endif
+
+
    MDS(cUF+" "+STR(nLINHA)+"/"+STR(nLASTREC)+" -> "+LEFT(linha,50))             
    cIE      :=  ""
    cNOME    := ""
@@ -1006,19 +1014,15 @@ WHILE .NOT. HB_FEof()
           dbunlock()   	
    endif
 
-//   LINHA := alltrim( FREADLINE( nHANDLE ) )
-//   IF LINHA = "__FINAL__"
-//      exit
-///   endif
    
-   HB_FSkip(1)
-   LINHA:=HB_FREADLN()  
-   //LINHA:=HB_FREADLN()  
+ //  HB_FSkip(1)
+//   LINHA:=HB_FREADLN()  
+
    zei_fort(nLASTREC,,,1)
    nLINHA++   
 enddo
-HB_FUse()
-//FCLOSE(nHANDLE)
+//HB_FUse()
+FCLOSE(nHANDLE)
 
 /*
 IF cUF="PE"
