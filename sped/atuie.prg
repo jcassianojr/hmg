@@ -986,10 +986,10 @@ while .T.
 		 IF .NOT. EMPTY(cIBGE)     
 			//SU SUFRAMA   YY ajustes
 			 IF cUF="GO" .OR. cUF="PB" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR" .OR. cUF="BAIXAPR" .OR. cUF="YY"
-				FIELD->"IBGE":=cIBGE
+				FIELD->IBGE:=cIBGE
 			 ENDIF	
 		  ENDIF	
-		  IF ! EMTPY(cNOME)
+		  IF ! EMPtY(cNOME)
              IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="TODASPB" 
                FIELD->NOME:=cNOME
              ENDIF

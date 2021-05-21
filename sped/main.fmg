@@ -313,8 +313,8 @@ DEFINE WINDOW TEMPLATE AT 195 , 508 WIDTH 667 HEIGHT 350 VIRTUAL WIDTH Nil VIRTU
 
     DEFINE BUTTON Button_13
         ROW    140
-        COL    310
-        WIDTH  120
+        COL    20
+        WIDTH  140
         HEIGHT 30
         ACTION IMPTXT("XMLSPED")
         CAPTION "xml->sped"
@@ -568,6 +568,32 @@ DEFINE WINDOW TEMPLATE AT 195 , 508 WIDTH 667 HEIGHT 350 VIRTUAL WIDTH Nil VIRTU
         UPDOWN .F.
         RIGHTALIGN .F.
     END DATEPICKER
+
+    DEFINE BUTTON Button_7
+        ROW    140
+        COL    310
+        WIDTH  120
+        HEIGHT 30
+        ACTION cnpjirimp()
+        CAPTION "txt->cnpjir"
+        FONTNAME "Arial"
+        FONTSIZE 9
+        TOOLTIP ""
+        FONTBOLD .F.
+        FONTITALIC .F.
+        FONTUNDERLINE .F.
+        FONTSTRIKEOUT .F.
+        ONGOTFOCUS Nil
+        ONLOSTFOCUS Nil
+        HELPID Nil
+        FLAT .F.
+        TABSTOP .T.
+        VISIBLE .T.
+        TRANSPARENT .F.
+        MULTILINE .F.
+        PICTURE Nil
+        PICTALIGNMENT TOP
+    END BUTTON
 
 END WINDOW
 

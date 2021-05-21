@@ -28,7 +28,8 @@ while ! SINTCERT->(EOF())
             cIE:=TIRAOUT(SINTCERT->IE)
             cCNAE:=SINTCERT->CNAE
             cNOME:=SINTCERT->RAZAO
-            cMUNICIPIO:=SINTCERT->CIDADE
+            cCODIBGE:=SINTCERT->CODIBGE
+            //cMUNICIPIO:=SINTCERT-> agora somente ibge
             DBSELECTAR(cALIAS)
             DBGOTOP()   
             IF ! DBSEEK(cCNPJ)
@@ -67,27 +68,8 @@ while ! SINTCERT->(EOF())
                    ENDIF
                ENDIF     
                  // If cESTADO = "GO" Or cESTADO = "RS" Or cESTADO = "MA"  Or cESTADO = "PR" Then 'estes estao tem arquivo separado de baixados                 
-     	      ENDIF	
-            IF cUF="GO" .OR. cUF="PA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="SC"
-               IF VAL((cALIAS)->CNAE)=0.AND.VAL(cCNAE)>0
-                  (cALIAS)->CNAE:=cCNAE
-               ENDIF               
-            ENDIF
-            IF cUF="GO" .OR. cUF="MG" .OR. cUF="PB" .OR. cUF="PI" .OR. cUF="RO" .OR. cUF="PA"
-               IF EMPTY((cALIAS)->NOME)
-                  (cALIAS)->NOME:=cNOME
-               ENDIF
-            ENDIF
-            IF cUF="GO"  .OR. cUF="PB"  
-               IF EMPTY((cALIAS)->MUNICIPIO)
-                  (cALIAS)->MUNICIPIO:=cMUNICIPIO
-               ENDIF
-            ENDIF          
-            IF cUF="PB"  
-               IF EMPTY((cALIAS)->CEP)
-                  (cALIAS)->CEP:=SINTCERT->CEP
-               ENDIF
-            ENDIF          
+     	      ENDIF
+            gravaiecampos()   	
             dbunlock()            
          ENDIF
    	ENDIF	  
@@ -133,7 +115,7 @@ while ! eof()
             cCNAE:=CNPJXML->CNAE
             cNOME:=CNPJXML->NOME
             cCODIBGE:=CNPJXML->CODIBGE
-            cMUNICIPIO=CNPJXML->CIDADE
+            //cMUNICIPIO=CNPJXML->CIDADE agora somente ibge
             DBSELECTAR(cALIAS)
             DBGOTOP()   
             IF ! DBSEEK(cCNPJ)
@@ -146,43 +128,7 @@ while ! eof()
                   FWRITE(nHANDLE,"CNPJXML: "+cCNPJ+" "+cUF+" "+cIE+"<>"+(cALIAS)->IE+HB_OsNewLine())
                ENDIF
             ENDIF     
-            IF cUF="GO" .OR. cUF="PA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="SC"
-               IF VAL((cALIAS)->CNAE)=0.AND.VAL(cCNAE)>0
-                  (cALIAS)->CNAE:=cCNAE
-               ENDIF               
-            ENDIF
-            IF cUF="GO" .OR. cUF="MG" .OR. cUF="PB" .OR. cUF="PI" .OR. cUF="RO" .OR. cUF="PA"
-               IF EMPTY((cALIAS)->NOME)
-                  (cALIAS)->NOME:=cNOME
-               ENDIF
-            ENDIF
-            IF cUF="GO"  .OR. cUF="PB" 
-               IF EMPTY((cALIAS)->MUNICIPIO)
-                  (cALIAS)->MUNICIPIO:=cMUNICIPIO
-               ENDIF
-            ENDIF             
-            IF cUF="GO"  .OR. cUF="PB"  .OR. cUF="SC" .or. cUF="PR"
-               IF val((cALIAS)->ibge)=0
-                  (cALIAS)->ibge:=cCODIBGE
-               ENDIF               
-            ENDIF 
-            IF cUF="PB"            
-                IF EMPTY((cALIAS)->ENDERECO)
-                  (cALIAS)->ENDERECO:=CNPJXML->ENDERECO
-                ENDIF
-                IF EMPTY((cALIAS)->NUMEND)
-                  (cALIAS)->NUMEND:=CNPJXML->NUMEND
-                ENDIF
-                IF EMPTY((cALIAS)->COMPLEM)
-                  (cALIAS)->COMPLEM:=CNPJXML->COMPLEM
-                ENDIF
-                IF EMPTY((cALIAS)->BAIRRO)
-                  (cALIAS)->BAIRRO:=CNPJXML->BAIRRO
-                ENDIF
-                IF EMPTY((cALIAS)->CEP)
-                  (cALIAS)->CEP:=CNPJXML->CEP
-                ENDIF
-            ENDIF
+            gravaiecampos()
             dbunlock()            
          ENDIF
    	ENDIF	  
@@ -210,3 +156,43 @@ ENDIF
 
 MDS("...")
       
+function gravaiecampos()
+IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"
+   IF VAL((cALIAS)->CNAE)=0.AND.VAL(cCNAE)>0
+      (cALIAS)->CNAE:=cCNAE
+   ENDIF               
+ENDIF
+IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" 
+   IF EMPTY((cALIAS)->NOME)
+      (cALIAS)->NOME:=cNOME
+   ENDIF
+ENDIF
+//agora somente o codigo do ibge
+//IF cUF="GO"  .OR. cUF="PB" 
+//   IF EMPTY((cALIAS)->MUNICIPIO)
+ //     (cALIAS)->MUNICIPIO:=cMUNICIPIO
+ //  ENDIF
+//ENDIF             
+IF cUF="GO" .OR. cUF="PB"  .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR"  .OR. cUF="YY"
+   IF val((cALIAS)->ibge)=0
+      (cALIAS)->ibge:=cCODIBGE
+   ENDIF               
+ENDIF 
+IF cUF="PB"            
+    IF EMPTY((cALIAS)->ENDERECO)
+      (cALIAS)->ENDERECO:=FIELD->ENDERECO
+    ENDIF
+    IF EMPTY((cALIAS)->NUMEND)
+      (cALIAS)->NUMEND:=FIELD->NUMEND
+    ENDIF
+    IF EMPTY((cALIAS)->COMPLEM)
+      (cALIAS)->COMPLEM:=FIELD->COMPLEM
+    ENDIF
+    IF EMPTY((cALIAS)->BAIRRO)
+      (cALIAS)->BAIRRO:=FIELD->BAIRRO
+    ENDIF
+    IF EMPTY((cALIAS)->CEP)
+      (cALIAS)->CEP:=FIELD->CEP
+    ENDIF
+ENDIF
+return .t.
