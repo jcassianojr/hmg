@@ -244,6 +244,24 @@ FUNCTION imptxt(cTIPO)
 			   endif
             ENDIF   
 
+            IF AT("CNAECSV",cARQUIVO)>0   
+			   cARQUIVO:="FO_CNAE2"
+			   lCHECTB:=.F.
+            ENDIF   
+            IF AT("NATJUCSV",cARQUIVO)>0   
+			   cARQUIVO:="NATUREZA_JURIDICA"
+			   lCHECTB:=.F.
+            ENDIF   
+            IF AT("QUALSCSV",cARQUIVO)>0   
+			   cARQUIVO:="QUALIF_SOCIO_CNPJ"
+			   lCHECTB:=.F.
+            ENDIF   
+            IF AT("PAISCSV",cARQUIVO)>0   
+			   cARQUIVO:="SISCOMEX_PAISES"
+			   lCHECTB:=.F.
+            ENDIF   
+
+
             IF AT("CFOP",cARQUIVO)>0 .AND. LEN(cARQUIVO)=4 //len evita cfop complemntares como cfop_creditos
 			   IF At("DESC_CFOP,",cLINHA)>0
 			      cARQUIVO:="MD04"
@@ -257,7 +275,7 @@ FUNCTION imptxt(cTIPO)
 				  lCHECTB:=.F.
 			   endif
 	
-            IF AT("PAISES",cARQUIVO)>0
+            IF AT("PAISES",cARQUIVO)>0 .AND. cARQUIVO<>"SISCOMEX_PAISES"
     		   IF At("COD_PAIS,",cLINHA)>0
 					    DO CASE
 						   CASE At("1|CANADA",cLINH2)>0
@@ -488,23 +506,47 @@ FUNCTION imptxt(cTIPO)
                    nFile := HB_FUse(cARQIMP)
                    nLASTREC:=hb_flastrec()
                    zei_fort( nLASTREC,,,0)
-                   hb_fgotop()
-                   HB_FSkip(1) //1o. linha reader
-                   DO WHILE .NOT. HB_FEof()
-                      cLINHA:=HB_FREADLN()  
-                      aCAMPOS:=HB_ATokens(cLINHA,"|")                            
+                 //  hb_fgotop()
+                   HB_FUse()
+           
+                   cDELIM:=FDELIM (cARQIMP,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
+                   nFILE:=FOPEN(cARQIMP) //abre o arquivo
+                   nLINHA:=1
+
+                   IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
+                   ELSE
+                       cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM)
+                       //HB_FSkip(1) //1o. linha reader
+                   ENDIF
+
+                   WHILE .T. //.NOT. HB_FEof()
+                      //cLINHA:=HB_FREADLN() 
+                      cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM) //FREADLINE (handle, line_len,lremchrexp,cDELI)
+                      IF cLINHA='__FINAL__' //freadline retorna __FINAL__   quando nao e mais linhas
+                         EXIT
+                      ENDIF
+                      
+                      IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
+                         aCAMPOS:=SplitCommaAspas(cLINHA)
+                      ELSE
+                          aCAMPOS:=HB_ATokens(cLINHA,"|")                            
+                      ENDIF  
                       MDS(cLINHA)
                       cSUBLINHA:=""
                       GravaRegEFD(cARQUIVO,1)
                       cTEXTO:="insert into "+cARQUIVO +" values ("
-                      cTEXTO+=STRVAL(hb_FRecNo()-1)+"," //1o. linha reader                            
+                      cTEXTO+=STRVAL(nLINHA)+","  //cTEXTO+=STRVAL(hb_FRecNo()-1)+"," //1o. linha reader                            
                       cTEXTO+=cSUBLINHA
                       cTEXTO+="1) ;"
+                      
+                      nLINHA++
                       FWRITE(nGRV,cTEXTO+HB_OSNEWLINE())
-                      HB_FSkip(1)
+                      //HB_FSkip(1)
                    ENDDO
-                   HB_FUse()
+                   //HB_FUse()
+                   fclose(nfile)
                    fclose(nGRV)
+    
                    filedelete(cARQIMP)
                ENDIF
                DBCLOSEALL()
@@ -1250,87 +1292,87 @@ cALIAS:=UPPER(cALIAS)
 //case para upgrade cnae cfo ncm cidades paises outros podera ter return ou array adequada linclui podera virar false nFIM ajustado
 //criar seek e escolher ordem
 //cria so estrutura necessaria
-	   DO CASE
-		      CASE cALIAS="MD10"
-			       lINCLUI:=.F.  
-				   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
-				   IF LEN(aCAMPOS)>=3
-				       aCAMPOS[3]:=coduf(aCAMPOS[1],"UF")  //tras o codigo da uf pelos 2 digitos do codigo ibge
-				   ELSE
-				       AADD(aCAMPOS,coduf(aCAMPOS[1],"UF"))
-                   ENDIF				   
-				   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
-  	         CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
-			       lINCLUI:=.F.
-				   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
-				   IF LEN(aCAMPOS)>=3
-				       aCAMPOS[3]:="EX" 
-				   ELSE
-				       AADD(aCAMPOS,"EX")
-                   ENDIF
-		           aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
-  	         CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)>0 //COD_PAIS, NOM_PAIS, DT_INI, DT_FIM
-			       lINCLUI:=.F.
-				   dbsetorder(1) //ISO3166A
-				   IF LEN(aCAMPOS)>=3
-				       aCAMPOS[3]:="EX" 
-				   ELSE
-				       AADD(aCAMPOS,"EX")
-                   ENDIF
-		           aEFD:={{"ISO3166A","C", 2,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
-		      CASE cALIAS="MD04"
-			       lINCLUI:=.F.
-				   aEFD:={{"CFONEW","C", 4,0},{"DESCRICAO" ,"C",150,0}}
-				   dbsetorder(2) // cfonew
-		      CASE cALIAS="MD05"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // uf
-				   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}}
-		      CASE cALIAS="MD05X"
-			       lINCLUI:=.F.
-				   dbsetorder(3) // uficms ufdest
-				   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}} //checar furamente inclusao por md05 como ufdest **
-		      CASE cALIAS="CEST"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 7,0},{"DESCRICAO" ,"M",255,0}}			   
-		      CASE cALIAS="FO_CNAE2"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 7,0},{"DESCRICAO" ,"C",100,0}}			   
-		      CASE cALIAS="SINTDOC"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",70,0}}
-		      CASE cALIAS="CST_COFINS"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
-		      CASE cALIAS="CST_IPI"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
-		      CASE cALIAS="CST_ICMS"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 3,0},{"NOME" ,"C",150,0}}
-		      CASE cALIAS="CST_PIS"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
-		      CASE cALIAS="NFECRET"
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",120,0}}
-		      CASE cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)>0 //versão=1 TIP_MOEDA, Nome, DT_INI, DT_FIM, PAIS
-			       lINCLUI:=.F.
-				   dbsetorder(2) // simboro
-				   aEFD:={{"SIMBOLO","C", 3,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0},{"PAIS" ,"C",20,0}}
-		      CASE cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 //versão=1 CODIGO, DESCRICAO, DT_INI, DT_FIM
-			       lINCLUI:=.F.
-				   dbsetorder(1) // codigo
-				   aEFD:={{"CODIGO","N", 4,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0}}
-		   ENDCASE
+DO CASE
+    CASE cALIAS="MD10"
+       lINCLUI:=.F.  
+	   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
+	   IF LEN(aCAMPOS)>=3
+	       aCAMPOS[3]:=coduf(aCAMPOS[1],"UF")  //tras o codigo da uf pelos 2 digitos do codigo ibge
+	   ELSE
+	       AADD(aCAMPOS,coduf(aCAMPOS[1],"UF"))
+             ENDIF				   
+	   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
+       CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
+       lINCLUI:=.F.
+	   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
+	   IF LEN(aCAMPOS)>=3
+	       aCAMPOS[3]:="EX" 
+	   ELSE
+	       AADD(aCAMPOS,"EX")
+             ENDIF
+         aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
+       CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)>0 //COD_PAIS, NOM_PAIS, DT_INI, DT_FIM
+       lINCLUI:=.F.
+	   dbsetorder(1) //ISO3166A
+	   IF LEN(aCAMPOS)>=3
+	       aCAMPOS[3]:="EX" 
+	   ELSE
+	       AADD(aCAMPOS,"EX")
+             ENDIF
+         aEFD:={{"ISO3166A","C", 2,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
+    CASE cALIAS="MD04"
+       lINCLUI:=.F.
+	   aEFD:={{"CFONEW","C", 4,0},{"DESCRICAO" ,"C",150,0}}
+	   dbsetorder(2) // cfonew
+    CASE cALIAS="MD05"
+       lINCLUI:=.F.
+	   dbsetorder(1) // uf
+	   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}}
+    CASE cALIAS="MD05X"
+       lINCLUI:=.F.
+	   dbsetorder(3) // uficms ufdest
+	   aEFD:={{"UFICMS","C", 2,0},{"NOMEEXT" ,"C",20,0}} //checar furamente inclusao por md05 como ufdest **
+    CASE cALIAS="CEST"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 7,0},{"DESCRICAO" ,"M",255,0}}			   
+    CASE cALIAS="FO_CNAE2"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 7,0},{"DESCRICAO" ,"C",100,0}}			   
+    CASE cALIAS="SINTDOC"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",70,0}}
+    CASE cALIAS="CST_COFINS"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
+    CASE cALIAS="CST_IPI"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
+    CASE cALIAS="CST_ICMS"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 3,0},{"NOME" ,"C",150,0}}
+    CASE cALIAS="CST_PIS"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",150,0}}
+    CASE cALIAS="NFECRET"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",120,0}}
+    CASE cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)>0 //versão=1 TIP_MOEDA, Nome, DT_INI, DT_FIM, PAIS
+       lINCLUI:=.F.
+	   dbsetorder(2) // simboro
+	   aEFD:={{"SIMBOLO","C", 3,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0},{"PAIS" ,"C",20,0}}
+    CASE cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 //versão=1 CODIGO, DESCRICAO, DT_INI, DT_FIM
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","N", 4,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0}}
+ENDCASE
 IF lINCLUI=.F. //as tabelas padrao 
 	nini:=1 //codigo na tabela tem que ser campo 1 grava checa inclui e grava
 	nfim:=2  //nome ou descricao na tabela tem que ser campo 1 grava se a descricao esta vazia
@@ -1344,6 +1386,11 @@ ENDIF
 IF cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 //versão=1 CODIGO, DESCRICAO, DT_INI, DT_FIM
    nFIM:=4
 ENDIF
+
+IF  AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
+	nfim:=2  //CSV DADOS ABERTOS  so tem dois campos
+ENDIF
+
 
 //aCAMPOS VEM do hb_atokens tem os campos dos registros
 IF lINCLUI
