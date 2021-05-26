@@ -3,7 +3,7 @@ function cnpjirimp()
 //"33600832";"0001";"06";"1";"DALUARI BOUTIQUE";"02";"20190513";"00";"";"";"20190513";"4781400";"4782201,4782202,4783101,4783102";"AVENIDA";"JOSE TOZZI";"1831";"LOJA  04";"CENTRO";"29930245";"ES";"5697";"27";"37638200";"";"";"";"";"CADASTRO@PEREIRABCONTABILIDDE.COM.BR";"";"" 
 
 
-cCAM   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())+"MD10"
+cCAM   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())
 
 
 cARQUIVO:=cCAM+"MD10"
@@ -52,7 +52,7 @@ NEXT X
        cFOLDER:=GetFolder ( 'Pasta Arquivos tabelas auxiliares sped' )
        cFOLDER+="\"
 
-
+altd()
 mListaArq := Directory(cFOLDER+"*ESTABE*.*")                     
 nLENX:=LEN(mListaArq)
 FOR I= 1 TO nLENX       
@@ -64,6 +64,7 @@ FOR I= 1 TO nLENX
         IF cLINHA='__FINAL__' //freadline retorna __FINAL__   quando nao e mais linhas
            EXIT
         ENDIF
+        MDS(cLINHA)
         
         //Usando splitcommaspas especifico em lugar hb_atokens corrigiu ; dentro de campos ex: "predio 01;apto 02"
         aCAMPOS:=SplitCommaAspas(cLINHA) 
@@ -129,13 +130,7 @@ FOR I= 1 TO nLENX
              dbunlock()
           ENDIF
  
-          dbselectar("cnpjiesu") //suframa
-          dbgotop()
-          IF DBSEEK(cCNPJ)
-             rlock()
-             gravairrf()
-             dbunlock()
-          ENDIF
+ 
  
           IF cSITUACAO="08" //baixada
              dbselectar(cARQUIVO) //ativas
@@ -181,17 +176,34 @@ FOR I= 1 TO nLENX
              field->SITESP     :=aCAMPOS[29]
              field->DATAESP    :=aCAMPOS[30]
           ENDIF
+          
+          xUF:=cUF  //muda para SU mas retorna embaixo
+          cUF:="SU"
+          dbselectar("cnpjiesu") //suframa
+          dbgotop()
+          IF DBSEEK(cCNPJ)
+             rlock()
+             gravairrf()
+             dbunlock()
+          ENDIF
+          cUF:=XUF
+          
+          
        ENDIF
     ENDDO
     FCLOSE(nfile) 
+    ferase(cFOLDER+cARQIMP)
 NEXT I
 dbcloseall()
-
+alertx("concluido")
+mds("...")
 
 function gravairrf()
 IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"
-  IF ! EMPTY(cCNAE) .AND. EMPTY(FIELD->CNAE) .AND. VAL(cCNAE)>0 .AND. LEN(ALLTRIM(cCNAE))=7
-     FIELD->CNAE:=cCNAE
+  IF ! EMPTY(cCNAE) .AND. VAL(cCNAE)>0 .AND. LEN(ALLTRIM(cCNAE))=7
+     IF  EMPTY(FIELD->CNAE) 
+         FIELD->CNAE:=cCNAE
+     ENDIF    
   ENDIF
 ENDIF
 IF ! EMPTY(cNOME)		  
