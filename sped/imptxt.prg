@@ -224,11 +224,17 @@ FUNCTION imptxt(cTIPO)
 			//esocial sao tbs   
 		    lCHECTB:=.T.
 
-            nFile := HB_FUse(cARQIMP)	
-            cLINHA:=UPPER(HB_FREADLN())	
-            HB_FSkip(1)			   
-			cLINH2:=UPPER(HB_FREADLN())	
-     	    HB_FUse()
+          cDELIM:=FDELIM (cARQIMP,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
+          nFILE:=FOPEN(cARQIMP) //abre o arquivo
+          cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM)
+          cLINH2:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM)
+          FCLOSE(nFILE) 
+
+          //  nFile := HB_FUse(cARQIMP)	
+           // cLINHA:=UPPER(HB_FREADLN())	
+          //  HB_FSkip(1)			   
+	     //		cLINH2:=UPPER(HB_FREADLN())	
+     	   // HB_FUse()
 			   
 		    IF AT("MUNICIPIOS",cARQUIVO)>0	   
 			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0
@@ -503,11 +509,14 @@ FUNCTION imptxt(cTIPO)
                    
                    FWRITE(nGRV,cCRIASQL+HB_OSNEWLINE())
                    
-                   nFile := HB_FUse(cARQIMP)
-                   nLASTREC:=hb_flastrec()
-                   zei_fort( nLASTREC,,,0)
-                 //  hb_fgotop()
-                   HB_FUse()
+  ALTD()                 
+                   nLASTREC:=FLINECOUNT(cARQIMP)
+
+//                   nFile := HB_FUse(cARQIMP)
+//                   nLASTREC:=hb_flastrec()
+//                   zei_fort( nLASTREC,,,0)
+// hb_fgotop()
+//                   HB_FUse()
            
                    cDELIM:=FDELIM (cARQIMP,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
                    nFILE:=FOPEN(cARQIMP) //abre o arquivo
@@ -521,12 +530,13 @@ FUNCTION imptxt(cTIPO)
 
                    WHILE .T. //.NOT. HB_FEof()
                       //cLINHA:=HB_FREADLN() 
-                      cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM) //FREADLINE (handle, line_len,lremchrexp,cDELI)
+                      cLINHA:=FREADLINE (nFILE, 1024 ,.F. ,cDELIM) //FREADLINE (handle, line_len,lremchrexp,cDELI) 
                       IF cLINHA='__FINAL__' //freadline retorna __FINAL__   quando nao e mais linhas
                          EXIT
                       ENDIF
                       
                       IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
+                         cLINHA:=TIRACe2(cLINHA)
                          aCAMPOS:=SplitCommaAspas(cLINHA)
                       ELSE
                           aCAMPOS:=HB_ATokens(cLINHA,"|")                            
@@ -1300,18 +1310,18 @@ DO CASE
 	       aCAMPOS[3]:=coduf(aCAMPOS[1],"UF")  //tras o codigo da uf pelos 2 digitos do codigo ibge
 	   ELSE
 	       AADD(aCAMPOS,coduf(aCAMPOS[1],"UF"))
-             ENDIF				   
+       ENDIF				   
 	   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
-       CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
+    CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
        lINCLUI:=.F.
 	   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
 	   IF LEN(aCAMPOS)>=3
 	       aCAMPOS[3]:="EX" 
 	   ELSE
 	       AADD(aCAMPOS,"EX")
-             ENDIF
-         aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
-       CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)>0 //COD_PAIS, NOM_PAIS, DT_INI, DT_FIM
+       ENDIF
+       aEFD:={{"BACEN","N", 4,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
+    CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)>0 //COD_PAIS, NOM_PAIS, DT_INI, DT_FIM
        lINCLUI:=.F.
 	   dbsetorder(1) //ISO3166A
 	   IF LEN(aCAMPOS)>=3
@@ -1372,6 +1382,12 @@ DO CASE
        lINCLUI:=.F.
 	   dbsetorder(1) // codigo
 	   aEFD:={{"CODIGO","N", 4,0},{"NOME" ,"C",20,0},{"DATA_INI" ,"D",8,0},{"DATA_FIM" ,"D",8,0}}
+    CASE AT("NATJUCSV",CNOMEORI)>0
+	   aEFD:={{"CODIGO","C", 4,0},{"DESCRICAO" ,"C",80,0}}
+    CASE AT("QUALSCSV",CNOMEORI)>0
+	   aEFD:={{"CODIGO","C", 2,0},{"DESCRICAO" ,"C",80,0}}
+    CASE AT("PAISCSV",CNOMEORI)>0
+	   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",40,0}}
 ENDCASE
 IF lINCLUI=.F. //as tabelas padrao 
 	nini:=1 //codigo na tabela tem que ser campo 1 grava checa inclui e grava
