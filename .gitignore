@@ -14,3 +14,5 @@ lerxmlsefaz/ErrorLog.Htm
 *.exe
 sped/ErrorLog.Htm
 *.c
+*.rc
+sped/hbmk.log.terabox.uploading.cfg
