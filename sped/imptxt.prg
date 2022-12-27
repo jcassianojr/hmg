@@ -1,3 +1,9 @@
+//Cnae 
+//https://cnae.ibge.gov.br/en/?view=atividades
+//https://cnae.ibge.gov.br/en/classificacoes/download-concla.html
+//
+
+
 FUNCTION imptxt(cTIPO)
 
 

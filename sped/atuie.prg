@@ -556,13 +556,36 @@ while .T.
 
 
     Case cUF="MG" //LIMITADOR LINUX
+//versao antiga posional   
 //0011949720055 00000000000000  JOSE ANTONIO DE FARIA e outro(s)                             H	
 //1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 //         1         2         3         4         5         6         7         8         9
-         cIE:=SUBSTR(LINHA,1,13)
-         cCNPJ:=SUBSTR(LINHA,15,14)
-         cNOME:=SUBSTR(LINHA,31,60)
-         cSITUACAO:=SUBSTR(LINHA,92,1)  //H = Habilitado  N= NÆo Habilitado
+//versao nova chr(20) separdor
+//0027509030137 18384930001638 DATORA MOBILE TELECOMUNICACOES S.A. N 6120-5/99   
+//1             15             30
+
+   //      versao antiga posicional
+  //       cIE:=SUBSTR(LINHA,1,13)
+   //      cCNPJ:=SUBSTR(LINHA,15,14)
+       //  cNOME:=SUBSTR(LINHA,31,60)
+       //  cSITUACAO:=SUBSTR(LINHA,92,1)  //H = Habilitado  N= NÆo Habilitado
+       
+       
+       
+        aCAMPOS:=HB_ATokens(LINHA,chr(20))          
+        if len(aCAMPOS)>=5 //O Txt as vezes tem linhas em branco
+             CIE:=        Acampos[1]
+             cCNPJ:=      Acampos[2]
+             CNOME:=      Acampos[3]
+             cSITUACAO:=  Acampos[4] 
+             cCNAE    :=  TIRAOUT(Acampos[5])  
+        endif
+        alert(cCNPJ)
+        alert(cIE)
+        ALERT(cNOME)
+        alert(cSITUACAO)
+        alert(cCNAE)
+        ALTD()
 
     Case cUF="MT"
 
@@ -950,8 +973,9 @@ while .T.
 		  //grava so ibge para diminuir tamanho dos arquivos
           //IF cUF="RO" .OR. cUF="ES" .OR. cUF="MS" .OR. cUF="RS" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="TODASPB" //.OR.cUF="PE"
           //   field->UF:=cESTADO
-          //ENDIF	
-          IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="BAIXAPR"  .OR. cUF="TODASPB" 
+          //ENDIF
+          //27/12/2O22 Incluido MG	
+          IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="BAIXAPR"  .OR. cUF="TODASPB" .OR. cUF="MG"
             FIELD->CNAE:=cCNAE
             IF VAL(FIELD->CNAE)=0
                FIELD->CNAE:=""
@@ -990,6 +1014,7 @@ while .T.
 			 ENDIF	
 		  ENDIF	
 		  IF ! EMPtY(cNOME)
+             cNOME:=TiRACE(cNOME)
              IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="TODASPB" 
                FIELD->NOME:=cNOME
              ENDIF
