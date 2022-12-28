@@ -157,7 +157,8 @@ ENDIF
 MDS("...")
       
 function gravaiecampos()
-IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"
+//27/12/2022 MG agora tem cnae
+IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"  .OR. cUF="MG"
    IF VAL((cALIAS)->CNAE)=0.AND.VAL(cCNAE)>0
       (cALIAS)->CNAE:=cCNAE
    ENDIF               

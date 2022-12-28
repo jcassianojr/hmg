@@ -250,8 +250,9 @@ while ! eof()
                if alltrim(TIRAOUT((cALIAS)->NOME))<>cNOME
                   fwrite(nhandle,ccnpjt+": "+cNOME+"<>"+NOME+" Razao<>"+cSUB+HB_OsNewLine())
                endif   
-            ENDIF            
-            IF lCNPJCNAE .AND. Z<>3  .AND. ( cUF="GO" .OR. cUF="PA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="SC")
+            ENDIF         
+            //27/12/2022 MG agora tem cnae   
+            IF lCNPJCNAE .AND. Z<>3  .AND. ( cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"  .OR. cUF="MG")
                if alltrim(TIRAOUT((cALIAS)->CNAE))<>cCNAE
                   fwrite(nhandle,ccnpjt+": "+cCNAE+"<>"+CNAE+" CNAE<>"+cSUB+HB_OsNewLine())
                endif   

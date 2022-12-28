@@ -97,6 +97,9 @@ if file("contribuinte.txt")
    Frename("contribuinte.txt","ce.txt")
 endif
 
+if file("cadastro_sped.txt")
+   frename("cadastro_sped.txt","mg.txt")	 
+endif
 
 if file("cadastro.txt")
     cDELIM:=FDELIM ("cadastro.txt",1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
@@ -106,15 +109,18 @@ if file("cadastro.txt")
     if at(";",cLINHA)>0
        frename("cadastro.txt","al.txt")
 	else 
-       cSITUACAO:=SUBSTR(cLINHA,92,1)		  
-	   if cSITUACAO="N" .OR. cSITUACAO='H'	      
-	      frename("cadastro.txt","mg.txt")	   	  
-	   else 
-	      if at("ESTADO DE SC",cLINHA)>0		     
-		     frename("cadastro.txt","sc.txt")	   	  
-		  endif
-	   endif
-    endif    
+      if at("ESTADO DE SC",cLINHA)>0		     
+		frename("cadastro.txt","sc.txt")	   	  
+      endif
+    endif
+    
+// mg agora  cadastro_sped
+  //     cSITUACAO:=SUBSTR(cLINHA,92,1)		  
+//	   if cSITUACAO="N" .OR. cSITUACAO='H'	      
+//	      frename("cadastro.txt","mg.txt")	   	  
+//	   else 
+//	   endif
+//    endif    
 endif
 
 
@@ -570,22 +576,30 @@ while .T.
        //  cNOME:=SUBSTR(LINHA,31,60)
        //  cSITUACAO:=SUBSTR(LINHA,92,1)  //H = Habilitado  N= NÆo Habilitado
        
+        cIE:=SUBSTR(LINHA,1,13)
+        cCNPJ:=SUBSTR(LINHA,15,14)
+        cSUBLINHA:=SUBSTR(LINHA,30)
+        cNOME:=SUBSTR(cSUBLINHA,1,LEN(cSUBLINHA)-11)
+        cSUBLINHA:=SUBSTR(cSUBLINHA,LEN(cSUBLINHA)-10)
+        IF AT("/",cSUBLINHA)>0 .AND. AT("-",cSUBLINHA)>0 //checa sublinha pois alguma nao trazem o cnae e situacao
+           cSITUACAO:=LEFT(cSUBLINHA,1)
+           cCNAE    :=TIRAOUT(SUBSTR(cSUBLINHA,3))
+        ENDIF
        
-       
-        aCAMPOS:=HB_ATokens(LINHA,chr(20))          
-        if len(aCAMPOS)>=5 //O Txt as vezes tem linhas em branco
-             CIE:=        Acampos[1]
-             cCNPJ:=      Acampos[2]
-             CNOME:=      Acampos[3]
-             cSITUACAO:=  Acampos[4] 
-             cCNAE    :=  TIRAOUT(Acampos[5])  
-        endif
-        alert(cCNPJ)
-        alert(cIE)
-        ALERT(cNOME)
-        alert(cSITUACAO)
-        alert(cCNAE)
-        ALTD()
+      //  aCAMPOS:=HB_ATokens(LINHA,chr(20))          
+   //     if len(aCAMPOS)>=5 //O Txt as vezes tem linhas em branco
+   //          CIE:=        Acampos[1]
+   //          cCNPJ:=      Acampos[2]
+    //         CNOME:=      Acampos[3]
+    //         cSITUACAO:=  Acampos[4] 
+    //         cCNAE    :=  TIRAOUT(Acampos[5])  
+    //    endif
+  //      alert(cCNPJ)
+   //     alert(cIE)
+   //     ALERT(cNOME)
+   ////     alert(cSITUACAO)
+   //     alert(cCNAE)
+   //     ALTD()
 
     Case cUF="MT"
 
