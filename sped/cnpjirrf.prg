@@ -100,22 +100,36 @@ NEXT X
        cFOLDER:=GetFolder ( 'Pasta Arquivos tabelas auxiliares sped' )
        cFOLDER+="\"
 
-altd()
 mListaArq := Directory(cFOLDER+"*ESTABE*.*")                     
 nLENX:=LEN(mListaArq)
 FOR I= 1 TO nLENX       
     cARQIMP:= UPPER(mListaArq[i,1])
     cDELIM:=FDELIM (cFOLDER+cARQIMP,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
     nFILE:=FOPEN(cFOLDER+cARQIMP) 
+	nLINHA:=0
+	
      WHILE .T.    
         cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM) //FREADLINE (handle, line_len,lremchrexp,cDELI)
+		nLINHA++
         IF cLINHA='__FINAL__' //freadline retorna __FINAL__   quando nao e mais linhas
            EXIT
         ENDIF
-        MDS(cLINHA)
+        MDS(STR(nLINHA)+" "+cLINHA)
+		
+		
         
         //Usando splitcommaspas especifico em lugar hb_atokens corrigiu ; dentro de campos ex: "predio 01;apto 02"
         aCAMPOS:=SplitCommaAspas(cLINHA) 
+		IF LEN(aCAMPOS)<30
+		   ALERT(cARQUIVO)
+		   ALERT(STR(nLINHA))
+		   IF MDG("Erro Encerrar")
+		      quit
+		   else 
+              loop		   
+		   ENDIF
+		ENDIF
+		
         cCNPJ:=aCAMPOS[1]+aCAMPOS[2]+aCAMPOS[3]  //1'cnpj_basico',   2   'cnpj_ordem',    3   'cnpj_dv',
         cNOME:=aCAMPOS[5]                        //5   'nome_fantasia',
         cCNAE:=aCAMPOS[12]                       // 12   'cnae_fiscal_principal',
