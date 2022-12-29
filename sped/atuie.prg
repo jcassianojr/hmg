@@ -599,7 +599,6 @@ while .T.
    //     ALERT(cNOME)
    ////     alert(cSITUACAO)
    //     alert(cCNAE)
-   //     ALTD()
 
     Case cUF="MT"
 

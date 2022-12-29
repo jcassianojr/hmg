@@ -190,7 +190,6 @@ while ! eof()
 	   endif	    
    endif   
    
-   altd()
    if (len(alltrim(tiraout(cnpjxml->telefone)))=8 .or. len(alltrim(tiraout(cnpjxml->telefone)))=9) .and. at("-",cnpjxml->telefone)=0     
       cnpjxml->telefone:=formatatel(cnpjxml->telefone)
    endif	  

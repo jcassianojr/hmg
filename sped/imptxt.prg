@@ -457,10 +457,10 @@ FUNCTION imptxt(cTIPO)
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="CST_ICMS"
 			       lZAP:=.F.
-				   cCAM   := PROFILESTRING( "sped.ini","PATH","SINTEGRA",HB_CWD())
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="SINTDOC"
 			       lZAP:=.F.
-				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","SINTEGRA",HB_CWD())
 		      CASE upper(cARQUIVO)="MD05"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
@@ -515,7 +515,6 @@ FUNCTION imptxt(cTIPO)
                    
                    FWRITE(nGRV,cCRIASQL+HB_OSNEWLINE())
                    
-  ALTD()                 
                    nLASTREC:=FLINECOUNT(cARQIMP)
 
 //                   nFile := HB_FUse(cARQIMP)
@@ -1540,6 +1539,13 @@ IF nPOS>0  //versão=1 TIP_MOEDA
   aCAMPOS[1]:=SUBSTR(aCAMPOS[1],nPOS+1) //TIP_MOEDA
 ENDIF
 FOR I:=1 TO nFIM
+   nPOS:=at(" - ",aCAMPOS[I])>0
+   if nPOS>0
+      ALERT(aCAMPOS[I])
+      aCAMPOS[I]:=SUBSTR(aCAMPOS[1],nPOS)
+      ALERT(aCAMPOS[I])
+      quit
+   endif
    aCAMPOS[I]:=STRTRAN(UPPER(ALLTRIM(aCAMPOS[I]))," ","")
    IF aCAMPOS[I]="DT_INI" .OR. aCAMPOS[I]="DT_FIM" .OR. aCAMPOS[I]="DATAINCIO" .OR. aCAMPOS[I]="DATAFIM"
      AADD(aTAMANHO,8)
