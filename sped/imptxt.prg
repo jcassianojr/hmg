@@ -242,8 +242,8 @@ FUNCTION imptxt(cTIPO)
 	     //		cLINH2:=UPPER(HB_FREADLN())	
      	   // HB_FUse()
 			   
-		    IF AT("MUNICIPIOS",cARQUIVO)>0	   
-			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0
+		    IF AT("MUNICIPIOS",cARQUIVO)>0  .OR. cARQUIVO="TB14099"
+			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0  //tb14099
 			      cARQUIVO:="MD10"
 				  lCHECTB:=.F.
 			   endif			   
@@ -274,28 +274,27 @@ FUNCTION imptxt(cTIPO)
             ENDIF   
 
 
-            IF AT("CFOP",cARQUIVO)>0 .AND. LEN(cARQUIVO)=4 //len evita cfop complemntares como cfop_creditos
-			   IF At("DESC_CFOP,",cLINHA)>0
+            IF (AT("CFOP",cARQUIVO)>0 .AND. LEN(cARQUIVO)=4) .OR. cARQUIVO="TB15236" //len evita cfop complemntares como cfop_creditos
+			   IF At("DESC_CFOP,",cLINHA)>0  //tb15236
 			      cARQUIVO:="MD04"
 				  lCHECTB:=.F.
 			   endif
             ENDIF
-            
 			   
-			   IF At("OFICIAL GENERAL",cLINH2)>0
-			      cARQUIVO:="ESOCIAL_CBO"
-				  lCHECTB:=.F.
-			   endif
+			IF At("OFICIAL GENERAL",cLINH2)>0
+			   cARQUIVO:="ESOCIAL_CBO"
+			   lCHECTB:=.F.
+			endif
 	
-            IF AT("PAISES",cARQUIVO)>0 .AND. cARQUIVO<>"SISCOMEX_PAISES"
+            IF (AT("PAISES",cARQUIVO)>0 .AND. cARQUIVO<>"SISCOMEX_PAISES") .OR. cARQUIVO="TB14140" .OR. cARQUIVO="TB14141"
     		   IF At("COD_PAIS,",cLINHA)>0
 					    DO CASE
-						   CASE At("1|CANADA",cLINH2)>0
+						   CASE At("1|CANADA",cLINH2)>0   //tb14140.txt
 						       cARQUIVO:="SISCOMEX_PAISES"   
 							CASE At("ABU DHABI",cLINH2)>0
 						       cARQUIVO:="SPED_PAISES" 
 						   OTHERWISE
-						    cARQUIVO:="PAISES" //usa codigo bacen importa
+						    cARQUIVO:="PAISES" //usa codigo bacen importa tb14141
                         ENDCASE					
 				  lCHECTB:=.F.
 			   endif
@@ -1539,7 +1538,7 @@ IF nPOS>0  //versão=1 TIP_MOEDA
   aCAMPOS[1]:=SUBSTR(aCAMPOS[1],nPOS+1) //TIP_MOEDA
 ENDIF
 FOR I:=1 TO nFIM
-   nPOS:=at(" - ",aCAMPOS[I])>0
+   nPOS:=at(" - ",aCAMPOS[I])
    if nPOS>0
       ALERT(aCAMPOS[I])
       aCAMPOS[I]:=SUBSTR(aCAMPOS[1],nPOS)
