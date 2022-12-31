@@ -49,7 +49,10 @@ function cnpjirimp()
                             28   'correio_eletronico',
                             29   'situacao_especial',
                             30   'data_situacao_especial']
- */                              
+ */    
+ 
+ 
+                           
 
 cCAM   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())
 
