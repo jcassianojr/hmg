@@ -575,6 +575,16 @@ while .T.
    //      cCNPJ:=SUBSTR(LINHA,15,14)
        //  cNOME:=SUBSTR(LINHA,31,60)
        //  cSITUACAO:=SUBSTR(LINHA,92,1)  //H = Habilitado  N= NÆo Habilitado
+        IF AT("/",LINHA)=0 .OR. AT("-",LINHA)=0 //veio em duas linhas
+        
+           LINHA2 := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ) )
+           IF LINHA2 = "__FINAL__"
+              exit
+           endif
+           LINHA:=LINHA+LINHA2
+        
+        ENDIF  
+       
        
         cIE:=SUBSTR(LINHA,1,13)
         cCNPJ:=SUBSTR(LINHA,15,14)
@@ -586,19 +596,6 @@ while .T.
            cCNAE    :=TIRAOUT(SUBSTR(cSUBLINHA,3))
         ENDIF
        
-      //  aCAMPOS:=HB_ATokens(LINHA,chr(20))          
-   //     if len(aCAMPOS)>=5 //O Txt as vezes tem linhas em branco
-   //          CIE:=        Acampos[1]
-   //          cCNPJ:=      Acampos[2]
-    //         CNOME:=      Acampos[3]
-    //         cSITUACAO:=  Acampos[4] 
-    //         cCNAE    :=  TIRAOUT(Acampos[5])  
-    //    endif
-  //      alert(cCNPJ)
-   //     alert(cIE)
-   //     ALERT(cNOME)
-   ////     alert(cSITUACAO)
-   //     alert(cCNAE)
 
     Case cUF="MT"
 
