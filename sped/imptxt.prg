@@ -256,6 +256,8 @@ FUNCTION imptxt(cTIPO)
 			   endif
             ENDIF   
 
+
+            //tabelas dados aberto cnpj
             IF AT("CNAECSV",cARQUIVO)>0   
 			   cARQUIVO:="FO_CNAE2"
 			   lCHECTB:=.F.
@@ -267,7 +269,15 @@ FUNCTION imptxt(cTIPO)
             IF AT("QUALSCSV",cARQUIVO)>0   
 			   cARQUIVO:="QUALIF_SOCIO_CNPJ"
 			   lCHECTB:=.F.
-            ENDIF   
+            ENDIF  
+            IF AT("MUNICCSV",cARQUIVO)>0   
+			   cARQUIVO:="CIDIRRF"
+			   lCHECTB:=.F.
+            ENDIF        
+            IF AT("MOTICSV",cARQUIVO)>0   
+			   cARQUIVO:="MOTIVO_SITUACAO_CADASTRAL"
+			   lCHECTB:=.F.
+            ENDIF          
             IF AT("PAISCSV",cARQUIVO)>0   
 			   cARQUIVO:="SISCOMEX_PAISES"
 			   lCHECTB:=.F.
@@ -478,6 +488,9 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="MOEDA"  
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
+              CASE AT("MUNICCSV",CNOMEORI)>0
+                   lZAP:=.F.
+                   cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())    
 		   ENDCASE
 			   
            
@@ -526,10 +539,11 @@ FUNCTION imptxt(cTIPO)
                    nFILE:=FOPEN(cARQIMP) //abre o arquivo
                    nLINHA:=1
 
-                   IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
+                   IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0 .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0
+                     //os arquivos acima nao tem header a primeira linha ja tem os dados
                    ELSE
                        cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM)
-                       //HB_FSkip(1) //1o. linha reader
+                       //1o. linha reader necessario desconsiderar primeira linha
                    ENDIF
 
                    WHILE .T. //.NOT. HB_FEof()
@@ -539,7 +553,7 @@ FUNCTION imptxt(cTIPO)
                          EXIT
                       ENDIF
                       
-                      IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
+                      IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0 .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0
                          cLINHA:=TIRACe2(cLINHA)
                          aCAMPOS:=SplitCommaAspas(cLINHA)
                       ELSE
@@ -1390,6 +1404,12 @@ DO CASE
 	   aEFD:={{"CODIGO","C", 4,0},{"DESCRICAO" ,"C",80,0}}
     CASE AT("QUALSCSV",CNOMEORI)>0
 	   aEFD:={{"CODIGO","C", 2,0},{"DESCRICAO" ,"C",80,0}}
+    CASE AT("MUNICCSV",CNOMEORI)>0
+        lINCLUI:=.F.
+	   dbsetorder(1) // codcid
+	   aEFD:={{"CODCID","C", 4,0},{"NOMECID" ,"C",32,0}}
+    CASE AT("MOTICSV",CNOMEORI)>0
+	   aEFD:={{"CODIGO","C", 2,0},{"DESCRICAO" ,"C",90,0}}      
     CASE AT("PAISCSV",CNOMEORI)>0
 	   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",40,0}}
 ENDCASE
@@ -1407,8 +1427,8 @@ IF cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 //versão=1 CODIGO, DESCRICAO, 
    nFIM:=4
 ENDIF
 
-IF  AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0
-	nfim:=2  //CSV DADOS ABERTOS  so tem dois campos
+IF  AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0 .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0
+	nfim:=2  //CSV DADOS ABERTOS cnpj so tem dois campos
 ENDIF
 
 

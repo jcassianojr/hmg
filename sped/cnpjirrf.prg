@@ -52,23 +52,26 @@ function cnpjirimp()
  */    
  
  
-                           
+nUSO:=FCREATE("cnpjIR_erro.TXT")                      
 
 cCAM   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())
-
-
 cARQUIVO:=cCAM+"MD10"
 dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
 ordlistadd( cARQUIVO)
-dbsetorder(1) //
+dbsetorder(1) 
 
 cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
-
-
 cARQUIVO:=cCAM+"CIDIRRF"
 dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
 ordlistadd( cARQUIVO)
-dbsetorder(1) //
+dbsetorder(1) 
+
+
+cCAM  := PROFILESTRING( "sped.ini","CIDCONV.DBF","CAMINHO",HB_CWD())
+cARQUIVO:=cCAM+"CIDCONV"
+dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
+ordlistadd( cARQUIVO)
+dbsetorder(1) 
 
 
  aUF    := { "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", ;
@@ -167,12 +170,21 @@ FOR I= 1 TO nLENX
         if dbseek(cUF+cCIDADE)
            cIBGE:=MD10->CODIBGE
         else
-           cCIDADE:=""
-           cUF:=""
+           cBUSCA:=cUF+PEGCIDCONV(cUF,cCIDADE)
+    	   dbselectar("MD10")
+    	   dbgotop()
+    	   if dbseek(cBUSCA)
+    	      cIBGE:=MD10->CODIBGE
+           else 
+               //zera os valores
+               cCIDADE:=""
+               cUF:=""
+               fwrite(nUSO,cCNPJ+" cidade nao cadastrada:"+cUF+" "+cCIDADE+HB_OsNewLine())   
+           endif     
         endif
 
         @ 24,00 say cUF  +  " "+ cIBGE +  " "+ cCNPJ +  " "+  cCNAE  
-        IF ASCAN(aUF,cUF)  >0 .AND. ! eMPTY(cUF)  .AND. lEN(ALLTRIM(cUF))=2
+        IF ASCAN(aUF,cUF)  >0 .AND. ! eMPTY(cUF)  .AND. lEN(ALLTRIM(cUF))=2  //valores zerados acima para nao gravar aqui
           cARQUIVO:="CNPJIE"+cUF
           cARQBX  :="BAIXA"+cUF
           cARQIR  :="CNPJIR"+cUF
@@ -258,6 +270,7 @@ FOR I= 1 TO nLENX
     ferase(cFOLDER+cARQIMP)
 NEXT I
 dbcloseall()
+fclose(nUSO)
 alertx("concluido")
 mds("...")
 
