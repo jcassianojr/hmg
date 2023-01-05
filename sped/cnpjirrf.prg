@@ -165,22 +165,13 @@ FOR I= 1 TO nLENX
            cCIDADE:=UPPER(ALLTRIM(tratanome(cidirrf->nomecid)))
         endif
         
-        dbselectar("md10")
-        dbgotop()
-        if dbseek(cUF+cCIDADE)
-           cIBGE:=MD10->CODIBGE
-        else
-           cBUSCA:=cUF+PEGCIDCONV(cUF,cCIDADE)
-    	   dbselectar("MD10")
-    	   dbgotop()
-    	   if dbseek(cBUSCA)
-    	      cIBGE:=MD10->CODIBGE
-           else 
-               //zera os valores
-               cCIDADE:=""
-               cUF:=""
-               fwrite(nUSO,cCNPJ+" cidade nao cadastrada:"+cUF+" "+cCIDADE+HB_OsNewLine())   
-           endif     
+        
+        cIBGE:=BUSCAIBGE(cUF,cCIDADE)
+        IF EMPTY(cIBGE)
+            //zera os valores
+            cCIDADE:=""
+            cUF:=""
+            fwrite(nUSO,cCNPJ+" cidade nao cadastrada:"+cUF+" "+cCIDADE+HB_OsNewLine())   
         endif
 
         @ 24,00 say cUF  +  " "+ cIBGE +  " "+ cCNPJ +  " "+  cCNAE  

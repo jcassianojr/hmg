@@ -114,7 +114,7 @@ ENDIF
 dbunlock()
 return .t.
 
-
+/*
 function tratanome(mNOME,lANSI,lACEN)
 IF VALTYPE(lANSI)<>"L"
    lANSI:=.F.
@@ -141,19 +141,7 @@ ENDIF
 
 mNOME     := ALLTRIM(UPPER(mNOME))
 RETUrn mNOME
-
-function pegcidconv(cUF,cNOME)
-cDBF:=ALIAS()
-IF EMPTY(cUF).OR.EMPTY(cNOME)
-   return cNOME
-ENDIF
-dbselectar("cidconv")
-dbgotop()
-if dbseek(cUF+cNOME)
-   cNOME:=CIDDES
-ENDIF
-DBSELECTAR(cDBF)
-RETUrn cNOME
+*/
 
 
 function gravasql(cARQ)

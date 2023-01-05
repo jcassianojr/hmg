@@ -147,8 +147,14 @@ while ! eof()
    
    
    IF empty(cnpjxml->CODIBGE) .AND. ! empty(cnpjxml->cidade) .AND. ! EMPTY(cnpjxml->UF)
-      cBUSCA:=cnpjxml->UF+ALLTRIM(cnpjxml->cidade)
-      cCODIBGE:=""      
+     cCODIBGE:=BUSCAIBGE(cnpjxml->UF,ALLTRIM(cnpjxml->cidade))
+      IF ! EMPTY(cCODIBGE)      
+         cnpjxml->CODIBGE:=cCODIBGE
+      endif      
+      
+  /*   cBUSCA:=cnpjxml->UF+ALLTRIM(cnpjxml->cidade)
+      cCODIBGE:="" 
+       
       dbselectar("MD10")
       DBsetorder(1)
  	   dbselectar("MD10")
@@ -160,9 +166,12 @@ while ! eof()
       IF ! EMPTY(cCODIBGE)      
          cnpjxml->CODIBGE:=cCODIBGE
       endif   
-	   dbselectar("MD10")
-      set filter to
-      dbsetorder(1)
+ */     
+      
+//	   dbselectar("MD10")
+//      set filter to
+ //     dbsetorder(1)
+      
    ENDIF
 
    IF EMPTY(cnpjxml->UF) .and. ! empty(cnpjxml->CODIBGE)      
@@ -391,7 +400,7 @@ IF (empty(cnpjxml->cidade) .OR. EMPTY(cnpjxml->UF)) .and. ! empty(cnpjxml->CODIB
       cCIDADE:=""
       dbselectar("MD10")
       DBsetorder(3)
- 	   dbselectar("MD10")
+      
 	   dbgotop()
 	   if dbseek(cBUSCA)
          cUF:=MD10->UF
@@ -404,9 +413,11 @@ IF (empty(cnpjxml->cidade) .OR. EMPTY(cnpjxml->UF)) .and. ! empty(cnpjxml->CODIB
 	   if ! empty(cCIDADE).AND.EMPTY(cnpjxml->cidade)
 	      cnpjxml->CIDADE:=cCIDADE
 	   endif        
-      dbselectar("MD10")
-      set filter to
-      dbsetorder(1)
+ 
+ //     dbselectar("MD10")
+ //     set filter to
+//      dbsetorder(1)
+
    ENDIF
 return .t.
 

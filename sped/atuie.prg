@@ -998,7 +998,7 @@ while .T.
              dbgotop()
              if dbseek(cCIDADE)
                 cCIDADE:=PRCID->MUNICIPIO
-                cIBGE:=BUSCAIBGE('PR'+cCIDADE)
+                cIBGE:=BUSCAIBGE('PR',cCIDADE)
 			 ELSE
                 cCIDADE:="" //zera a cidade para evitar erros			 
              endif
@@ -1010,11 +1010,11 @@ while .T.
           ENDIF	
           
           IF cUF="TODASPB"    //Pode ser substitutivo por isso usa estado aqui                       
-             cIBGE:=BUSCAIBGE(cESTADO+cCIDADE)                  
+             cIBGE:=BUSCAIBGE(cESTADO,cCIDADE)                  
           ENDIF	 
 		  
 		  IF Empty(cIBGE) .AND. ! Empty(cCIDADE) 
-		     cIBGE:=BUSCAIBGE(cUF+cCIDADE)
+		     cIBGE:=BUSCAIBGE(cUF,cCIDADE)
 		  ENDIF	
 
 		 IF .NOT. EMPTY(cIBGE)     
@@ -1071,47 +1071,7 @@ IF cUF="PE"
 ENDIF
 */
 
-/*ja grava o ibge na importacao
-dbselectar(carqdbf)
-IF cUF="GO" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="PR" .OR. cUF="BAIXAPR"             
-   dbgotop()
-   while ! eof()
-      MDS(FIELD->CNPJ)
-      if VAL(FIELD->IBGE)=0 
-         NETRECLOCK()
-          IF cUF="SC" .AND. ! EMPTY(FIELD->IRRF)            
-             cIBGE:=IRRFIBGE(FIELD->IRRF)
-             FIELD->IBGE:=cIBGE                      
-          ENDIF	
-          IF cUF="GO" .OR. cUF="PB"              
-            cIBGE:=BUSCAIBGE(cUF+FIELD->MUNICIPIO)
-            FIELD->IBGE:=cIBGE        
-         ENDIF            
-         IF cUF="GO" .OR. cUF="SC" 
-            IF VAL(FIELD->CNAE)=0
-                FIELD->CNAE:=""
-            ENDIF
-         ENDIF
-         IF cUF="PR" .OR. cUF="BAIXAPR" 
-             cCIDADE:=ALLTRIM(FIELD->MUNICIPIO)         
-             dbselectar('prcid')
-             dbgotop()
-             if dbseek(cCIDADE)
-                cCIDADE:=ALLTRIM(PRCID->MUNICIPIO)
-                cIBGE:=BUSCAIBGE('PR'+cCIDADE)
-                dbselectar(carqdbf)
-                if ! empty(cIBGE)
-                    FIELD->IBGE:=cIBGE                      
-                ENDIF    
-             endif
-             dbselectar(carqdbf)
-          ENDIF	    
-         DBUNLOCK()
-      endif   
-      dbskip()
-   enddo
-endif
-*/
+
 
 dbcloseall()
 
@@ -1119,22 +1079,62 @@ MDS("...")
 ferase(cARQTXT)
 RETURN .T.
 
+/*
 
+function pegcidconv(cUF,cNOME)
+LOCAL cDBF
+cDBF:=ALIAS()
+IF EMPTY(cUF).OR.EMPTY(cNOME)
+   return cNOME
+ENDIF
+dbselectar("cidconv")
+dbgotop()
+if dbseek(cUF+cNOME)
+   cNOME:=CIDDES
+ENDIF
+IF ! EMPTY(cDBF)
+   DBSELECTAR(cDBF)
+ENDIF   
+RETUrn cNOME
+*/
 
-FUNCTION BUSCAIBGE(cBUSCA)
-cIBGE:=""
+/*
+
+FUNCTION BUSCAIBGE(cUF,cCIDADE)
+LOCAL cIBGE
+LOCAL cALIAS
+LOCAL cBUSCA
+
 cALIAS:=ALIAS()
+
+cBUSCA:=cUF+cCIDADE
+cIBGE:=""
 cBUSCA := strtran( alltrim( cBUSCA ), "'", " " )    //tirar como d'agua d'olho
+
 dbselectar("MD10")
 dbsetorder(1)
 dbgotop()
 if dbseek(cbUSCA)
-  cIBGE:=MD10->CODIBGE
+   cIBGE:=MD10->CODIBGE
+ELSE
+   cBUSCA:=cUF+PEGCIDCONV(cUF,cCIDADE)
+   dbselectar("MD10")
+   dbgotop()
+   if dbseek(cBUSCA)
+      cIBGE:=MD10->CODIBGE
+   endif     
 endif
-dbselectar(cALIAS)
+if ! empty(cALIAS)
+   dbselectar(cALIAS)
+ENDIF   
 return cIBGE
+*/
+
+/*
 
 FUNCTION IRRFIBGE(cBUSCA)
+LOCAL cIBGE
+LOCAL cALIAS
 cIBGE:=""
 cALIAS:=ALIAS()
 dbselectar("MD10")
@@ -1143,7 +1143,9 @@ dbgotop()
 if dbseek(cbUSCA)
   cIBGE:=MD10->CODIBGE
 endif
-dbselectar(cALIAS)
+IF ! EMPTY(cALIAS)
+   dbselectar(cALIAS)
+ENDIF   
 return cIBGE
 
-
+*/
