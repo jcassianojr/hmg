@@ -204,44 +204,6 @@ FOR Y=1 TO 7
     endif
 NEXT Y
 
-/*
-//trocar ie pe velho->novo
-if file("peie.txt.new") //ba contribuintes
-   IF  netuse("CNPJIEPE")
-       dbsetorder(2)
-       mds("atualizando ie Pernanbuco")
-       nLASTREC:=FLINECOUNT("peie.txt.new")
-       zei_fort( nLASTREC,,,0)
-       nHANDLE:=FOPEN("peie.txt.new")
-       LINHA := ALLTRIM(FREADLINE( nHANDLE ))
-       while .T.
-          MDS(linha)          
-          cIE:=SUBSTR(LINHA,1,14)
-          cIENEW:=SUBSTR(LINHA,16)
-          dbgotop()
-          IF dbseek(cIE)
-             netreclock()
-             field->ieold:=cIE
-             field->ie   :=cIENEW    
-             dbunlock()
-          endif
-          LINHA := alltrim( FREADLINE( nHANDLE ) )
-          IF LINHA = "__FINAL__"
-             exit
-          endif
-          zei_fort(nLASTREC,,,1)
-       enddo
-      dbcloseall()
-      fclose(nhandle)
-      ferase("peie.txt.new")
-      ferase("peie.txt")
-   else
-     //  alert("erro abrir cnpjieba")
-   endif
-else
-   //alert("falta ba situ")
-endif
-*/
 
 IF file("PrestadoresNFe.txt")
    cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
@@ -464,6 +426,14 @@ IF ! NETUSE(cCAMINHO)
    DBCLOSEALL()
    RETURN .f.
 ENDIF
+
+
+cCAMINHO := PROFILESTRING( "sped.ini","CIDCONV.DBF","CAMINHO",HB_CWD())+"CIDCONV"
+IF ! NETUSE(cCAMINHO)
+   DBCLOSEALL()
+   RETURN .f.
+ENDIF
+
 
 IF cUF="PR".OR.cUF="BAIXAPR"
    cCAMINHO   := PROFILESTRING( "sped.ini","PRCID.DBF","CAMINHO",HB_CWD())+"PRCID"
