@@ -114,6 +114,7 @@ FOR I= 1 TO nLENX
     nFILE:=FOPEN(cFOLDER+cARQIMP) 
 	nLINHA:=0
 	
+    
      WHILE .T.    
         cLINHA:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM) //FREADLINE (handle, line_len,lremchrexp,cDELI)
 		nLINHA++
@@ -136,24 +137,21 @@ FOR I= 1 TO nLENX
 		   ENDIF
 		ENDIF
 		
-        cCNPJ:=aCAMPOS[1]+aCAMPOS[2]+aCAMPOS[3]  //1'cnpj_basico',   2   'cnpj_ordem',    3   'cnpj_dv',
-        cNOME:=aCAMPOS[5]                        //5   'nome_fantasia',
-        cCNAE:=aCAMPOS[12]                       // 12   'cnae_fiscal_principal',
-        cUF  :=aCAMPOS[20]                       //20   'uf',
-        cCODCID:=aCAMPOS[21]                     //21   'municipio',
-        cDDD:=aCAMPOS[22]                        //22   'ddd_1',
-        cTELEFONE:=aCAMPOS[23]                   //23   'telefone_1',
-
-       cDATA:=aCAMPOS[11]                        //11   'data_inicio_atividade',
-       dDATA:=STOD(cDATA)
-        
-       cENDTIP  := aCAMPOS[14]                        //14   'tipo_logradouro',
-       cENDERECO:= aCAMPOS[15]                        //15   'logradouro',
-       cNUMEND  := aCAMPOS[16]                        //16   'numero',
-       cCOMPLEM := strtran(strtran(aCAMPOS[17],"  "," "),"  "," ") //duplos espacos 17   'complemento',
-       cBAIRRO  := aCAMPOS[18]                        //18   'bairro',
-       cCEP     := aCAMPOS[19]                        //19   'cep',
- 
+        cCNPJ    := aCAMPOS[1]+aCAMPOS[2]+aCAMPOS[3]   //1    'cnpj_basico',   2   'cnpj_ordem',    3   'cnpj_dv',
+        cNOME    := aCAMPOS[5]                         //5    'nome_fantasia',
+        cCNAE    := aCAMPOS[12]                        //12   'cnae_fiscal_principal',
+        cUF      := aCAMPOS[20]                        //20   'uf',
+        cCODCID  := aCAMPOS[21]                        //21   'municipio',
+        cDDD     := aCAMPOS[22]                        //22   'ddd_1',
+        cTELEFONE:= aCAMPOS[23]                        //23   'telefone_1',
+        cDATA    := aCAMPOS[11]                        //11   'data_inicio_atividade',
+        dDATA    := STOD(cDATA)
+        cENDTIP  := aCAMPOS[14]                        //14   'tipo_logradouro',
+        cENDERECO:= aCAMPOS[15]                        //15   'logradouro',
+        cNUMEND  := aCAMPOS[16]                        //16   'numero',
+        cCOMPLEM := strtran(strtran(aCAMPOS[17],"  "," "),"  "," ") //duplos espacos 17   'complemento',
+        cBAIRRO  := aCAMPOS[18]                        //18   'bairro',
+        cCEP     := aCAMPOS[19]                        //19   'cep',
         //01 – NULA 02 – ATIVA 03 – SUSPENSA 04 – INAPTA 08 – BAIXADA
         cSITUACAO:=aCAMPOS[6]                    //6   'situacao_cadastral',
       
@@ -180,6 +178,10 @@ FOR I= 1 TO nLENX
           cARQBX  :="BAIXA"+cUF
           cARQIR  :="CNPJIR"+cUF
           
+          
+          //nao cria no registro cnpjieUF e baixaieUF pois no nacional nao tem inscricao estadual
+          //mas grava dados adcionais e efetua a baixa
+          
           dbselectar(cARQUIVO) //ativas
           dbgotop()
           IF DBSEEK(cCNPJ)
@@ -197,7 +199,7 @@ FOR I= 1 TO nLENX
           ENDIF
  
  
- 
+          //Muda para baixado apos gravar acima os dados adiconais pela funcao gravairrf
           IF cSITUACAO="08" //baixada
              dbselectar(cARQUIVO) //ativas
              dbgotop()
@@ -241,6 +243,30 @@ FOR I= 1 TO nLENX
              field->FONE3      :=aCAMPOS[27]   //27   'fax',
              field->SITESP     :=aCAMPOS[29]   //29   'situacao_especial',
              field->DATAESP    :=aCAMPOS[30]   //30   'data_situacao_especial']
+             
+             //corrige campos com 0 letras ou outras situacoes
+             //a base nao usa tracos nos telefones
+             if val(field->DDD1)=0
+                field->DDD1:=""
+             endif
+             if val(field->FONE1)=0
+                field->FONE1:=""
+             endif
+             if val(field->DDD2)=0
+                field->DDD2:=""
+             endif
+             if val(field->FONE2)=0
+                field->FONE2:=""
+             endif
+             if val(field->DDD3)=0
+                field->DDD3:="FONE3"
+             endif   
+             if val(field->FONE3)=0
+                field->FONE3:=""
+             endif 
+              if val(field->DATASIT)=0
+                field->DATASIT:=""
+             endif   
           ENDIF
           
           xUF:=cUF  //muda para SU mas retorna embaixo
@@ -321,4 +347,9 @@ IF cUF="PA" .OR. cUF="GO" .OR. cUF="SC"
       field->DATA:=dDATA
    ENDIF   
 ENDIF	
+IF cUF="TO" .OR. cUF="PE" .OR. cUF="MS" .OR. cUF="ES" .OR. cUF="SE" 
+   IF EMPTY(field->DATA) .AND. ! EMPTY(dDATA)
+      field->DATA:=DTOC(dDATA)
+   ENDIF  
+ENDIF
 return

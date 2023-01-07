@@ -605,8 +605,9 @@ while .T.
              cESTADO:=   Acampos[14]
              cCEP:=   Acampos[15]
              //c:=   Acampos[16] endereco conc nao usado
-             
           ENDIF
+          
+          
 
     Case cUF="PB"
           aCAMPOS:=HB_ATokens(LINHA,";")
@@ -909,10 +910,38 @@ while .T.
 
     Case cUF="SE"
         cIE:=SubStr(LINHA,1,9)
-     	  CCNPJ:=SubStr(LINHA,11,14)
-     	  cSITUACAO:=SubStr(LINHA,26,1)
-     	  CDATA:=SubStr(LINHA,52,8)
-     	  cCATEGORIA:=SubStr(LINHA,61)
+     	CCNPJ:=SubStr(LINHA,11,14)
+     	cSITUACAO:=SubStr(LINHA,26,1)
+     	CDATA:=SubStr(LINHA,52,8)
+     	cCATEGORIA:=ALLTRIM(UPPER(SubStr(LINHA,61)))
+        
+        /*
+        NOR;NORMAL
+        SER;PRESTADOR DE SERVICO
+        COM;SIMFAZ COMERCIO
+        SIM;SIMPLES NACIONAL
+        MEI;SIMEI
+        IND;SIMFAZ INDUSTRIA
+        SUB;SUBSTITUTO
+        */
+        
+        //Grava sigla para a base nao ficar muito grande melhoria perfomace leitura gravacao
+        DO CASE
+           CASE cCATEGORIA="NORMAL"
+                cCATEGORIA:="NOR"
+           CASE cCATEGORIA="PRESTADOR DE SERVICO"
+                cCATEGORIA:="SER"
+           CASE cCATEGORIA="SIMFAZ COMERCIO"
+                cCATEGORIA:="COM"                            
+           CASE cCATEGORIA="SIMEI"
+                cCATEGORIA:="MEI"
+           CASE cCATEGORIA="SIMPLES NACIONAL"
+                cCATEGORIA:="SIM"
+           CASE cCATEGORIA="SIMFAZ INDUSTRIA"
+                cCATEGORIA:="IND"
+           CASE cCATEGORIA="SUBSTITUTO"
+                cCATEGORIA:="SUB"                                                   
+        ENDCASE
 
 
 
@@ -946,6 +975,13 @@ while .T.
           	         .OR. cUF="SE" .OR. cUF="CPFSC" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="BAIXAPR"
              field->SITUACAO:=cSITUACAO
           ENDIF	
+          IF cUF="TO" .OR. cUF="PE" .OR. cUF="MS" .OR. cUF="ES" ;
+             .OR. cUF="BAIXATO" .OR. cUF="BAIXAPE" .OR. cUF="BAIXAMS" .OR. cUF="BAIXAES"
+            cDATA:=dtoc(stod(Cdata))
+          ENDIF
+          IF cUF="SE" .OR. cUF="BAIXASE"
+            cDATA:==dtoc(str2data(cDATA))
+          ENDIF
           IF cUF="ES" .OR. cUF="MS" .OR. cUF="PE" .OR. cUF="PR" .OR. cUF="RS" ;
                   .OR. cUF="BAIXARS" .OR. cUF="SE" .OR. cUF="BAIXAPR"
              field->DATA:=cDATA
@@ -1005,6 +1041,38 @@ while .T.
           IF cUF="PA" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="SC"
              field->DATA:=dDATA
           ENDIF	
+          IF cUF="TODASPB"   .OR. cUF="PB"
+          
+            /*
+            NOR;NORMAL
+            SIM;SIMPLES NACIONAL
+            OUT;OUTROS
+            FON;FONTE
+            RUR;PRODUTOR RURAL PESSO
+            SUB;SUBST TRIBUT.
+            ESP;ESPECIAL
+            */
+            
+            //Grava sigla para a base nao ficar muito grande melhoria perfomace leitura gravacao
+            DO CASE
+               CASE cREGIME="NORMAL"
+                    cREGIME:="NOR"
+               CASE AT("PRODUTOR RURAL",cREGIME)>0
+                    cREGIME:="RUR"
+               CASE cREGIME="FONTE"
+                    cREGIME:="FON"   
+               CASE cREGIME="ESPECIAL"
+                    cREGIME:="ESP"
+               CASE cREGIME="SIMPLES NACIONAL"
+                    cREGIME:="SIM"
+               CASE cREGIME="OUTROS"
+                    cREGIME:="OUT"
+               CASE AT("SUBST TRIBUT",cREGIME)>0
+                    cREGIME:="SUB"                                                   
+            ENDCASE
+      
+             
+          ENDIF
           IF cUF="PA" .OR. cUF="TODASPB"   .OR. cUF="PB"                      
              field->REGIME:=cREGIME
           ENDIF
