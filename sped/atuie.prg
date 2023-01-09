@@ -980,7 +980,7 @@ while .T.
             cDATA:=dtoc(stod(Cdata))
           ENDIF
           IF cUF="SE" .OR. cUF="BAIXASE"
-            cDATA:==dtoc(str2data(cDATA))
+            cDATA:=dtoc(str2data(cDATA))
           ENDIF
           IF cUF="ES" .OR. cUF="MS" .OR. cUF="PE" .OR. cUF="PR" .OR. cUF="RS" ;
                   .OR. cUF="BAIXARS" .OR. cUF="SE" .OR. cUF="BAIXAPR"

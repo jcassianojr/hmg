@@ -65,7 +65,6 @@ ZERRO:=""
    lCNPJ:=.T.
    lCEPUF:=.F.
    lEMAIL:=.F.
-  // l3DIG :=.T. //cidades agora podem possuir mais de um conjunto de 3 digitos no inicio da inscricao
    lCEPCID:=.F.
    lCID:=.T.
    lCCMIE:=.T.
@@ -165,14 +164,7 @@ while ! eof()
             fwrite(nhandle,cCNPJT+" "+cUF+" "+cCIDADE+" "+cDDD+" DDD nao e da cidade:"+md10->ddd+HB_OsNewLine())
          ENDIF   
       endif
-      //IF l3DIG
-      //   IF (cUF="MG".OR.cUF="PE".OR.cUF="RS".OR.cUF="SP").and.empty(md10->iniie).AND.cCIDADE<>"SAO PAULO".AND.LEFT(cIE,5)<>"ISENT".AND. ! EMPTY(cIE)
-     //       IF LEFT(cie,3)<>md10->iniie.AND. ! EMPTY(md10->iniie)
-     //          fwrite(nhandle,cCNPJT+" "+cUF+" "+cCIDADE+" "+left(cIE,3)+" prefixo Incricao Estadual nao e da cidade: "+md10->INIIE+HB_OsNewLine())
-     //          lLIMPAIE:=.t.
-     //       endif
-     //    endif
-      //ENDIF   
+
       IF lCEPCID
          if cCEP >= MD10->INICEP .and. cCEP <= MD10->FIMCEP
          ELSE
