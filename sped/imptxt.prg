@@ -3,7 +3,6 @@
 //https://cnae.ibge.gov.br/en/classificacoes/download-concla.html
 //
 
-
 FUNCTION imptxt(cTIPO)
 
 
@@ -236,12 +235,7 @@ FUNCTION imptxt(cTIPO)
           cLINH2:=FREADLINE (nFILE, 1024 ,.T. ,cDELIM)
           FCLOSE(nFILE) 
 
-          //  nFile := HB_FUse(cARQIMP)	
-           // cLINHA:=UPPER(HB_FREADLN())	
-          //  HB_FSkip(1)			   
-	     //		cLINH2:=UPPER(HB_FREADLN())	
-     	   // HB_FUse()
-			   
+        
 		    IF AT("MUNICIPIOS",cARQUIVO)>0  .OR. cARQUIVO="TB14099"
 			   IF At("NOME_MUN,",cLINHA)>0 .OR. At("NOM_MUN,",cLINHA)>0  //tb14099
 			      cARQUIVO:="MD10"
@@ -529,11 +523,7 @@ FUNCTION imptxt(cTIPO)
                    
                    nLASTREC:=FLINECOUNT(cARQIMP)
 
-//                   nFile := HB_FUse(cARQIMP)
-//                   nLASTREC:=hb_flastrec()
-//                   zei_fort( nLASTREC,,,0)
-// hb_fgotop()
-//                   HB_FUse()
+
            
                    cDELIM:=FDELIM (cARQIMP,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
                    nFILE:=FOPEN(cARQIMP) //abre o arquivo
@@ -569,9 +559,7 @@ FUNCTION imptxt(cTIPO)
                       
                       nLINHA++
                       FWRITE(nGRV,cTEXTO+HB_OSNEWLINE())
-                      //HB_FSkip(1)
                    ENDDO
-                   //HB_FUse()
                    fclose(nfile)
                    fclose(nGRV)
     
@@ -692,16 +680,19 @@ P Apuração da Contribuição Previdenciária sobre a Receita Bruta
        endif
        lATUdescri:=MDG("Atualizar Descricoes")
        cARQNBM:="NBM_"+ArqLogDataHora("txt")
-       cARQNBMLOGIX:="LOGIX_"+ArqLogDataHora("sql")
+    //   cARQNBMLOGIX:="LOGIX_"+ArqLogDataHora("sql")
        cARQNBMPROTHEUS:="protheus_"+ArqLogDataHora("sql")
        nNBM:=fcreate(cARQNBM)
        nNBMPROTHEUS:=fcreate(cARQNBMPROTHEUS)
     ENDIF
     
-    nFile := HB_FUse(cARQIMP)
-    nLASTREC:=hb_flastrec()
-    zei_fort( nLASTREC,,,0)
-    hb_fgotop()
+ //   nFile := HB_FUse(cARQIMP)  //abaixo 
+//    nLASTREC:=hb_flastrec()
+//    zei_fort( nLASTREC,,,0)
+//    hb_fgotop()
+
+
+
     IF cTIPO="EFD"  .OR. cTIPO="ECD" .OR. cTIPO="EFT" .OR. cTIPO="FCONT" .OR. cTIPO="MANAD"                                                        
        cARQERRO:=cARQIMP+"_inconsistenscias_"+ArqLogDataHora("txt")
        nLOGERRO:=fcreate(cARQERRO)
@@ -732,9 +723,25 @@ aPARDADOS:={}
 aBLOCO:={}
 aBLQTD:={}
 
+
+    nLASTREC:=FLINECOUNT(cARQIMP)
+    zei_fort( nLASTREC,,,0)
+    
+    cDELIM:=FDELIM (cARQIMP,1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
+    nFILEuso:=FOPEN(cARQIMP) //abre o arquivo
+
+
+
       
-      DO WHILE .NOT. HB_FEof()
-         cLINHA:=HB_FREADLN()  
+      WHILE .T. //DO WHILE .NOT. HB_FEof()
+         //cLINHA:=HB_FREADLN()  
+         cLINHA:=FREADLINE (nFILEuso, 1024 ,.T. ,cDELIM)
+         
+         IF cLINHA='__FINAL__' //freadline retorna __FINAL__   quando nao e mais linhas
+            EXIT
+        ENDIF
+         
+         
          MDS(cLINHA)
          IF cTIPO="SINTEGRA"
            cREG:=LEFT(cLINHA,2)
@@ -866,6 +873,7 @@ aBLQTD:={}
                  aCAMPOS[4]:=strtran(aCAMPOS[4],"-","")    
                  aCAMPOS[4]:=strtran(aCAMPOS[4],"'"," ")    
                  aCAMPOS[4]:=strtran(aCAMPOS[4],CHR(34),"")    
+                 aCAMPOS[4]:=tirace(aCAMPOS[4])
                  //versao antinga
                  //codigo;ex;tabela;NOME;aliqNac;aliqImp
                  // 1      2   3       4         5        6  
@@ -993,7 +1001,7 @@ aBLQTD:={}
             OTHERWISE                        
                  GravaRegEFD()                                    
          ENDCASE
-         zei_fort(nLASTREC,,,1)
+         
          if SUBSTR(cREG,1,1)="9" //Totalizadores
             lTEMBLOCO:=.t.
          endif
@@ -1012,9 +1020,14 @@ aBLQTD:={}
                aBLQTD[nPOSBLO]+=1
             ENDIF
          ENDIF 
-         HB_FSkip(1)
+        
+        zei_fort(nLASTREC,,,1) 
+
+        // HB_FSkip(1)
       ENDDO
-      HB_FUse()
+    //  HB_FUse()
+  fclose(nFILEuso)   //fecha o arquivo    
+  //    --->
  
       IF LEN(aBLOCO)>0
          hb_memowrit("blocos.TXT",strval(aBLOCO)) 
