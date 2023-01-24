@@ -52,16 +52,20 @@ function cnpjirimp()
  */    
  
  
-nUSO:=FCREATE("cnpjIR_erro.TXT")                      
+ 
+nUSO:=FCREATE("cnpjIR_erro.TXT")         
+
+
+if ! file("cepruaimp.dbf")
+   alert("Falta cepruaimp.dbf")
+   quit
+endif
+
+use cepruaimp new exclusive
+index on CEP tag ufcep             
 
 cCAM   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())
 cARQUIVO:=cCAM+"MD10"
-dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
-ordlistadd( cARQUIVO)
-dbsetorder(1) 
-
-cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
-cARQUIVO:=cCAM+"CIDIRRF"
 dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
 ordlistadd( cARQUIVO)
 dbsetorder(1) 
@@ -74,12 +78,23 @@ ordlistadd( cARQUIVO)
 dbsetorder(1) 
 
 
+cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
+cARQUIVO:=cCAM+"CIDIRRF"
+dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
+ordlistadd( cARQUIVO)
+dbsetorder(1) 
+
  aUF    := { "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", ;
               "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", ;
               "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO","SU" } //SU suframa
 
+
+
+
+cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
+ALTD()
 nFIM:=LEN(aUF)
-FOR X=1 TO nFIM
+FOR X:=1 TO nFIM
     cARQUIVO:=cCAM+"CNPJIE"+aUF[X]
     IF FILE(cARQUIVO+".DBF")
       dbusearea( .T., "DBFCDX", cARQUIVO,, .T. )
@@ -103,8 +118,10 @@ FOR X=1 TO nFIM
     ENDIF
 NEXT X
 
-       cFOLDER:=GetFolder ( 'Pasta Arquivos tabelas auxiliares sped' )
-       cFOLDER+="\"
+
+
+cFOLDER:=GetFolder ( 'Pasta Arquivos tabelas auxiliares sped' )
+cFOLDER+="\"
 
 mListaArq := Directory(cFOLDER+"*ESTABE*.*")                     
 nLENX:=LEN(mListaArq)
@@ -269,7 +286,7 @@ FOR I= 1 TO nLENX
              endif   
           ENDIF
           
-          xUF:=cUF  //muda para SU mas retorna embaixo
+          xUF:=cUF  //muda para SU mas retorna embaixo se faz necessario pois suframa nao e um estado
           cUF:="SU"
           dbselectar("cnpjiesu") //suframa
           dbgotop()
@@ -278,7 +295,7 @@ FOR I= 1 TO nLENX
              gravairrf()
              dbunlock()
           ENDIF
-          cUF:=XUF
+          cUF:=XUF  //retorno da marcacao temporaria para su para a uf do cadastro
           
           
        ENDIF
@@ -286,10 +303,39 @@ FOR I= 1 TO nLENX
     FCLOSE(nfile) 
     ferase(cFOLDER+cARQIMP)
 NEXT I
-dbcloseall()
 fclose(nUSO)
+
+
+//Grava ceps para depois atualizar na rotina cepruaimp
+nFIM:= LEN(aUF)
+FOR KW:=1 TO nFIM
+    cARQUIVO:="CNPJIR"+aUF[KW]
+    dbselectar(carquivo)
+    dbgotop()
+    while ! eof()
+        cCEP:=field->cep
+        cIBGE:=field->ibge
+        mds( aUF[KW] + " " + cCEP + " " + cIBGE )
+        dbselectar("cepruaimp")
+        dbgotop()
+        if ! dbseek(cCEP)
+           dbappend()
+           field->cep:=Ccep
+           field->codibge:=cIBGE
+        endif
+        dbselectar(carquivo)
+       dbskip()
+    enddo
+NEXT KW
+
+dbcloseall()
 alertx("concluido")
 mds("...")
+
+
+function gravaruaimp()
+return
+
 
 function gravairrf()
 //27/12/2022 MG agora tem cnae
