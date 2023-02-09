@@ -463,7 +463,7 @@ FUNCTION imptxt(cTIPO)
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="SINTDOC"
 			       lZAP:=.F.
-				   cCAM   := PROFILESTRING( "sped.ini","PATH","SINTEGRA",HB_CWD())
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="MD05"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
