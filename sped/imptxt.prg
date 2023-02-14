@@ -190,8 +190,10 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="CONSUMO_GAS"
                CASE cARQUIVO="CL_CONS_ENERGIA"
                     cARQUIVO:="CONSUMO_ENERGIA"                                               
-               CASE cARQUIVO="MOD_DOC"
+               CASE cARQUIVO="MOD_DOC" .OR. cARQUIVO="MODELOS"
                     cARQUIVO:="SINTDOC"
+               CASE cARQUIVO="QUALIFICACAO"
+                    cARQUIVO:="QUALIF_ASSINANTE"
                CASE cARQUIVO="UF_COD_SIG"
                     cARQUIVO:="UF_CODIGO_SIGLA"
                CASE cARQUIVO="UNIDADES_DA_FEDERACAO"
@@ -222,8 +224,8 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="CEST"
                 CASE cARQUIVO="CBC_MOEDA"
                     cARQUIVO:="MOEDA"
-               CASE cARQUIVO="MODELOS"
-                    cARQUIVO:="SINTDOC"
+               CASE cARQUIVO="SERVICO"
+                    cARQUIVO:="FI_NBMS"
             END CASE
               
 			//esocial sao tbs   
@@ -464,6 +466,12 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="SINTDOC"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+		      CASE upper(cARQUIVO)="QUALIF_ASSINANTE"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+ 		      CASE upper(cARQUIVO)="FI_NBMS"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())                  
 		      CASE upper(cARQUIVO)="MD05"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","CEP",HB_CWD())
@@ -1385,6 +1393,14 @@ DO CASE
        lINCLUI:=.F.
 	   dbsetorder(1) // codigo
 	   aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",70,0}}
+    CASE cALIAS="QUALIF_ASSINANTE"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",70,0}}       
+    CASE cALIAS="FI_NBMS"
+       lINCLUI:=.F.
+	   dbsetorder(1) // codigo
+	   aEFD:={{"NUMERONBM","C", 9,0},{"DESCRI" ,"C",100,0}}      
     CASE cALIAS="CST_COFINS"
        lINCLUI:=.F.
 	   dbsetorder(1) // codigo
@@ -1458,6 +1474,9 @@ else
    ENDIF
    IF cALIAS="MOEDA" .AND. AT("CBC_MOEDA",cARQIMP)=0 
      eVALOR:=VAL(eVALOR)
+   ENDIF
+   IF cALIAS="FI_NBMS"
+      eVALOR:=STRZERO(VAL(eVALOR),4)
    ENDIF
    dbgotop()
    if ! dbseek(eVALOR)
