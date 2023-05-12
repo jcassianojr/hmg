@@ -250,3 +250,19 @@ fUNCTION tirace2( cXml )
    NEXT
 
    RETURN cXml
+   
+   function GetJson(cJson)
+    Local xReturn := hb_jsonDecode( cJson )
+
+    If !( ValType( xReturn ) $ 'HA' )
+        xReturn := Nil
+    Endif
+
+return ( xReturn )
+
+
+
+function IsJsonValid(cJson)
+return ( GetJson(cJson) != Nil .and. ;
+        Len( GetJson(cJson) ) != 0 )
+
