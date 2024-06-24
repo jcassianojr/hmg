@@ -1,4 +1,13 @@
 main.prg
+# d:\develop\harbour\sefazclass\source\ze_sefazassina.prg
+# d:\develop\harbour\sefazclass\source\ze_sefazcapicom.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazdacte.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazdadfe.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazdaevento.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazdamdfe.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazdanfce.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazdanfe.prg
+#d:\develop\harbour\sefazclass\source\ze_sefazxmlclass.prg
 d:\develop\harbour\objmgw\adofix.prg
 d:\develop\harbour\objmgw\cepsutil.prg
 d:\develop\harbour\objmgw\disk53.prg
@@ -9,18 +18,11 @@ d:\develop\harbour\objmgw\netdbf.prg
 d:\develop\harbour\objmgw\profile.prg
 d:\develop\harbour\sefazclass\source\ze_digitodoc.prg
 d:\develop\harbour\sefazclass\source\ze_miscfunc.prg
-d:\develop\harbour\sefazclass\source\ze_sefazassina.prg
-d:\develop\harbour\sefazclass\source\ze_sefazcapicom.prg
-d:\develop\harbour\sefazclass\source\ze_sefazclass.prg
-d:\develop\harbour\sefazclass\source\ze_sefazdacte.prg
-d:\develop\harbour\sefazclass\source\ze_sefazdadfe.prg
-d:\develop\harbour\sefazclass\source\ze_sefazdaevento.prg
-d:\develop\harbour\sefazclass\source\ze_sefazdamdfe.prg
-d:\develop\harbour\sefazclass\source\ze_sefazdanfce.prg
-d:\develop\harbour\sefazclass\source\ze_sefazdanfe.prg
-d:\develop\harbour\sefazclass\source\ze_sefazxmlclass.prg
+d:\develop\harbour\sefazclass\source\ze_sefazclass.pRG
+d:\develop\harbour\sefazclass\source\ze_sefaz_assina.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_bpeprotocolo.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_bpestatus.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_capicom.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_cteaddcancelamento.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_cteenvio.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_cteevento.prg
@@ -66,7 +68,14 @@ d:\develop\harbour\sefazclass\source\ze_sefaz_nfeinutiliza.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_nfeprotocolo.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_nferetenvio.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_nfestatus.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_pdf_comum.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_pdf_cte.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_pdf_evento.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_pdf_mdfe.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_pdf_nfce.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_pdf_nfe.prg
 d:\develop\harbour\sefazclass\source\ze_sefaz_setup.prg
+d:\develop\harbour\sefazclass\source\ze_sefaz_xmlclass.prg
 d:\develop\harbour\sefazclass\source\ze_xmlfunc.prg
 d:\develop\hmg\lerxmlsefaz\consulte.prg
 d:\develop\hmg\lerxmlsefaz\funcoesnfe.prg

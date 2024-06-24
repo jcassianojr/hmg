@@ -1057,7 +1057,7 @@ FOR nOPCAO:=1 TO nFIM
    Endif
       
    if filesize(cFILEDANFE)<200  //arquivos muito pequenos     
-	  cCHAVE:=SONUMEROS(cFILEDANFE)	  
+	  cCHAVE:=SONUMERO(cFILEDANFE)	  
       cARQIMP:=cChave+"-nfe_vis.xml"
 	  IF copiavislogix(cARQIMP,cNFECNPJ+cARQIMP)
 		 filedelete(cCAM+cFILEDANFE)
