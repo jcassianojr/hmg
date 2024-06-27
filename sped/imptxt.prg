@@ -1,7 +1,14 @@
 //Cnae 
+//https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj
 //https://cnae.ibge.gov.br/en/?view=atividades
 //https://cnae.ibge.gov.br/en/classificacoes/download-concla.html
 //
+
+//IBPTax
+//https://github.com/wnvmu/IBPTax.git
+//https://a7.net.br/tabela-ibptax/
+//
+
 
 FUNCTION imptxt(cTIPO)
 
