@@ -4,10 +4,10 @@ function IMPTXTSEFAZ
 
 
 
-aUF    := { "PR","BAIXAPR", "RS", "BAIXARS", "SC", "CPFSC", "MA", "BAIXAMA", "SE", "RO", ;
+aUF    := { "PR","BAIXAPR", "RS", "BAIXARS", "SC", "CPFSC", "MA", "BAIXAMA", "SE", "RO","SP","BAIXASP", ;
             "MS", "ES", "CE", "PA", "MG", "TODASPB","PB", "PI", "PE","BA","CPFBA","RJ","GO","BAIXAGO","AL"}
 
-aUF2   := { "PR","PR", "RS", "RS", "SC", "SC", "MA", "MA", "SE", "RO", ;
+aUF2   := { "PR","PR", "RS", "RS", "SC", "SC", "MA", "MA", "SE", "RO", "SP", "SP", ;
             "MS", "ES", "CE", "PA", "MG", "PB", "PB","PI", "PE","BA","BA","RJ","GO","GO","AL"}
 
 if file("contodos.txt")  //todaspb tem diferenca da contodos uma usa ; outra usa |
@@ -113,14 +113,6 @@ if file("cadastro.txt")
 		frename("cadastro.txt","sc.txt")	   	  
       endif
     endif
-    
-// mg agora  cadastro_sped
-  //     cSITUACAO:=SUBSTR(cLINHA,92,1)		  
-//	   if cSITUACAO="N" .OR. cSITUACAO='H'	      
-//	      frename("cadastro.txt","mg.txt")	   	  
-//	   else 
-//	   endif
-//    endif    
 endif
 
 
@@ -132,8 +124,22 @@ if file("sintegra.txt")
    frename("sintegra.txt","se.txt")
 endif
 
+
 if file("ativos.txt")
-   frename("ativos.txt","pr.txt")
+    cDELIM:=FDELIM ("ativos.txt",1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
+    nHANDLE:=FOPEN("ativos.txt")
+    cLINHA := ALLTRIM(FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ))
+	fclose(Nhandle)	
+    if at("Inscricao_Estadual",cLINHA)>0
+       frename("ativos.txt","sp.txt")
+	else 
+      frename("ativos.txt","pr.txt")
+    endif
+endif
+
+
+if file("Nao_Ativos.txt")
+   frename("Nao_Ativos.txt","baixasp.txt")
 endif
 
 if file("cancelados.txt")
@@ -144,15 +150,6 @@ if file("cadastro"+dtos(date())+".txt")
    frename("cadastro"+dtos(date())+".txt","mg.txt")
 endif
 
-//if file(".txt")
-   //frename("",".txt")
-//endif
-
-
-//if file(".txt")
-   //frename("",".txt")
-//endif
-        
             
 IF MDG("Atualizar txts")   
    for y=1 to len(aUF)
@@ -341,12 +338,12 @@ for Y=1 to 5
             cTEXTO:="PACK"
     ENDCASE
     IF MDG("Apagar "+cTEXTO)
-       aUF:={"baixago","baixama","baixapr","baixars","cnpjieac","cnpjieal","cnpjieam",    ;
+       aUF:={"baixasp","baixago","baixama","baixapr","baixars","cnpjieac","cnpjieal","cnpjieam",    ;
             "cnpjieap","cnpjieba","cnpjiece","cnpjiedf","cnpjiees",  ;
             "cnpjiego","cnpjiema","cnpjiemg","cnpjiems","cnpjiemt","cnpjiepa","cnpjiepb",  ;
             "cnpjiepe","cnpjiepi","cnpjiepr","cnpjierj","cnpjiern","cnpjiero","cnpjierr",  ;
             "cnpjiers","cnpjiesc","cnpjiese","cnpjiesp","cnpjieto" }
-       aUF2:={"GO","MA","PR","RS","AC","AL","AM",    ;
+       aUF2:={"SP","GO","MA","PR","RS","AC","AL","AM",    ;
             "AP","BA","CE","DF","ES",  ;
             "GO","MA","MG","MS","MT","PA","PB",  ;
             "PE","PI","PR","RJ","RN","RO","RR",  ;
@@ -386,22 +383,18 @@ FUNCTION ATUaLIZA(cUF,cUF2)
 cARQTXT:=cUF+".txt"
 cARQDBF:="CNPJIE"+cUF
 DO CASE
+   CASE cUF="BAIXASP"
+   	  cARQDBF:="BAIXASP"
+   	  cARQTXT:="BAIXASP.TXT"
    CASE cUF="BAIXAPR"
    	  cARQDBF:="BAIXAPR"
    	  cARQTXT:="BAIXAPR.TXT"
    CASE cUF="BAIXAGO"
    	  cARQDBF:="BAIXAGO"
    	  cARQTXT:="BAIXAGO.TXT"
-   //CASE cUF="RS" //.AND.FILE("ICS_ATIVO.TXT")	       
-        //cARQTXT:="ICS_ATIVO.TXT"        
    CASE cUF="BAIXARS"	
        cARQDBF:="BAIXARS"
        cARQTXT:="BAIXARS.TXT"
-       //IF FILE("ICS_BAIXADO.TXT") //rename acima
-       //   cARQTXT:="ICS_BAIXADO.TXT"
-       //ELSE
-       //   cARQTXT:="BAIXARS.TXT"
-       //ENDIF  
    CASE cUF="BAIXAMA"	
       cARQDBF:="BAIXAMA"
       cARQTXT:="BAIXAMA.TXT"
@@ -464,9 +457,6 @@ zei_fort( nLASTREC,,,0)
 MDS(PADR(cARQTXT+"->"+cARQDBF,40))
 cDELIM:=FDELIM (cARQTXT,1024)
 nHANDLE:=FOPEN(cARQTXT)
-//nFile := HB_FUse(cARQTXT)
-//LINHA:=HB_FREADLN()  
-//WHILE .NOT. HB_FEof()   
 while .T.
 
    LINHA := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ) )
@@ -493,7 +483,6 @@ while .T.
    cNUMEND  :=""
    cENDTIP  :=""
    cCOMPLEM :=""
-   cREGIME  :=""
    
    
 
@@ -508,43 +497,12 @@ while .T.
     Case cUF="DF"
 
     Case cUF="MA".or.cUF="BAIXAMA"
-       //Mudado strutura
-        //aStruct:= {{"IE","C",9,0},;
-        //          {"SEP01","C",2,0},;
-        //          {"CNPJ","C",14,0},;
-        //          {"SEP02","C",55,0}}
-       //cIE:=    SUBSTR(LINHA,1,9)
-       //cCNPJ:=     alltrim(SUBSTR(LINHA,12,14))
-       //120000520        //1o. linha ie
-       //06265946000166   //2o.linha cnpj
-       //                 //3 Linha em branco
-       // cIE:=LINHA
-      //  LINHA := alltrim( FREADLINE( nHANDLE ) ) //linha cnpj
-      //  cCNPJ:=LINHA
-      //  LINHA := alltrim( FREADLINE( nHANDLE ) ) // Linha em branco apenas saltar
-
-         
          cCNPJ:=SUBSTR(LINHA,01,14)
          cIE  :=SUBSTR(LINHA,15,9)
          cCNAE:=SUBSTR(LINHA,24,7)         
          cNOME:=SUBSTR(LINHA,31,200)
-         
 
-
-    Case cUF="MG" //LIMITADOR LINUX
-//versao antiga posional   
-//0011949720055 00000000000000  JOSE ANTONIO DE FARIA e outro(s)                             H	
-//1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
-//         1         2         3         4         5         6         7         8         9
-//versao nova chr(20) separdor
-//0027509030137 18384930001638 DATORA MOBILE TELECOMUNICACOES S.A. N 6120-5/99   
-//1             15             30
-
-   //      versao antiga posicional
-  //       cIE:=SUBSTR(LINHA,1,13)
-   //      cCNPJ:=SUBSTR(LINHA,15,14)
-       //  cNOME:=SUBSTR(LINHA,31,60)
-       //  cSITUACAO:=SUBSTR(LINHA,92,1)  //H = Habilitado  N= NÆo Habilitado
+    Case cUF="MG"
         IF AT("/",LINHA)=0 .OR. AT("-",LINHA)=0 //veio em duas linhas
         
            LINHA2 := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ) )
@@ -693,7 +651,58 @@ while .T.
        if cSITUACAO="9"
           cSITUACAO:="2"         //muda para 2 para ficar igual cnpj
        endif
-    Case cUF="SP"
+
+ 
+
+
+
+    Case cUF="SP" .OR. cUF="BAIXASP"
+    
+    /*
+       1       nscri‡Æo Estadual
+       2   CNPJ
+       3   Nome Empresarial
+       4   Nome Fantasia
+       5   Natureza Jur¡dica
+       6   Tipo Logradouro
+       7   Nome Logradouro
+       8   Numero Logradouro
+       9   Complemento Logradouro
+       10   CEP
+       11   Bairro
+       12   Munic¡pio
+       13   UF
+       14   Situa‡Æo Cadastral
+       15   Data da Situa‡Æo Cadastral
+       16    Ocorrˆncia Fiscal
+       17   Regime de Apura‡Æo
+       18   Atividade Econ“mica
+    */
+    
+        aCAMPOS:=HB_ATokens(LINHA,";") 
+         if len(aCAMPOS)>=18  //O Txt as vezes tem linhas em branco
+           CIE:=        Acampos[1]   //
+           cCNPJ:=      Acampos[2]   //
+           CNOME:=      Acampos[3]   //
+           cDATA    := Acampos[15]  //
+           dDATA    := str2data(cDATA,"YMD","-",4)//
+           cSITUACAO:= Acampos[14]     //
+           cCIDADE  := Acampos[12]  // Grava ibge
+           cCNAE    :=  Acampos[18]  //
+
+        //   cIBGE    :=Acampos[]   //
+           cBAIRRO  :=Acampos[11]   //grava cep
+           cENDERECO:=Acampos[7]    //grava cep
+           cCEP     := Acampos[10]
+           cREGIME  :=Acampos[17]
+           cESTADO  :=Acampos[13] //difere de cUF(Passado funcao) para evitar erros pode ser ST subistituto tributario  //grava cep
+           cNUMEND  :=Acampos[8]
+           cENDTIP  :=Acampos[6]   //grava cep
+        //   cCOMPLEM :=Acampos[]
+        
+    
+           
+         endif
 
     Case cUF="TO"
 
@@ -972,7 +981,7 @@ while .T.
            field->ie:=Cie
         ENDIF   
           IF cUF="AL" .OR. cUF="ES" .OR. cUF="MS" .OR. cUF="PR" .OR. cUF="PE" .OR. cUF="SC" .OR. cUF="TODASPB" ;
-          	         .OR. cUF="SE" .OR. cUF="CPFSC" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="BAIXAPR"
+          	         .OR. cUF="SE" .OR. cUF="CPFSC" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="BAIXAPR" .OR. cUF="SP" .OR. cUF="BAIXASP"
              field->SITUACAO:=cSITUACAO
           ENDIF	
           IF cUF="TO" .OR. cUF="PE" .OR. cUF="MS" .OR. cUF="ES" ;
@@ -991,7 +1000,8 @@ while .T.
           //   field->UF:=cESTADO
           //ENDIF
           //27/12/2O22 Incluido MG	
-          IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="BAIXAPR"  .OR. cUF="TODASPB" .OR. cUF="MG"
+          IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA" .OR. cUF="BAIXAPR"  .OR. cUF="TODASPB" .OR. cUF="MG" ;
+             .OR. cUF="SP" .OR. cUF="BAIXASP"
             FIELD->CNAE:=cCNAE
             IF VAL(FIELD->CNAE)=0
                FIELD->CNAE:=""
@@ -1025,23 +1035,25 @@ while .T.
 
 		 IF .NOT. EMPTY(cIBGE)     
 			//SU SUFRAMA   YY ajustes
-			 IF cUF="GO" .OR. cUF="PB" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR" .OR. cUF="BAIXAPR" .OR. cUF="YY"
+			 IF cUF="GO" .OR. cUF="PB" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR" ;
+                .OR. cUF="SP" .OR. cUF="BAIXASP".OR. cUF="BAIXAPR" .OR. cUF="YY"
 				FIELD->IBGE:=cIBGE
 			 ENDIF	
 		  ENDIF	
-		  IF ! EMPtY(cNOME)
+		  IF ! EMPtY(cNOME) 
              cNOME:=TiRACE(cNOME)
-             IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="TODASPB" 
+             IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" ;
+                .OR. cUF="SP" .OR. cUF="BAIXASP".OR. cUF="TODASPB" 
                FIELD->NOME:=cNOME
              ENDIF
           ENDIF
            IF cUF=="RS" .OR. cUF=="BA" .OR. cUF=="CPFBA" .OR. cUF=="SE" 
              FIELD->CATEGORIA:=cCATEGORIA
           ENDIF
-          IF cUF="PA" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="SC"
+          IF cUF="PA" .OR. cUF="GO" .OR. cUF="BAIXAGO" .OR. cUF="SC"  .OR. cUF="SP" .OR. cUF="BAIXASP"
              field->DATA:=dDATA
           ENDIF	
-          IF cUF="TODASPB"   .OR. cUF="PB"
+          IF cUF="TODASPB"   .OR. cUF="PB"  .OR. cUF="SP" .OR. cUF="BAIXASP"
           
             /*
             NOR;NORMAL
@@ -1073,42 +1085,26 @@ while .T.
       
              
           ENDIF
-          IF cUF="PA" .OR. cUF="TODASPB"   .OR. cUF="PB"                      
+          IF cUF="PA" .OR. cUF="TODASPB"   .OR. cUF="PB"    .OR. cUF="SP" .OR. cUF="BAIXASP"                   
              field->REGIME:=cREGIME
           ENDIF
-          IF cUF="TODASPB"      
-             field->ENDTIP  :=cENDTIP          
-             field->ENDERECO:=cENDERECO
+          IF cUF="SP" .OR. cUF="BAIXASP"  .OR. cUF="TODASPB"    //grava so cep e o numero pelo cep traz bairro logradouro tipo logradouro
+//             field->ENDTIP  :=cENDTIP          
+//             field->ENDERECO:=cENDERECO
              field->NUMEND:=cNUMEND  
-             field->COMPLEM:=cCOMPLEM
-             field->BAIRRO:=cBAIRRO
+//             field->COMPLEM:=cCOMPLEM
+//             field->BAIRRO:=cBAIRRO
              field->CEP:=cCEP   
           ENDIF
+
           dbunlock()   	
    endif
 
-   
- //  HB_FSkip(1)
-//   LINHA:=HB_FREADLN()  
 
    zei_fort(nLASTREC,,,1)
    nLINHA++   
 enddo
-//HB_FUse()
 FCLOSE(nHANDLE)
-
-/*
-IF cUF="PE"
-   nHANDLE:=FCREATE("PEIE.TXT")
-   dbgotop()
-   while ! eof()
-      fwrite(nHANDLE,IE+HB_OsNewLine()) 
-      dbskip()
-   enddo
-   FCLOSE(nHANDLE)
-ENDIF
-*/
-
 
 
 dbcloseall()
@@ -1117,73 +1113,4 @@ MDS("...")
 ferase(cARQTXT)
 RETURN .T.
 
-/*
 
-function pegcidconv(cUF,cNOME)
-LOCAL cDBF
-cDBF:=ALIAS()
-IF EMPTY(cUF).OR.EMPTY(cNOME)
-   return cNOME
-ENDIF
-dbselectar("cidconv")
-dbgotop()
-if dbseek(cUF+cNOME)
-   cNOME:=CIDDES
-ENDIF
-IF ! EMPTY(cDBF)
-   DBSELECTAR(cDBF)
-ENDIF   
-RETUrn cNOME
-*/
-
-/*
-
-FUNCTION BUSCAIBGE(cUF,cCIDADE)
-LOCAL cIBGE
-LOCAL cALIAS
-LOCAL cBUSCA
-
-cALIAS:=ALIAS()
-
-cBUSCA:=cUF+cCIDADE
-cIBGE:=""
-cBUSCA := strtran( alltrim( cBUSCA ), "'", " " )    //tirar como d'agua d'olho
-
-dbselectar("MD10")
-dbsetorder(1)
-dbgotop()
-if dbseek(cbUSCA)
-   cIBGE:=MD10->CODIBGE
-ELSE
-   cBUSCA:=cUF+PEGCIDCONV(cUF,cCIDADE)
-   dbselectar("MD10")
-   dbgotop()
-   if dbseek(cBUSCA)
-      cIBGE:=MD10->CODIBGE
-   endif     
-endif
-if ! empty(cALIAS)
-   dbselectar(cALIAS)
-ENDIF   
-return cIBGE
-*/
-
-/*
-
-FUNCTION IRRFIBGE(cBUSCA)
-LOCAL cIBGE
-LOCAL cALIAS
-cIBGE:=""
-cALIAS:=ALIAS()
-dbselectar("MD10")
-dbsetorder(5)
-dbgotop()
-if dbseek(cbUSCA)
-  cIBGE:=MD10->CODIBGE
-endif
-IF ! EMPTY(cALIAS)
-   dbselectar(cALIAS)
-ENDIF   
-return cIBGE
-
-*/
