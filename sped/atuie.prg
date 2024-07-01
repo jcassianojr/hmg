@@ -451,7 +451,13 @@ ENDIF
 
 
 mds("contando as linhas: "+cARQTXT)
-nLASTREC:=FLINECOUNT(cARQtxt)
+IF cUF="SP" .OR. cUF="BAIXASP" //Muitos linhas trava contagem
+  nLASTREC:=1
+ELSE
+  nLASTREC:=FLINECOUNT(cARQtxt)
+ENDIF  
+
+
 nLINHA:=1
 zei_fort( nLASTREC,,,0)
 MDS(PADR(cARQTXT+"->"+cARQDBF,40))
@@ -465,7 +471,7 @@ while .T.
    endif
 
 
-   MDS(cUF+" "+STR(nLINHA)+"/"+STR(nLASTREC)+" -> "+LEFT(linha,50))             
+   MDS(cUF+" "+transform(STR(nLINHA),"@R 999.999.999")+"/"+TRANSFORM(STR(nLASTREC),"@R 999.999.999")+" -> "+LEFT(linha,50))             
    cIE      :=  ""
    cNOME    := ""
    cCNPJ    := ""
@@ -503,9 +509,9 @@ while .T.
          cNOME:=SUBSTR(LINHA,31,200)
 
     Case cUF="MG"
-        IF AT("/",LINHA)=0 .OR. AT("-",LINHA)=0 //veio em duas linhas
+        IF AT("/",LINHA)=0 .OR. AT("-",LINHA)=0 //as informacoes vem em duas linhas
         
-           LINHA2 := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ) )
+           LINHA2 := alltrim( FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ) ) //Como sao duas linhas precisa checar se e fim de arquivo novamente
            IF LINHA2 = "__FINAL__"
               exit
            endif
@@ -655,7 +661,7 @@ while .T.
  
 
 
-
+  //  ALTD()
     Case cUF="SP" .OR. cUF="BAIXASP"
     
     /*
