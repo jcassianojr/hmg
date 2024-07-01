@@ -174,7 +174,7 @@ IF cUF="GO" .OR. cUF="PB"  .OR. cUF="SP" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="D
       (cALIAS)->ibge:=cCODIBGE
    ENDIF               
 ENDIF 
-IF cUF="PB"  .OR. cUF="SP"           
+IF cUF="PB"  .OR. cUF="SP"   .OR. cUF="SU"      
 //    IF EMPTY((cALIAS)->ENDERECO)
 //      (cALIAS)->ENDERECO:=FIELD->ENDERECO
 //    ENDIF
