@@ -168,30 +168,25 @@ IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG
       (cALIAS)->NOME:=cNOME
    ENDIF
 ENDIF
-//agora somente o codigo do ibge
-//IF cUF="GO"  .OR. cUF="PB" 
-//   IF EMPTY((cALIAS)->MUNICIPIO)
- //     (cALIAS)->MUNICIPIO:=cMUNICIPIO
- //  ENDIF
-//ENDIF             
-IF cUF="GO" .OR. cUF="PB"  .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR"  .OR. cUF="YY"
+  
+IF cUF="GO" .OR. cUF="PB"  .OR. cUF="SP" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR"  .OR. cUF="YY"
    IF val((cALIAS)->ibge)=0
       (cALIAS)->ibge:=cCODIBGE
    ENDIF               
 ENDIF 
-IF cUF="PB"            
-    IF EMPTY((cALIAS)->ENDERECO)
-      (cALIAS)->ENDERECO:=FIELD->ENDERECO
-    ENDIF
+IF cUF="PB"  .OR. cUF="SP"           
+//    IF EMPTY((cALIAS)->ENDERECO)
+//      (cALIAS)->ENDERECO:=FIELD->ENDERECO
+//    ENDIF
     IF EMPTY((cALIAS)->NUMEND)
       (cALIAS)->NUMEND:=FIELD->NUMEND
     ENDIF
-    IF EMPTY((cALIAS)->COMPLEM)
-      (cALIAS)->COMPLEM:=FIELD->COMPLEM
-    ENDIF
-    IF EMPTY((cALIAS)->BAIRRO)
-      (cALIAS)->BAIRRO:=FIELD->BAIRRO
-    ENDIF
+//    IF EMPTY((cALIAS)->COMPLEM)
+//      (cALIAS)->COMPLEM:=FIELD->COMPLEM
+ //   ENDIF
+  //  IF EMPTY((cALIAS)->BAIRRO)
+//      (cALIAS)->BAIRRO:=FIELD->BAIRRO
+ //   ENDIF
     IF EMPTY((cALIAS)->CEP)
       (cALIAS)->CEP:=FIELD->CEP
     ENDIF
