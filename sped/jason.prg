@@ -41,7 +41,7 @@ JASONCSV("sefazmodbcst.json")       //tamanhos campos
 JASONCSV("sefazmodfis.json","sintdoc")        //tamanhos campos 2,45 modelo fiscal
 JASONCSV("sefazmodfrete.json")          //tamanhos campos   1,52 modelo frete
 JASONCSV("sefazncmexterior.json")        //tamanhos campos   8,6 unidade de medidao exportacao ncm
-JASONCSV("sefaznfestatus.json")         //tamanhos campos   7,154
+//JASONCSV("sefaznfestatus.json")         //tamanhos campos   7,154
 JASONCSV("sefazorigem.json")        //tamanhos campos  1,107 origem
 JASONCSV("sefazpiscst.json")        //tamanhos campos  2,75
 JASONCSV("sefazpisenq.json")        //tamanhos campos  
