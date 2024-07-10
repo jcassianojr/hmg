@@ -388,6 +388,7 @@ return
 FUNCTION ATUaLIZA(cUF,cUF2,nSEQTXT)
 cARQTXT:=cUF+".txt"
 cARQDBF:="CNPJIE"+cUF
+cARQIR :="CNPJIR"+cUF2 //ir sempre estado nao tem baixados controlado pela situacao
 IF VALTYPE(nSEQTXT)="N"
    cARQTXT:=cUF+STRZERO(nSEQTXT,2)+".txt" 
    IF ! FILE(cARQTXT)
@@ -427,32 +428,38 @@ ENDCASE
 
 
 if ! file(cARQTXT)   
-   retu .f.
+   return .f.
 endif
 
-cCAMINHO   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())+"MD10"
-IF ! NETUSE(cCAMINHO)
+cCAMINHO   := PROFILESTRING( "sped.ini","MD10.DBF","CAMINHO",HB_CWD())
+IF ! NETUSE(cCAMINHO+"MD10")
    DBCLOSEALL()
    RETURN .f.
 ENDIF
 
 
-cCAMINHO := PROFILESTRING( "sped.ini","CIDCONV.DBF","CAMINHO",HB_CWD())+"CIDCONV"
-IF ! NETUSE(cCAMINHO)
+cCAMINHO := PROFILESTRING( "sped.ini","CIDCONV.DBF","CAMINHO",HB_CWD())
+IF ! NETUSE(cCAMINHO+"CIDCONV")
    DBCLOSEALL()
    RETURN .f.
 ENDIF
 
-
+//parana tem codigos cidades espefico
 IF cUF="PR".OR.cUF="BAIXAPR"
-   cCAMINHO   := PROFILESTRING( "sped.ini","PRCID.DBF","CAMINHO",HB_CWD())+"PRCID"
-   IF ! NETUSE(cCAMINHO)
+   cCAMINHO   := PROFILESTRING( "sped.ini","PRCID.DBF","CAMINHO",HB_CWD())
+   IF ! NETUSE(cCAMINHO+"prcid")
       DBCLOSEALL()
       RETURN .f.
    ENDIF
 ENDIF
 
 cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
+
+IF ! netuse(Ccam+Carqir)
+	dbcloseall()
+	return .f.
+endif
+
 IF ! netuse(Ccam+cARQDBF)
    dbcloseall()
    return .f.
@@ -463,7 +470,6 @@ IF cUF="MG"
 	   return .f.
 	endif
 ENDIF
-
 
 
 mds("contando as linhas: "+cARQTXT)
@@ -981,13 +987,17 @@ while .T.
    cNOME:=STRTRAN(cNOME,"  ","") //tirar duplo espaco
    
    if  ! empty(cCNPJ) .AND. ! EMPTY(cIE) .AND. ((VALCGC( cCNPJ,,.F.) .and. ValIE( cIE, cUF2 , , .f. , .f. ) ) .or. Valcpf( cCNPJ ,.f.))         //VALIEOLD(cIE, cUF2,.F.))
-		IF cUF="MG" 
+	  
+       dbselectar(cARQDBF)
+       //MG ativos e baixos mesmo arquivo controlado pela Situacao
+    	IF cUF="MG" 
            IF cSITUACAO="H"	
               DBSELECTAR("CNPJIEMG")		   
 		   ELSE
 		      DBSELECTAR("BAIXAMG")
 		   ENDIF
-	    ENDIF
+	   ENDIF
+       
 	   dbgotop()
         IF ! dbseek(cCNPJ)
           netrecapp()
@@ -1122,8 +1132,30 @@ while .T.
 //             field->BAIRRO:=cBAIRRO
              field->CEP:=cCEP   
           ENDIF
-
-          dbunlock()   	
+          dbunlock()   
+          
+          dbselectar(cARQIR) 
+          dbgotop()
+          if ! dbseek(cCNPJ)
+             netrecapp()
+             field->cnpj:=cCNPJ
+          else
+             netreclock()
+          endif
+          IF cUF="PR"
+             if ! empty(cCNAE) .AND. EMPTY(FIELD->cnae)
+                field->cnae:=cCNAE
+             endif
+          endif
+          IF cUF="PR"
+             if ! empty(cIBGE) .AND. EMPTY(FIELD->IBGE)
+                field->IBGE:=cIBGE
+             endif
+          endif    
+          dbunlock()
+        
+          //retorna are CNPJIE
+          dbselectar(cARQDBF)  
    endif
 
 
