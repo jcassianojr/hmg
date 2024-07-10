@@ -155,6 +155,10 @@ IF MDG("Atualizar txts")
    for y=1 to len(aUF)
       atualiza(aUF[y],aUF2[y])
    next y
+   FOR y=1 to 99 //sp sequencia
+     ATUaLIZA("SP","SP",y)
+     atualiza("BAIXASP","SP",Y)
+   next y
 ENDIF
 
 //gravar situacao bahia
@@ -236,7 +240,7 @@ endif
 //apagar baixados dos ativos MA/RS/GO/PR
 IF MDG("Cruzar Ativos#Baixados")
     cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
-    for y=1 to 5
+    for y=1 to 6
         DO CASE
            CASE y=1
                cUF="MA"
@@ -248,6 +252,8 @@ IF MDG("Cruzar Ativos#Baixados")
                cUF="PR"
           CASE y=5
                cUF="MG"
+          CASE y=6
+               cUF="SP"            
         ENDCASE
         if file(cCAM+"CNPJIE"+cUF+".DBF") .and. file(CCAM+"BAIXA"+cUF+".DBF")
            if NETUSE(cCAM+"CNPJIE"+cUF)
@@ -379,13 +385,23 @@ next Y
 return
 
 
-FUNCTION ATUaLIZA(cUF,cUF2)
+FUNCTION ATUaLIZA(cUF,cUF2,nSEQTXT)
 cARQTXT:=cUF+".txt"
 cARQDBF:="CNPJIE"+cUF
+IF VALTYPE(nSEQTXT)="N"
+   cARQTXT:=cUF+STRZERO(nSEQTXT,2)+".txt" 
+   IF ! FILE(cARQTXT)
+      RETURN .F.
+   ENDIF
+ENDIF
+
 DO CASE
    CASE cUF="BAIXASP"
    	  cARQDBF:="BAIXASP"
    	  cARQTXT:="BAIXASP.TXT"
+      IF VALTYPE(nSEQTXT)="N"
+         cARQTXT:="BAIXASP"+STRZERO(nSEQTXT,2)+".txt"
+      ENDIF   
    CASE cUF="BAIXAPR"
    	  cARQDBF:="BAIXAPR"
    	  cARQTXT:="BAIXAPR.TXT"
@@ -1044,6 +1060,10 @@ while .T.
 			 IF cUF="GO" .OR. cUF="PB" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="SU" .OR. cUF="DF" .OR. cUF="PR" ;
                 .OR. cUF="SP" .OR. cUF="BAIXASP".OR. cUF="BAIXAPR" .OR. cUF="YY"
 				FIELD->IBGE:=cIBGE
+                //Corrige caso venha fora do padrao em algum txt
+                IF VAL(FIELD->IBGE)=0  .or. len(alltrim(FIELD->IBGE))<7
+                   FIELD->IBGE:=""
+                ENDIF
 			 ENDIF	
 		  ENDIF	
 		  IF ! EMPtY(cNOME) 

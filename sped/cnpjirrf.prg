@@ -338,8 +338,7 @@ return
 
 
 function gravairrf()
-//27/12/2022 MG agora tem cnae
-IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"  .OR. cUF="MG"
+IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA"  .OR. cUF="MG" .OR. cUF="SP"
   IF ! EMPTY(cCNAE) .AND. VAL(cCNAE)>0 .AND. LEN(ALLTRIM(cCNAE))=7
      IF  EMPTY(FIELD->CNAE) 
          FIELD->CNAE:=cCNAE
@@ -347,14 +346,14 @@ IF cUF="MA" .OR. cUF="PR" .OR. cUF="RS" .OR. cUF="GO" .OR. cUF="SC" .OR. cUF="PA
   ENDIF
 ENDIF
 IF ! EMPTY(cNOME)		  
-  IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="SU" 
+  IF cUF="MA" .OR. cUF="RO" .OR. cUF="GO" .OR. cUF="PB" .OR. cUF="PA" .OR. cUF="MG" .OR. cUF="PI" .OR. cUF="SU" .OR. cUF="SP"
      IF EMPTY(FIELD->NOME)
         FIELD->NOME:=cNOME
      ENDIF   
   ENDIF	
 ENDIF
 IF .NOT. EMPTY(cIBGE) .AND. VAL(cIBGE)>0 .AND. LEN(ALLTRIM(cIBGE))=7  
-   IF cUF="GO" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="DF" .OR. cUF="PR" .OR. cUF="SU"
+   IF cUF="GO" .OR. cUF="PB" .OR. cUF="SC" .OR. cUF="DF" .OR. cUF="PR" .OR. cUF="SU" .OR. cUF="SP"
       IF EMPTY(FIELD->IBGE)
          FIELD->IBGE:=cIBGE
       ENDIF   
@@ -368,7 +367,7 @@ IF cUF="SU"
      FIELD->TELEFONE:=cTELEFONE
   ENDIF
 ENDIF
-IF cUF="PB"  .OR. cUF="SU"     //grava so cep e o numero pelo cep traz bairro logradouro tipo logradouro
+IF cUF="PB"  .OR. cUF="SU"  .OR. cUF="SP"   //grava so cep e o numero pelo cep traz bairro logradouro tipo logradouro
 //    IF EMPTY(FIELD->ENDTIP).AND. ! EMPTY(cENDTIP)
 //       FIELD->ENDTIP:=cENDTIP
 //    ENDIF
