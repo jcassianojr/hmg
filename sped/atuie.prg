@@ -10,18 +10,32 @@ aUF    := { "PR","BAIXAPR", "RS", "BAIXARS", "SC", "CPFSC", "MA", "BAIXAMA", "SE
 aUF2   := { "PR","PR", "RS", "RS", "SC", "SC", "MA", "MA", "SE", "RO", "SP", "SP", ;
             "MS", "ES", "CE", "PA", "MG", "PB", "PB","PI", "PE","BA","BA","RJ","GO","GO","AL"}
 
+
+//pernambuco varios arquivos renomeia fazer um a cada rodada do programa
 if file("contodos.txt")  //todaspb tem diferenca da contodos uma usa ; outra usa |
    frename("contodos.txt","pb.txt")
 endif
-
 if file("connormal.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
    frename("connormal.txt","pb.txt")
 endif
-
+if file("consimples.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("consimples.txt","pb.txt")
+endif
+if file("ConSIMEI.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConSIMEI","pb.txt")
+endif
+if file("ConProdRuralPF.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConProdRuralPF","pb.txt")
+endif
+if file("ConSubstituicao.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConSubstituicao","pb.txt")
+endif
+if file("ConTodosCNPJ.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConTodosCNPJ","pb.txt")
+endif
 if file("conoutros.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
    frename("conoutros.txt","pb.txt")
 endif
-
 if file("contrib_todas_sit.txt")  //todaspb tem diferenca da contodos uma usa ; outra usa |
    frename("contrib_todas_sit.txt","TODASPB.txt")
 endif
@@ -1142,33 +1156,31 @@ while .T.
           else
              netreclock()
           endif
-          IF cUF="PR"
+          IF cUF="PR" .OR. cUF="SP".OR. cUF="TODASPB"   .OR. cUF="PB"
              if ! empty(cCNAE) .AND. EMPTY(FIELD->cnae)
                 field->cnae:=cCNAE
              endif
           endif
-          IF cUF="PR" .OR. cUF="SP"
+          IF cUF="PR" .OR. cUF="SP" .OR. cUF="TODASPB"   .OR. cUF="PB"
              if ! empty(cIBGE) .AND. EMPTY(FIELD->IBGE)
                 field->IBGE:=cIBGE
              endif
           endif   
-          IF cUF="SP"
+          IF cUF="SP" .OR. cUF="TODASPB" .OR. cUF="PB"
              if ! empty(cNOME) .AND. EMPTY(FIELD->NOME)
-                field->NOME:=cCNOME
+                field->NOME:=cNOME
              endif
           endif 
-          IF cUF="SP"
+          IF cUF="SP" .OR. cUF="TODASPB" .OR. cUF="PB"
              if ! empty(cNUMEND) .AND. EMPTY(FIELD->NUMEND)
                 field->NUMEND:=cNUMEND
              endif
-          endif 
-          IF cUF="SP"
+          endif  
+          IF cUF="SP" .OR. cUF="TODASPB" .OR. cUF="PB"
              if ! empty(cCEP) .AND. EMPTY(FIELD->cEP)
                 field->cEP:=cCEP
              endif
           endif 
-
-          
           dbunlock()
         
           //retorna are CNPJIE
