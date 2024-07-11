@@ -1147,11 +1147,28 @@ while .T.
                 field->cnae:=cCNAE
              endif
           endif
-          IF cUF="PR"
+          IF cUF="PR" .OR. cUF="SP"
              if ! empty(cIBGE) .AND. EMPTY(FIELD->IBGE)
                 field->IBGE:=cIBGE
              endif
-          endif    
+          endif   
+          IF cUF="SP"
+             if ! empty(cNOME) .AND. EMPTY(FIELD->NOME)
+                field->NOME:=cCNOME
+             endif
+          endif 
+          IF cUF="SP"
+             if ! empty(cNUMEND) .AND. EMPTY(FIELD->NUMEND)
+                field->NUMEND:=cNUMEND
+             endif
+          endif 
+          IF cUF="SP"
+             if ! empty(cCEP) .AND. EMPTY(FIELD->cEP)
+                field->cEP:=cCEP
+             endif
+          endif 
+
+          
           dbunlock()
         
           //retorna are CNPJIE
