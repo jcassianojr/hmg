@@ -11,30 +11,30 @@ aUF2   := { "PR","PR", "RS", "RS", "SC", "SC", "MA", "MA", "SE", "RO", "SP", "SP
             "MS", "ES", "CE", "PA", "MG", "PB", "PB","PI", "PE","BA","BA","RJ","GO","GO","AL"}
 
 
-//pernambuco varios arquivos renomeia fazer um a cada rodada do programa
+//pernambuco varios arquivos renomeia sequencial 01 02
 if file("contodos.txt")  //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("contodos.txt","pb.txt")
+   frename("contodos.txt","pb01.txt")
 endif
-if file("connormal.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("connormal.txt","pb.txt")
+if file("connormal.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("connormal.txt","pb02.txt")
 endif
-if file("consimples.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("consimples.txt","pb.txt")
+if file("consimples.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("consimples.txt","pb03.txt")
 endif
-if file("ConSIMEI.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("ConSIMEI","pb.txt")
+if file("ConSIMEI.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConSIMEI.TXT","pb04.txt")
 endif
-if file("ConProdRuralPF.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("ConProdRuralPF","pb.txt")
+if file("ConProdRuralPF.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConProdRuralPF.TXT","pb05.txt")
 endif
-if file("ConSubstituicao.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("ConSubstituicao","pb.txt")
+if file("ConSubstituicao.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConSubstituicao.TXT","pb06.txt")
 endif
-if file("ConTodosCNPJ.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("ConTodosCNPJ","pb.txt")
+if file("ConTodosCNPJ.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("ConTodosCNPJ.TXT","pb07.txt")
 endif
-if file("conoutros.txt") .and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
-   frename("conoutros.txt","pb.txt")
+if file("conoutros.txt") //.and. ! HB_FILEEXISTS('pb.txt') //todaspb tem diferenca da contodos uma usa ; outra usa |
+   frename("conoutros.txt","pb08.txt")
 endif
 if file("contrib_todas_sit.txt")  //todaspb tem diferenca da contodos uma usa ; outra usa |
    frename("contrib_todas_sit.txt","TODASPB.txt")
@@ -172,6 +172,7 @@ IF MDG("Atualizar txts")
    FOR y=1 to 99 //sp sequencia
      ATUaLIZA("SP","SP",y)
      atualiza("BAIXASP","SP",Y)
+     ATUaLIZA("PB","PB",y)
    next y
 ENDIF
 
