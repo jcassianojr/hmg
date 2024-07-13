@@ -69,7 +69,11 @@ if file("ICS_BAIXADO.txt")
 endif
 
 if file("CadAtivo.txt")
-   frename("CadAtivo.txt","sc.txt")
+   frename("CadAtivo.txt","sc01.txt")
+endif
+//sc02  verificacao abaixo cadastro txt
+if file("ARQ_PRODUTOR_RURAL.txt")
+   frename("ARQ_PRODUTOR_RURAL.txt","sc03.txt")
 endif
 
 if file("Arq_pessoa_fisica.txt")
@@ -116,15 +120,22 @@ if file("cadastro_sped.txt")
 endif
 
 if file("cadastro.txt")
+ //   alert("cadastro txt")
     cDELIM:=FDELIM ("cadastro.txt",1024) //acha o delimitador chr(13)+chr(10) dos ou chr(10) linux usado abaixo no freadline
     nHANDLE:=FOPEN("cadastro.txt")
     cLINHA := ALLTRIM(FREADLINE( nHANDLE, 1024 ,.T. ,cDELIM ))
+   // alert(cLINHA)
+    IF cLINHA="__FINAL__" //algum arquivo posiciona no final freadline tenta por freadstr
+       cLINHA := FReadStr(nHandle, 100) 
+  //     ALERT(cLINHA)
+    ENDIF
 	fclose(Nhandle)	
+    
     if at(";",cLINHA)>0
        frename("cadastro.txt","al.txt")
 	else 
       if at("ESTADO DE SC",cLINHA)>0		     
-		frename("cadastro.txt","sc.txt")	   	  
+		frename("cadastro.txt","sc02.txt")	   	  
       endif
     endif
 endif
@@ -173,6 +184,7 @@ IF MDG("Atualizar txts")
      ATUaLIZA("SP","SP",y)
      atualiza("BAIXASP","SP",Y)
      ATUaLIZA("PB","PB",y)
+     ATUaLIZA("SC","SC",y)
    next y
 ENDIF
 
@@ -1001,7 +1013,7 @@ while .T.
 
    cNOME:=STRTRAN(cNOME,"  ","") //tirar duplo espaco
    
-   if  ! empty(cCNPJ) .AND. ! EMPTY(cIE) .AND. ((VALCGC( cCNPJ,,.F.) .and. ValIE( cIE, cUF2 , , .f. , .f. ) ) .or. Valcpf( cCNPJ ,.f.))         //VALIEOLD(cIE, cUF2,.F.))
+   if  ! empty(cCNPJ) .AND. ! EMPTY(cIE) .AND. ((VALCGC( cCNPJ,,.F.) .and. ValIE( cIE, cUF2 , , .f. , .f. ) ) .or. Valcpf( cCNPJ ,.f.))      
 	  
        dbselectar(cARQDBF)
        //MG ativos e baixos mesmo arquivo controlado pela Situacao
@@ -1157,7 +1169,8 @@ while .T.
           else
              netreclock()
           endif
-          IF cUF="PR" .OR. cUF="SP".OR. cUF="TODASPB"   .OR. cUF="PB"
+          IF cUF="PR" .OR. cUF="SP" .OR. cUF="TODASPB" .OR. cUF="PB" .OR. cUF="SP" ;
+             .OR. cUF="RS"
              if ! empty(cCNAE) .AND. EMPTY(FIELD->cnae)
                 field->cnae:=cCNAE
              endif
