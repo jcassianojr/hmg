@@ -71,14 +71,16 @@ return "Estado:"+Idufuf(cID)+" MES/ANO:"+idmes(Cid)+"/"+idAno(cid)+" CNPJ:"+Idcn
 
 
 function idformatada(cID)
-RETURN TRANSFORM(cID,"@R 99-99/99-99.999.999/9999-99.99.999.999999999.9.99999999.9")
+RETURN TRANSFORM(cID,"@R 99-99/99-NN.NNN.NNN/NNNN-99.99.999.999999999.9.99999999.9")
+                    //@R 99-99/99-99.999.999/9999-99.99.999.999999999.9.99999999.9
 
 
 function idformatauf(cID)
 local cUF
 cUF:=IdufUF(cID)
 cID:=substr(cID,3)
-RETURN cUF+"-"+TRANSFORM(cID,"@R 99/99-99.999.999/9999-99.99.999.999999999.9.99999999.9")
+RETURN cUF+"-"+TRANSFORM(cID,"@R 99/99-NN.NNN.NNN/NNNN-99.99.999.999999999.9.99999999.9")
+                            //@R 99/99-99.999.999/9999-99.99.999.999999999.9.99999999.9
 
 
 function idModeloTipo(cID)
