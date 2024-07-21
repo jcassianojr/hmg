@@ -197,7 +197,7 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="CONSUMO_GAS"
                CASE cARQUIVO="CL_CONS_ENERGIA"
                     cARQUIVO:="CONSUMO_ENERGIA"                                               
-               CASE cARQUIVO="MOD_DOC" .OR. cARQUIVO="MODELOS"
+               CASE cARQUIVO="MOD_DOC" .OR. cARQUIVO="MODELOS" .OR. AT("SEFAZMODFIS",cARQUIVO)>0 
                     cARQUIVO:="SINTDOC"
                CASE cARQUIVO="QUALIFICACAO"
                     cARQUIVO:="QUALIF_ASSINANTE"
@@ -558,12 +558,24 @@ FUNCTION imptxt(cTIPO)
                          EXIT
                       ENDIF
                       
-                      IF AT("CNAECSV",CNOMEORI)>0   .OR. AT("NATJUCSV",CNOMEORI)>0 .OR.  AT("QUALSCSV",CNOMEORI)>0 .OR. AT("PAISCSV",CNOMEORI)>0 .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0
+                      DO CASE
+                         CASE  AT("CNAECSV",CNOMEORI)>0      .OR. AT("NATJUCSV",CNOMEORI)>0 .OR. AT("QUALSCSV",CNOMEORI)>0 ; 
+                               .OR. AT("PAISCSV",CNOMEORI)>0 .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0
+                         CASE  AT("SEFAZMODFIS",cNOMEORI)>0 
+                              aCAMPOS:=SplitCommaAspas(cLINHA,"|")
+                         OTHERWISE
+                             aCAMPOS:=HB_ATokens(cLINHA,"|") 
+                      ENDCASE
+                      /*
+                      IF AT("CNAECSV",CNOMEORI)>0          .OR. AT("NATJUCSV",CNOMEORI)>0 .OR. AT("QUALSCSV",CNOMEORI)>0 ; 
+                        .OR. AT("PAISCSV",CNOMEORI)>0      .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0 ;
+                        .OR. AT("SEFAZMODFIS",cNOMEORI)>0 
                          cLINHA:=TIRACe2(cLINHA)
                          aCAMPOS:=SplitCommaAspas(cLINHA)
                       ELSE
                           aCAMPOS:=HB_ATokens(cLINHA,"|")                            
                       ENDIF  
+                      */
                       MDS(cLINHA)
                       cSUBLINHA:=""
                       GravaRegEFD(cARQUIVO,1)
