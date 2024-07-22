@@ -199,8 +199,10 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="CONSUMO_ENERGIA"                                               
                CASE cARQUIVO="MOD_DOC" .OR. cARQUIVO="MODELOS" .OR. AT("SEFAZMODFIS",cARQUIVO)>0 
                     cARQUIVO:="SINTDOC"
-               CASE cARQUIVO="QUALIFICACAO"
+               CASE cARQUIVO="QUALIFICACAO" .OR. AT("SEFAZQUALIFICACAO",cARQUIVO)>0 
                     cARQUIVO:="QUALIF_ASSINANTE"
+               CASE AT("SEFAZMODFRETE",cARQUIVO)>0 
+                    cARQUIVO:="MODALIDADE_FRETE"     
                CASE cARQUIVO="UF_COD_SIG"
                     cARQUIVO:="UF_CODIGO_SIGLA"
                CASE cARQUIVO="UNIDADES_DA_FEDERACAO"
@@ -476,6 +478,9 @@ FUNCTION imptxt(cTIPO)
 		      CASE upper(cARQUIVO)="QUALIF_ASSINANTE"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
+              CASE upper(cARQUIVO)="MODALIDADE_FRETE"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())       
  		      CASE upper(cARQUIVO)="FI_NBMS"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())                  
@@ -486,7 +491,6 @@ FUNCTION imptxt(cTIPO)
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="CEST"
-			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
 		      CASE upper(cARQUIVO)="FO_CNAE2"
 			       lZAP:=.F.
@@ -561,7 +565,13 @@ FUNCTION imptxt(cTIPO)
                       DO CASE
                          CASE  AT("CNAECSV",CNOMEORI)>0      .OR. AT("NATJUCSV",CNOMEORI)>0 .OR. AT("QUALSCSV",CNOMEORI)>0 ; 
                                .OR. AT("PAISCSV",CNOMEORI)>0 .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0
-                         CASE  AT("SEFAZMODFIS",cNOMEORI)>0 
+                         CASE  AT("SEFAZMODFIS",cNOMEORI)>0  .OR. AT("SEFAZANPPROD",CNOMEORI)>0    .OR. AT("SEFAZANPPROUNIDADE",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZCEST",CNOMEORI)>0 .OR. AT("SEFAZCESTPORTA",CNOMEORI)>0 .OR. AT("SEFAZCFOP",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZCIDADE",CNOMEORI)>0 .OR. AT("SEFAZICMCST",CNOMEORI)>0 .OR. AT("SEFAZINDPRES",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZIPICST",CNOMEORI)>0 .OR. AT("SEFAZIPIENQ",CNOMEORI)>0 .OR. AT("SEFAZMODBC",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZMODBCST",CNOMEORI)>0 .OR. AT("SEFAZMODFIS",CNOMEORI)>0 .OR. AT("SEFAZMODFRETE",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZNCMEXTERIOR",CNOMEORI)>0 .OR. AT("SEFAZORIGEM",CNOMEORI)>0 .OR. AT("SEFAZPISCST",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZPISENQ",CNOMEORI)>0 .OR. AT("SEFAZQUALIFICACAO",CNOMEORI)>0 .OR. AT("SEFAZUNIDADE",CNOMEORI)>0 
                               aCAMPOS:=SplitCommaAspas(cLINHA,"|")
                          OTHERWISE
                              aCAMPOS:=HB_ATokens(cLINHA,"|") 
@@ -1415,7 +1425,11 @@ DO CASE
     CASE cALIAS="QUALIF_ASSINANTE"
        lINCLUI:=.F.
 	   dbsetorder(1) // codigo
-	   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",70,0}}       
+	   aEFD:={{"CODIGO","C", 3,0},{"DESCRICAO" ,"C",70,0}}    
+    CASE cALIAS="MODALIDADE_FRETE"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",55,0}}       
     CASE cALIAS="FI_NBMS"
        lINCLUI:=.F.
 	   dbsetorder(1) // codigo
