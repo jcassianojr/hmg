@@ -500,7 +500,7 @@ FUNCTION imptxt(cTIPO)
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","NFECNPJ",HB_CWD())
 		      CASE upper(cARQUIVO)="MOEDA"  
 			       lZAP:=.F.
-				   cCAM   := PROFILESTRING( "sped.ini","PATH","SPEDTABELAS",HB_CWD())
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
               CASE AT("MUNICCSV",CNOMEORI)>0
                    lZAP:=.F.
                    cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())    
