@@ -14,10 +14,10 @@ d:\develop\harbour\objmgw\f_freadl.prg
 d:\develop\harbour\objmgw\netdbf.prg
 d:\develop\harbour\objmgw\profile.prg
 d:\develop\harbour\objmgw\validaie.prg
-d:\develop\harbour\sefazclass\source\ze_digitodoc.prg
-d:\develop\harbour\sefazclass\source\ze_inscestadual.prg
-d:\develop\harbour\sefazclass\source\ze_miscfunc.prg
-d:\develop\harbour\sefazclass\source\ze_xmlfunc.prg
+d:\develop\harbour\sefazclass\ze_digitodoc.prg
+d:\develop\harbour\sefazclass\ze_inscestadual.prg
+d:\develop\harbour\sefazclass\ze_miscfunc.prg
+d:\develop\harbour\sefazclass\ze_xmlfunc.prg
 d:\develop\hmg\lerxmlsefaz\funcoesnfe.prg
 d:\develop\hmg\objmgwhmg\comp.prg
 exportartxt.prg
