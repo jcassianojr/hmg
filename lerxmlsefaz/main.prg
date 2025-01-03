@@ -4,8 +4,8 @@
 //WHERE clientes.cod_cliente[1,2] IN ('10','11','30','40','57','64','86','87')
 //AND par_edi_mgr.local_arq='p:\totvs\sintel\avb\'
 
-// logixsup (I)nutilizada(C)ancelada(<)3 tres meses(X)nao e itaesbra/outros(S)suprimentos(Y)transf filial(F)aturamento
-// logixsup (I)nutilizada(C)ancelada(<)3 tres meses(X)nao e itaesbra/outros(S)suprimentos(Y)transf filial(F)aturamento
+// logixsup (I)nutilizada(C)ancelada(<)3 tres meses(X)nao e empresa/outros(S)suprimentos(Y)transf filial(F)aturamento
+// logixsup (I)nutilizada(C)ancelada(<)3 tres meses(X)nao e empresa/outros(S)suprimentos(Y)transf filial(F)aturamento
 
 
 #include <hmg.ch>
@@ -66,18 +66,18 @@ Set( _SET_DATEFORMAT, "dd/mm/yyyy" )
   
   //SERVER=smtp.kinghost.net
 //PORTA=587
-//FROM=nfe.ieb@itaesbra.com.br
-//USUARIO=nfe.ieb@itaesbra.com.br
-//SENHA=1t@3sbra
-//POP=smtp.kinghost.net
+//FROM=nfe@empresa.com.br
+//USUARIO=nfe.ieb@empresa.com.br
+//SENHA=senha
+//POP=smtp.host.net
 
 
-   cSERVERIP    :="smtp.kinghost.net" //PROFILESTRING( "LERXML.INI","EMAIL","SERVER")
+   cSERVERIP    :="smtp.host.net" //PROFILESTRING( "LERXML.INI","EMAIL","SERVER")
    nPORT        := "587" //VAL(PROFILESTRING( "LERXML.INI","EMAIL","PORTA"))
-   cFROM        := "nfe.ieb@itaesbra.com.br" //PROFILESTRING( "LERXML.INI","EMAIL","FROM")
-   cUSER        := "nfe.ieb@itaesbra.com.br" //PROFILESTRING( "LERXML.INI","EMAIL","USUARIO")
-   cPASS        := "1t@3sbra" //PROFILESTRING( "LERXML.INI","EMAIL","SENHA")
-   cPOP         := "smtp.kinghost.net" //PROFILESTRING( "LERXML.INI","EMAIL","POP")
+   cFROM        := "nfe@empresa.com.br" //PROFILESTRING( "LERXML.INI","EMAIL","FROM")
+   cUSER        := "nfe@empresa.com.br" //PROFILESTRING( "LERXML.INI","EMAIL","USUARIO")
+   cPASS        := "senha" //PROFILESTRING( "LERXML.INI","EMAIL","SENHA")
+   cPOP         := "smtp.host.net" //PROFILESTRING( "LERXML.INI","EMAIL","POP")
    
    cMEMORIZADOS  := PROFILESTRING( "LERXML.INI","PATH","MEMORIZADOS")   
    cMEMORIZAR    := PROFILESTRING( "LERXML.INI","PATH","MEMORIZAR")   
@@ -200,7 +200,7 @@ for z=1 to 2
           field->UF:=""
           DBUNLOCK()	      
        ENDIF
-	   IF at('ITAESBRA',UPPER(field->EMAIL))>0   .and. .not. IsCNPJITA(tiraout(field->cnpj))
+	   IF at('EMPRESA',UPPER(field->EMAIL))>0   .and. .not. IsCNPJITA(tiraout(field->cnpj))
 	      NETRECLOCK()
           Field->EMAIL:=''
 		  DBUNLOCK()	      
@@ -855,11 +855,6 @@ ENDIF
 				ENDIF               
 			case cOPERACAO="IMP"
 			    lCOPIA:=.T.
-				//IF ARQUIVOITA(cFILEDANFE) //nao copia xml da propria itaesbra
-				//   lCOPIA:=.F.
-				//   lDELETE:=.T.
-				//ENDIF
-				//copia agora itaesbra pois tem c:\nfe\nfecnpj e P:\nfe\nfecnpj
 				IF lCOPIA                 //nao tem copia para nfecpnj para armazernar e apaga
 				   IF FILECOPY(mDIRETORIO+cFILEDANFE,cCAM+cFILEDANFE)>0	
 				      lDELETE:=.T.							                  
@@ -1524,7 +1519,7 @@ FOR nOPCAO:=1 TO nFIM
 	  nSeqEvento:="_"+tpEvento+"_"+PegaDados('nSeqEvento' ,Alltrim(Linha))      //as sequencia sao por eventos evita sobrepor seq e seq de tipos diferentes
 
 
-     IF EMPTY(cCGCDEST)  //copia para memorizar nota itaesbra quando ja chegaram eventos desta nota
+     IF EMPTY(cCGCDEST)  //copia para memorizar nota  quando ja chegaram eventos desta nota
         cARQIMP:=cChave+"-nfe_vis.xml"
 		IF copiavislogix(cARQIMP,cNFECNPJ+cARQIMP)
    	    else
@@ -2261,7 +2256,7 @@ FOR nOPCAO:=1 TO nFIM
    
    
    IF IsRaizIta(cCGCEmit)
-      if IsRaizIta(cCGCDEST) //emitende e destinatario itaesbra
+      if IsRaizIta(cCGCDEST) //emitende e destinatario 
           if m_TPNF="0" // nota fiscal de entrada inverter emitente destinatario
              GrvLogEdi(cCGCDest,dDATALOG,,m_protocolo,cID,cNNF,cCGCEmit,'EMAIL','XML')
           else      
@@ -2271,7 +2266,7 @@ FOR nOPCAO:=1 TO nFIM
    ELSE      
       IF m_TPNF<>"0" .and. ! lCALVOREM        //notas 0 e de entradas nao gerar log  -- notas de envio cesta basica(lCALVOREM)(gravacao acima )	     
 	     IF lCTE   	            		 
-  		    if ( IsCNPJITA(cCGCtoma) .and. ! lCTEPAGA )  // cte somente se a itaesbra for o tormador e gerar pagamento	ainda nao paga(1,2)   			
+  		    if ( IsCNPJITA(cCGCtoma) .and. ! lCTEPAGA )  // cte somente se a  for o tormador e gerar pagamento	ainda nao paga(1,2)   			
                 GrvLogEdi(cCGCLOG,dDATALOG,,m_protocolo,cID,cNNF,cCGCDest,'EMAIL','XML')                     
 		    endif		
 		 ELSE
@@ -2785,7 +2780,7 @@ IF lCHAVESUP
             endif   
          endif
          if ! IsRaizIta(cCNPJDEST) .and. ! idcte(cID) .and. ! idcteos(cID)     //cte pode ter outro destino    
-            danfe2->logixsup:="X" //a nota nao e para a Itaesbra          
+            danfe2->logixsup:="X" //a nota nao e para         
          endif      
          if ! IsRaizIta(cCNPJ) .AND. cANO=cANOBASE 
             cEMP=CNPJEmpLogix(cCNPJDest)
@@ -3173,7 +3168,7 @@ IF lCHAVESUP
    executasql(cCOMANDO,"Limpesa log 17")
    
    //email internos
-   cCOMANDO:=" DELETE FROM log_edi_mgr_hist WHERE nom_arquivo LIKE '%@itaesbra%' AND dat_geracao<=today-180  ; "  
+   cCOMANDO:=" DELETE FROM log_edi_mgr_hist WHERE nom_arquivo LIKE '%@empresa%' AND dat_geracao<=today-180  ; "  
    executasql(cCOMANDO,"Limpesa log 18")
    
   //apaga log que tenha sido reprocessados

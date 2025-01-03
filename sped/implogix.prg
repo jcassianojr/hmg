@@ -83,7 +83,7 @@ oRegistr2:CursorLocation := 3
 if mdg("importar clientes")
 	nNUMERO:=1
 	cSQL = " SELECT clientes.*,cnpjcpf(clientes.num_cgc_cpf) AS cnpj,pessoa(clientes.num_cgc_cpf) as PESSOA,cidades.den_cidade,vdp_cliente_compl.email  AS email_compl,vdp_cli_parametro.texto_parametro "
-	cSQL += "       , cliente_grupo_970.cognome_grupo,duns_itaesbra.num_duns  "
+	cSQL += "       , cliente_grupo_970.cognome_grupo,duns_empresa.num_duns  "
 	cSQL += "	,vdp_cli_fornec_cpl.cliente_fornecedor, vdp_cli_fornec_cpl.tip_cadastro, vdp_cli_fornec_cpl.bairro,  "
 	cSQL += "    vdp_cli_fornec_cpl.compl_endereco, vdp_cli_fornec_cpl.tip_logradouro, vdp_cli_fornec_cpl.logradouro, vdp_cli_fornec_cpl.num_iden_lograd    "
 	cSQL += " ,vdp_cli_grp_email.email "
@@ -91,7 +91,7 @@ if mdg("importar clientes")
 	cSQL += "                LEFT JOIN vdp_cliente_compl ON clientes.cod_cliente = vdp_cliente_compl.cliente"
 	cSQL += "                LEFT JOIN vdp_cli_parametro ON clientes.cod_cliente = vdp_cli_parametro.cliente  and vdp_cli_parametro.parametro = 'ins_municipal'"
 	cSQL += "                LEFT JOIN CLIENTE_GRUPO_970 ON CLIENTES.cod_cliente = cliente_grupo_970.cod_cliente"
-	cSQL += "                LEFT JOIN duns_itaesbra ON clientes.cod_cliente=duns_itaesbra.cod_cliente AND duns_itaesbra.cod_empresa='01' "	
+	cSQL += "                LEFT JOIN duns_empresa ON clientes.cod_cliente=duns_empresa.cod_cliente AND duns_empresa.cod_empresa='01' "	
 	cSQL += "	 		     LEFT JOIN vdp_cli_grp_email ON clientes.cod_cliente=vdp_cli_grp_email.cliente AND grupo_email=1 AND seq_email=1  "
 	cSQL += "                LEFT JOIN vdp_cli_fornec_cpl ON clientes.cod_cliente=vdp_cli_fornec_cpl.cliente_fornecedor AND vdp_cli_fornec_cpl.tip_cadastro='C' "
 	cSQL += " where clientes.ies_situacao='A' "
@@ -184,9 +184,6 @@ if mdg("importar clientes")
 	   aDADOS:={cCGC,cINSCR,cCCM,cESTADO,cCIDADE,cNOME,"LXCLI",TIRAOUT(cCEP),cDDD,cSUFRAMA,cCNAE,lower(cEMAIL),cTELEFONE,cPESSOA,cBAIRRO,cENDERECO,cNUMEND,cCOMPLEM,cENDTIP}
 	   IF cPESSOA="J"                 
 		  gravacert(aDADOS,.T.)            	  
-         //IF at('ITAESBRA',UPPER(field->EMAIL))>0   .and.  at("61381323",field->cnpj)=0 //.and. .not. IsCNPJITA(tiraout(field->cnpj))
-         //   Field->EMAIL:=''
-         //ENDIF 
    	     dbunlock()
 	   ENDIF	  
 	   
@@ -337,10 +334,6 @@ if mdg("importar fornecedor")
 		aDADOS:={cCGC,cINSCR,cCCM,cESTADO,cCIDADE,cNOME,"LXFOR",TIRAOUT(cCEP),cDDD,cSUFRAMA,cCNAE,lower(cEMAIL),cTELEFONE,cPESSOA,cBAIRRO,cENDERECO,cNUMEND,cCOMPLEM,cENDTIP}
 		IF cPESSOA="J"	                  	
 		   gravacert(aDADOS,.T.)
-		   //IF at('ITAESBRA',UPPER(field->EMAIL))>0   .and.  at("61381323",field->cnpj)=0 //.and. .not. IsCNPJITA(tiraout(field->cnpj))	          
-           //   Field->EMAIL:=''
-           //ENDIF 
-   	       //dbunlock() 
 		endif  
 		nCONTA++
 		IF lMANA5
@@ -482,7 +475,7 @@ IF MDG("Checar email grupo vdp")
        cCNPJ:=CNPJXML->CNPJ
        mds(cCNPJ)   
 	   
-      IF at('ITAESBRA',UPPER(CNPJXML->EMAIL))>0       //email internos como sendo pessoais     
+      IF at('EMPRESA',UPPER(CNPJXML->EMAIL))>0       //email internos como sendo pessoais     
           netreclock()	  
           CNPJXML->EMAIL:=''
 		   dbunlock()  
@@ -501,7 +494,7 @@ IF MDG("Checar email grupo vdp")
 			  cEMAIL = lower(Trim(Fix02(oregistr2:fields("email"):value)))    
 		  endif
 		  oregistr2:close()   
-		  if ! empty(cEMAIL) .and.  at('ITAESBRA',cEMAIL)=0
+		  if ! empty(cEMAIL) .and.  at('EMPRESA',cEMAIL)=0
 		     netreclock()
 			 CNPJXML->EMAIL:=cEMAIL
 			 dbunlock()  
