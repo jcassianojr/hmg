@@ -353,7 +353,7 @@ endif
 if mdg("Checar Cadastro")
    LIMPACNPJIE()
 endif
-RETURN
+RETURN .t.
 
 FUNCTION LIMPACNPJIE()
 cCAM := PROFILESTRING( "sped.ini","PATH","CNPJIEUF",HB_CWD())
@@ -409,7 +409,7 @@ for Y=1 to 5
        next z
     endif
 next Y
-return
+return .t.
 
 
 FUNCTION ATUaLIZA(cUF,cUF2,nSEQTXT)

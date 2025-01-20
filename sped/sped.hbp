@@ -1,30 +1,45 @@
-main.prg
-atuie.prg
-certieuf.prg
-cnpjirrf.prg
-d:\develop\harbour\objmgw\adofix.prg
-d:\develop\harbour\objmgw\cepsutil.prg
-d:\develop\harbour\objmgw\disk53.prg
-d:\develop\harbour\objmgw\disk55.prg
-d:\develop\harbour\objmgw\disk59.prg
-d:\develop\harbour\objmgw\disk70.prg
-d:\develop\harbour\objmgw\disk71.prg
-d:\develop\harbour\objmgw\disk72.prg
-d:\develop\harbour\objmgw\f_freadl.prg
-d:\develop\harbour\objmgw\netdbf.prg
-d:\develop\harbour\objmgw\profile.prg
-d:\develop\harbour\objmgw\validaie.prg
-d:\develop\harbour\sefazclass\ze_digitodoc.prg
-d:\develop\harbour\sefazclass\ze_inscestadual.prg
-d:\develop\harbour\sefazclass\ze_miscfunc.prg
-d:\develop\harbour\sefazclass\ze_xmlfunc.prg
-d:\develop\hmg\lerxmlsefaz\funcoesnfe.prg
-d:\develop\hmg\objmgwhmg\comp.prg
-exportartxt.prg
-implogix.prg
-impmana5.prg
-imptxt.prg
-impxmlsped.prg
-inovar.prg
-sintxml.prg
-validacert.prg
+#Nome do Arquivo de Saida
+-osped
+
+#Saida dos arquivos temporários
+-workdir=.\obj
+
+#Compacta o arquivo final
+-strip 
+-fullstatic
+-D__CALLDLL__
+
+#Compilação incremental
+-inc
+
+#Flag de compilação informado em configuração
+-exitstr -info -jobs=10 -trace -q -map -w3 -es2 -p.\PPO\
+
+#Configuração dos Paths
+sped.hbc
+
+#Arquivo de Recurso
+sped.rc
+
+#Lista de Arquivos
+"atuie.prg"
+"certieuf.prg"
+"cnpjirrf.prg"
+"exportartxt.Prg"
+"implogix.prg"
+"impmana5.prg"
+"imptxt.prg"
+"impxmlsped.prg"
+"inovar.prg"
+"main.prg"
+"sintxml.prg"
+"validacert.prg"
+
+#Lista de Arquivos incluidos como [outros]
+
+# hmg resources
+"C:\devprg\HMGDES~1\ide\Tools\Minigui\Resources\hmg.Res"
+
+#Dependence
+hbhpdf.hbc
+

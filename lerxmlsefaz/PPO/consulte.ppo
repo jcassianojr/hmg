@@ -1,40 +1,42 @@
-#include <hmg.ch>
-#include "try.ch"
-
+#line 54 "C:\devprg\HMGDES~1\IDE\Tools\Minigui\include\i_var.ch"
+  MEMVAR _HMG_SYSDATA
+#line 14 "C:\devprg\HMGDES~1\IDE\Tools\Minigui\include\miniprint.ch"
+  MEMVAR _HMG_MINIPRINT
+#line 4 "consulte.prg"
 function consultex(nTIPO,cID)
-   System.Clipboard := cID
-   
-if nTIPO=2 .AND. Idufnum(cID)<>'35'   
+   hb_gtInfo( 15, cID )
+
+if nTIPO=2 .AND. Idufnum(cID)<>"35"
    msginfo("NF nao e de Sao Paulo Usando Portal Nacional")
    nTIPO=1
 endif
 
-   
+
    SWITCH nTIPO
-      CASE 1 //Nacional
+      CASE 1
         if idcte(cID)
            abrirpagina("https://www.cte.fazenda.gov.br/portal/consulta.aspx?tipoConsulta=completa&tipoConteudo=mCK/KoCqru0=")
-		   
+
         ELSE
-           abrirpagina("http://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=completa&tipoConteudo=XbSeqxE8pl8=",'NA',cID)
-        ENDIF        
-        EXIT 
-      CASE 2 //SP
+           abrirpagina("http://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=completa&tipoConteudo=XbSeqxE8pl8=","NA",cID)
+        ENDIF
+        EXIT
+      CASE 2
         if idcte(cID)
            abrirpagina("https://nfe.fazenda.sp.gov.br/cteConsulta/consulta/publica/ConsultarCTe.aspx")
         ELSE
            abrirpagina("https://nfe.fazenda.sp.gov.br/ConsultaNFe/consulta/publica/ConsultarNFe.aspx","SP",cID)
-        ENDIF       
-        EXIT 
-      CASE 3 //rs scan
+        ENDIF
+        EXIT
+      CASE 3
         if idcte(cID)
            abrirpagina("https://www.sefaz.rs.gov.br/CTE/CTE-COM.aspx")
         ELSE
            abrirpagina("http://www.sefaz.rs.gov.br/ASP/AAE_ROOT/NFE/SAT-WEB-NFE-COM_1.asp?")
-        ENDIF        
-        EXIT 
+        ENDIF
+        EXIT
      case 4
-         checasituacao()     
-        EXIT  
+         checasituacao()
+        EXIT
    ENDSWITCH
-return .t.
+return .T.

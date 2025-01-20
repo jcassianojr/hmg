@@ -1,0 +1,299 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function EmissaoAno(cEMISSAO)
+return substr(cemissao,1,4)
+
+function EmissaoMes(cEMISSAO)
+return substr(cemissao,6,2)
+
+function EmissaoData(cEMISSAO)
+return STOD(STRTRAN(cEMISSAO,"-",""))
+
+function IdNFF(cID)
+return alltrim(str(val(SUBsTR(cID,27,8))))
+
+function IdNFF9(cID)
+return alltrim(str(val(SUBsTR(cID,26,9))))
+
+function IdModelo(cID)
+return SUBSTR(cID,21,2)
+
+function Idufnum(cID)
+return SUBSTR(cID,1,2)
+
+
+function IdufUF(cID)
+return coduf(SUBSTR(cID,1,2))
+
+function IdcnPj(cID)
+return SUBSTR(cID,7,14)
+
+function idCte(cID)
+return IdModelo(cID)="57"
+
+function idCteos(cID)
+return IdModelo(cID)="67"
+
+
+function idnfe(cID)
+return IdModelo(cID)="55"
+
+function IdEmissor(cID)
+return SUBSTR(cID,7,14)
+
+function idSerie(cID)
+return alltrim(str(val(SUBsTR(cID,23,3))))
+
+function idAno(cid)
+return SubStr(cid,3,2)
+
+function idmes(Cid)
+return SubStr(cid,5,2)
+
+function iddizer(cID)
+return "Estado:"+Idufuf(cID)+" MES/ANO:"+idmes(Cid)+"/"+idAno(cid)+" CNPJ:"+IdcnPj(cID) +" Numero" + IdNFF9(cID) +" Modelo:" + IdModelo(cID) + " Serie:" +idSerie(cID)
+
+
+function idformatada(cID)
+RETURN TRANSFORM(cID,"@R 99-99/99-NN.NNN.NNN/NNNN-99.99.999.999999999.9.99999999.9")
+
+
+
+function idformatauf(cID)
+local cUF
+cUF:=IdufUF(cID)
+cID:=substr(cID,3)
+RETURN cUF+"-"+TRANSFORM(cID,"@R 99/99-NN.NNN.NNN/NNNN-99.99.999.999999999.9.99999999.9")
+
+
+
+function idModeloTipo(cID)
+LOCAL cMODELO
+cMODELO:=IdModelo(cID)
+DO CASE
+   CASE cMODELO="55"
+         cMODELO="NFE"
+   CASE cMODELO="57"
+         cMODELO="CTE"
+   CASE cMODELO="67"
+         cMODELO="CTE-OS"
+   CASE cMODELO="65"
+         cMODELO="NFCe"
+endcase
+return cMODELO
+
+function idModeloTF(cID)
+LOCAL cMODELO
+cMODELO:=IdModelo(cID)
+DO CASE
+   CASE cMODELO="55"
+         cMODELO="procNFe"
+   CASE cMODELO="57"
+         cMODELO="procCTe"
+   CASE cMODELO="67"
+         cMODELO="procCTe OS"
+   CASE cMODELO="65"
+         cMODELO="procNFCe"
+endcase
+return cMODELO
+
+function idModeloCF(cID)
+LOCAL cMODELO
+cMODELO:=IdModelo(cID)
+DO CASE
+   CASE cMODELO="55"
+         cMODELO="NF-e"
+   CASE cMODELO="57"
+         cMODELO="CT-e"
+   CASE cMODELO="67"
+         cMODELO="CT-e OS"
+   CASE cMODELO="65"
+         cMODELO="NFC-e"
+endcase
+return cMODELO
+
+
+function PegCamXml(cID,cCNPJEmit,cCNPJDEST,cANO,cMES)
+LOCAL cARQIMP :=""
+LOCAL aCNPJBUS
+LOCAL aCAMARQ
+LOCAL ZK
+LOCAL ZL
+LOCAL cFIMXML
+LOCAL cARQBUS
+aCNPJBUS:=memvar->aCNPJITA
+IF EMPTY(cCNPJEmit)
+  cCNPJEmit:=IDEMISSOR(cID)
+ENDIF
+IF ! EMPTY(cCNPJEmit) .AND. ASCAN(memvar->aCNPJITA,cCNPJEmit)=0
+   AADD(aCNPJBUS,cCNPJEmit)
+ENDIF
+IF ! EMPTY(cCNPJDEST) .AND. ASCAN(memvar->aCNPJITA,cCNPJDesT)=0
+   AADD(aCNPJBUS,cCNPJDEST)
+ENDIF
+AADD(aCNPJBUS,"99999999999999")
+AADD(aCNPJBUS,"DestinatarioDesconhecido")
+IF EMPTY(cANO) .OR. EMPTY(CMES) .OR. val(cANO)=0 .OR. val(cMES)=0
+   cANO  := "20"+idano(cID)
+   cMES  := idmes(cID)
+ENDIF
+IF EMPTY(cANO) .OR. EMPTY(CMES) .OR. val(cANO)=0 .OR. val(cMES)=0
+   cANO  := strzero(year(date()),4,0)
+   cMES  := strzero(month(date()),2,0)
+ENDIF
+
+aCAMARQ:= {memvar->cLOGIX,memvar->cLOGIX2,memvar->cLOGIX3,memvar->cLOGIX4,memvar->cNFECNPJ, memvar->cLOGIXARQ}
+
+
+aadd(aCAMARQ,memvar->cmemorizados+"EmitidosPorMim\61381323000167\")
+aadd(aCAMARQ,memvar->cmemorizados+"EmitidosPorMim\61381323000248\")
+aadd(aCAMARQ,memvar->cmemorizados+"EmitidosPorMim\61381323000329\")
+aadd(aCAMARQ,memvar->cmemorizados+"EmitidosPorMim\61381323000400\")
+aadd(aCAMARQ,memvar->cmemorizados+"EmitidosPorMim\61381323000590\")
+
+aadd(aCAMARQ,memvar->cmemorizados+"Recebidos\XTIPOX\61381323000167\")
+aadd(aCAMARQ,memvar->cmemorizados+"Recebidos\XTIPOX\61381323000248\")
+aadd(aCAMARQ,memvar->cmemorizados+"Recebidos\XTIPOX\61381323000329\")
+aadd(aCAMARQ,memvar->cmemorizados+"Recebidos\XTIPOX\61381323000400\")
+aadd(aCAMARQ,memvar->cmemorizados+"Recebidos\XTIPOX\61381323000590\")
+
+aadd(aCAMARQ,memvar->cmemorizados+"cSLFProfile\61381323000167\")
+aadd(aCAMARQ,memvar->cmemorizados+"cSLFProfile\61381323000248\")
+aadd(aCAMARQ,memvar->cmemorizados+"cSLFProfile\61381323000329\")
+aadd(aCAMARQ,memvar->cmemorizados+"cSLFProfile\61381323000400\")
+aadd(aCAMARQ,memvar->cmemorizados+"cSLFProfile\61381323000590\")
+
+
+FOR ZK:=1 TO LEN(aCAMARQ)
+    IF EMPTY(cARQIMP)
+        DO CASE
+              case    memvar->ZK=1 .OR. memvar->ZK=2 .OR. memvar->ZK=3 .OR. memvar->ZK=4
+                cFIMXML:=cid+"-nfe_vis.xml"
+           case    memvar->ZK=5 .OR. memvar->ZK=6
+                cFIMXML:=idModeloTipo(cID)+cid+".xml"
+           case    memvar->ZK=7 .OR. memvar->ZK=8 .OR. memvar->ZK=9 .OR. memvar->ZK=10 .OR. memvar->ZK=11
+                cFIMXML:=cid+"-"+idModeloTF(cID)+".xml"
+           case    memvar->ZK=12 .OR. memvar->ZK=13 .OR. memvar->ZK=14 .OR. memvar->ZK=15 .OR. memvar->ZK=16
+                cFIMXML:=cid+"-"+idModeloTF(cID)+".xml"
+           case    memvar->ZK=17 .OR. memvar->ZK=18 .OR. memvar->ZK=19 .OR. memvar->ZK=20  .OR. memvar->ZK=21
+                cFIMXML:=idModeloTipo(cID)+cid+".xml"
+        ENDCASE
+       FOR ZL=1 TO LEN(aCNPJBUS)
+           IF EMPTY(cARQIMP)
+              do case
+                   case ZK=1 .OR. ZK=2 .OR. ZK=3 .OR. ZK=4
+                     cARQBUS:=aCAMARQ[ZK]+cFIMXML
+                 case ZK=12 .OR. ZK=13 .OR. ZK=14 .OR. ZK=15 .OR. ZK=16
+                      cARQBUS:=aCAMARQ[ZK]+aCNPJBUS[ZL]+"\"+cANO+"\"+cMES+"\"+cFIMXML
+                      cARQBUS:=STRTRAN(cARQBUS,"XTIPOX",idModeloCF(cID))
+                 otherwise
+                     cARQBUS:=aCAMARQ[ZK]+aCNPJBUS[ZL]+"\"+cANO+"\"+cMES+"\"+cFIMXML
+              endcase
+              if file(cARQBUS)
+                 cARQIMP:=cARQBUS
+                 exit
+              endif
+           ENDIF
+       next
+    ENDIF
+next
+return cARQIMP
+
+Function Pegacadastro(cTextoCad)
+   memvar->XCNPJ    := PegaDados( "CNPJ"  ,Alltrim(cTextoCad))
+   memvar->xNome    := PegaDados( "xNome" ,Alltrim(cTextoCad) )
+   memvar->xFant    := PegaDados( "xFANT" ,Alltrim(cTextoCad) )
+   memvar->xLgr     := PegaDados( "xLgr"  ,Alltrim(cTextoCad) )
+   memvar->xCpl     := PegaDados( "xcpl"  ,Alltrim(cTextoCad) )
+   memvar->Xnro     := PegaDados( "nro"  ,Alltrim(cTextoCad) )
+   memvar->xBairro  := PegaDados( "xBairro" ,Alltrim(cTextoCad))
+   memvar->CMun     := PegaDados( "cMun"  ,Alltrim(cTextoCad) )
+   memvar->xMun     := PegaDados( "xMun"  ,Alltrim(cTextoCad))
+   memvar->XUF      := PegaDados( "UF"   ,Alltrim(cTextoCad))
+   memvar->XCEP     := PegaDados( "CEP"  ,Alltrim(cTextoCad))
+   memvar->CPais    := PegaDados( "cPais" ,Alltrim(cTextoCad))
+   memvar->xPais    := PegaDados( "xPais" ,Alltrim(cTextoCad))
+   memvar->Xfone    := PegaDados( "fone"  ,Alltrim(cTextoCad))
+   memvar->XIE      := PegaDados( "IE"   ,Alltrim(cTextoCad) )
+   memvar->XIEST    := PegaDados( "IEST"   ,Alltrim(cTextoCad) )
+   memvar->XISUF    := PegaDados( "ISUF"   ,Alltrim(cTextoCad) )
+   memvar->Xemail   := PegaDados( "email"   ,Alltrim(cTextoCad) )
+   memvar->XIm     := PegaDados( "IM"   ,Alltrim(cTextoCad) )
+   memvar->XCNAE   := PegaDados( "cnae"   ,Alltrim(cTextoCad) )
+   memvar->XCPF    := PegaDados( "CPF"  ,Alltrim(cTextoCad) )
+
+   if memvar->xcnpj="00000000000000"
+      memvar->XCNPJ="0"
+   endif
+
+   IF (memvar->XCNPJ="0" .OR. empty(memvar->XCNPJ)) .AND. len(ALLTRIM(memvar->XCNPJ))<=1 .AND. memvar->XUF="EX"
+      memvar->XCNPJ    := "99999999999999"
+   ENDIF
+   IF (memvar->XCNPJ="0" .OR. empty(memvar->XCNPJ)) .AND. len(ALLTRIM(memvar->XCNPJ))<=1 .AND. len(ALLTRIM(memvar->XCPF))>1
+      memvar->XCNPJ    := memvar->XCPF
+   ENDIF
+return  .T.
+
+Function PegaDados(cProc, cLinha, cPADRAO, cTexto2)
+ Local InicioDoDado
+ Local FinalDoDado
+ Local nPosIni
+ Local nPosFim
+ Local cRet    := "0"
+ LOCAL aFrom
+ LOCAL aTo
+ LOCAL nI
+
+ IF VALTYPE(cPADRAO)<>"U"
+    cRET:=cPADRAO
+ ENDIF
+
+ cPROC:=UPPER(cPROC)
+ cLINHA:=UPPER(cLINHA)
+ IF cTEXTO2==nil
+ ELSE
+    cTEXTO2=UPPER(cTEXTO2)
+ ENDIF
+
+ InicioDoDado := Iif(cTexto2==Nil,"<"+cProc+">" , "<"+cProc )
+ FinalDoDado := Iif(cTexto2==Nil,"</"+cProc+">","</"+cTexto2+">")
+ nPosIni   := At(InicioDoDado,cLinha)
+ nPosFim   := At(FinalDoDado,cLinha)
+
+ If nPosIni==0 .OR. nPosFim==0
+    InicioDoDado := Iif(cTexto2==Nil,"<"+cProc , "<"+cProc )
+    FinalDoDado := Iif(cTexto2==Nil,"</"+cProc,"</"+cTexto2+">")
+    nPosIni   := At(InicioDoDado,cLinha)
+    nPosFim   := At(FinalDoDado,cLinha)
+ ENDIF
+
+
+ If nPosIni==0 .OR. nPosFim==0
+   Return cRet
+ Endif
+ cRet := Substr(cLinha,nPosIni+Len(IniciodoDado),nPosFim-nPosIni-Len(FinalDoDado)+1)
+ cRET:=STRTRAN(cRET,CHR(13),"")
+ cRET:=STRTRAN(cRET,CHR(10),"")
+ aTo := { "&", '"', "'", "<", ">", "º", "ª" }
+ aFrom := { "&amp;", "&quot;", "&#39;", "&lt;", "&gt;", "&#176;", "&#170;" }
+ FOR nI=1 TO LEN(aFrom)
+    cRet := STRTRAN( cRET, aFrom[nI], aTo[nI] )
+ NEXT
+
+Return ( cRet)

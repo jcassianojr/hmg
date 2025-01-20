@@ -131,17 +131,20 @@ return cMODELO
 
 function PegCamXml(cID,cCNPJEmit,cCNPJDEST,cANO,cMES)
 LOCAL cARQIMP :=""
-LOCAL cARQBUS :=""
 LOCAL aCNPJBUS
 LOCAL aCAMARQ
-aCNPJBUS:=aCNPJITA //cnpj matriz filial
+LOCAL ZK
+LOCAL ZL
+LOCAL cFIMXML
+LOCAL cARQBUS
+aCNPJBUS:=memvar->aCNPJITA //cnpj matriz filial
 IF EMPTY(cCNPJEmit)
   cCNPJEmit:=IDEMISSOR(cID)
 ENDIF
-IF ! EMPTY(cCNPJEmit) .AND. ASCAN(aCNPJITA,cCNPJEmit)=0
+IF ! EMPTY(cCNPJEmit) .AND. ASCAN(memvar->aCNPJITA,cCNPJEmit)=0
    AADD(aCNPJBUS,cCNPJEmit)
 ENDIF
-IF ! EMPTY(cCNPJDEST) .AND. ASCAN(aCNPJITA,cCNPJDesT)=0
+IF ! EMPTY(cCNPJDEST) .AND. ASCAN(memvar->aCNPJITA,cCNPJDesT)=0
    AADD(aCNPJBUS,cCNPJDEST)
 ENDIF
 AADD(aCNPJBUS,"99999999999999") //importacao exportacao
@@ -155,40 +158,40 @@ IF EMPTY(cANO) .OR. EMPTY(CMES) .OR. val(cANO)=0 .OR. val(cMES)=0
    cMES  := strzero(month(date()),2,0)
 ENDIF
 
-aCAMARQ:= {cLOGIX,cLOGIX2,cLOGIX3,cLOGIX4,cNFECNPJ, cLOGIXARQ}
+aCAMARQ:= {memvar->cLOGIX,memvar->cLOGIX2,memvar->cLOGIX3,memvar->cLOGIX4,memvar->cNFECNPJ, memvar->cLOGIXARQ}
 //            1       2         3     4        5          6
 			
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000167\')		// 7
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000248\')		// 8
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000329\')		// 9
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000400\')		// 10
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000590\')		// 11
+aadd(aCAMARQ,memvar->cmemorizados+'EmitidosPorMim\61381323000167\')		// 7
+aadd(aCAMARQ,memvar->cmemorizados+'EmitidosPorMim\61381323000248\')		// 8
+aadd(aCAMARQ,memvar->cmemorizados+'EmitidosPorMim\61381323000329\')		// 9
+aadd(aCAMARQ,memvar->cmemorizados+'EmitidosPorMim\61381323000400\')		// 10
+aadd(aCAMARQ,memvar->cmemorizados+'EmitidosPorMim\61381323000590\')		// 11
 
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000167\')	// 12 
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000248\')	// 13
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000329\')	// 14
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000400\')	// 15
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000590\')	// 16
+aadd(aCAMARQ,memvar->cmemorizados+'Recebidos\XTIPOX\61381323000167\')	// 12 
+aadd(aCAMARQ,memvar->cmemorizados+'Recebidos\XTIPOX\61381323000248\')	// 13
+aadd(aCAMARQ,memvar->cmemorizados+'Recebidos\XTIPOX\61381323000329\')	// 14
+aadd(aCAMARQ,memvar->cmemorizados+'Recebidos\XTIPOX\61381323000400\')	// 15
+aadd(aCAMARQ,memvar->cmemorizados+'Recebidos\XTIPOX\61381323000590\')	// 16
 
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000167\')			// 17
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000248\')			// 18
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000329\')			// 19
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000400\')			// 20
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000590\')			// 21
+aadd(aCAMARQ,memvar->cmemorizados+'cSLFProfile\61381323000167\')			// 17
+aadd(aCAMARQ,memvar->cmemorizados+'cSLFProfile\61381323000248\')			// 18
+aadd(aCAMARQ,memvar->cmemorizados+'cSLFProfile\61381323000329\')			// 19
+aadd(aCAMARQ,memvar->cmemorizados+'cSLFProfile\61381323000400\')			// 20
+aadd(aCAMARQ,memvar->cmemorizados+'cSLFProfile\61381323000590\')			// 21
 
 
-FOR ZK=1 TO LEN(aCAMARQ)      
+FOR ZK:=1 TO LEN(aCAMARQ)      
     IF EMPTY(cARQIMP)
 	    DO CASE
-       	   case	ZK=1 .OR. ZK=2 .OR. ZK=3 .OR. ZK=4  
+       	   case	memvar->ZK=1 .OR. memvar->ZK=2 .OR. memvar->ZK=3 .OR. memvar->ZK=4  
 	            cFIMXML:=cid+"-nfe_vis.xml"		   
-		   case	ZK=5 .or. ZK=6
+		   case	memvar->ZK=5 .or. memvar->ZK=6
 		        cFIMXML:=idModeloTipo(cID)+cid+".xml"
-           case	ZK=7 .OR. ZK=8 .OR. ZK=9 .OR. ZK=10 .OR. ZK=11
+           case	memvar->ZK=7 .OR. memvar->ZK=8 .OR. memvar->ZK=9 .OR. memvar->ZK=10 .OR. memvar->ZK=11
 				cFIMXML:=cid+"-"+idModeloTF(cID)+".xml"
-           case	ZK=12 .OR. ZK=13 .OR. ZK=14 .OR. ZK=15 .OR. ZK=16
+           case	memvar->ZK=12 .OR. memvar->ZK=13 .OR. memvar->ZK=14 .OR. memvar->ZK=15 .OR. memvar->ZK=16
 				cFIMXML:=cid+"-"+idModeloTF(cID)+".xml"
-		   case	ZK=17 .or. ZK=18 .or. ZK=19 .or. ZK=20  .or. ZK=21
+		   case	memvar->ZK=17 .or. memvar->ZK=18 .or. memvar->ZK=19 .or. memvar->ZK=20  .or. memvar->ZK=21
 		        cFIMXML:=idModeloTipo(cID)+cid+".xml"
         ENDCASE 	   	
        FOR ZL=1 TO LEN(aCNPJBUS) 
@@ -213,39 +216,39 @@ NEXT ZK
 return cARQIMP
 
 Function Pegacadastro(cTextoCad)
-   XCNPJ    := PegaDados( 'CNPJ'  ,Alltrim(cTextoCad))
-   xNome    := PegaDados( 'xNome' ,Alltrim(cTextoCad) )
-   xFant    := PegaDados( 'xFANT' ,Alltrim(cTextoCad) )
-   xLgr     := PegaDados( 'xLgr'  ,Alltrim(cTextoCad) )
-   xCpl     := PegaDados( 'xcpl'  ,Alltrim(cTextoCad) )
-   Xnro     := PegaDados( 'nro'  ,Alltrim(cTextoCad) )
-   xBairro  := PegaDados( 'xBairro' ,Alltrim(cTextoCad))
-   CMun     := PegaDados( 'cMun'  ,Alltrim(cTextoCad) )
-   xMun     := PegaDados( 'xMun'  ,Alltrim(cTextoCad))
-   XUF      := PegaDados( 'UF'   ,Alltrim(cTextoCad))
-   XCEP     := PegaDados( 'CEP'  ,Alltrim(cTextoCad))
-   CPais    := PegaDados( 'cPais' ,Alltrim(cTextoCad))
-   xPais    := PegaDados( 'xPais' ,Alltrim(cTextoCad))
-   Xfone    := PegaDados( 'fone'  ,Alltrim(cTextoCad))
-   XIE      := PegaDados( 'IE'   ,Alltrim(cTextoCad) )
-   XIEST    := PegaDados( 'IEST'   ,Alltrim(cTextoCad) )
-   XISUF    := PegaDados( 'ISUF'   ,Alltrim(cTextoCad) )
-   Xemail   := PegaDados( 'email'   ,Alltrim(cTextoCad) )
-   XIm     := PegaDados( 'IM'   ,Alltrim(cTextoCad) )
-   XCNAE   := PegaDados( 'cnae'   ,Alltrim(cTextoCad) )
-   XCPF    := PegaDados( 'CPF'  ,Alltrim(cTextoCad) )      
+   memvar->XCNPJ    := PegaDados( 'CNPJ'  ,Alltrim(cTextoCad))
+   memvar->xNome    := PegaDados( 'xNome' ,Alltrim(cTextoCad) )
+   memvar->xFant    := PegaDados( 'xFANT' ,Alltrim(cTextoCad) )
+   memvar->xLgr     := PegaDados( 'xLgr'  ,Alltrim(cTextoCad) )
+   memvar->xCpl     := PegaDados( 'xcpl'  ,Alltrim(cTextoCad) )
+   memvar->Xnro     := PegaDados( 'nro'  ,Alltrim(cTextoCad) )
+   memvar->xBairro  := PegaDados( 'xBairro' ,Alltrim(cTextoCad))
+   memvar->CMun     := PegaDados( 'cMun'  ,Alltrim(cTextoCad) )
+   memvar->xMun     := PegaDados( 'xMun'  ,Alltrim(cTextoCad))
+   memvar->XUF      := PegaDados( 'UF'   ,Alltrim(cTextoCad))
+   memvar->XCEP     := PegaDados( 'CEP'  ,Alltrim(cTextoCad))
+   memvar->CPais    := PegaDados( 'cPais' ,Alltrim(cTextoCad))
+   memvar->xPais    := PegaDados( 'xPais' ,Alltrim(cTextoCad))
+   memvar->Xfone    := PegaDados( 'fone'  ,Alltrim(cTextoCad))
+   memvar->XIE      := PegaDados( 'IE'   ,Alltrim(cTextoCad) )
+   memvar->XIEST    := PegaDados( 'IEST'   ,Alltrim(cTextoCad) )
+   memvar->XISUF    := PegaDados( 'ISUF'   ,Alltrim(cTextoCad) )
+   memvar->Xemail   := PegaDados( 'email'   ,Alltrim(cTextoCad) )
+   memvar->XIm     := PegaDados( 'IM'   ,Alltrim(cTextoCad) )
+   memvar->XCNAE   := PegaDados( 'cnae'   ,Alltrim(cTextoCad) )
+   memvar->XCPF    := PegaDados( 'CPF'  ,Alltrim(cTextoCad) )      
    
-   if xcnpj="00000000000000" //algumas exportacao estao trazendo 00000000000000
-      XCNPJ="0"
+   if memvar->xcnpj="00000000000000" //algumas exportacao estao trazendo 00000000000000
+      memvar->XCNPJ="0"
    endif
    
-   IF (XCNPJ="0" .or. empty(XCNPJ)) .and. len(ALLTRIM(XCNPJ))<=1 .AND. XUF="EX"      
-      XCNPJ    := "99999999999999"
+   IF (memvar->XCNPJ="0" .or. empty(memvar->XCNPJ)) .and. len(ALLTRIM(memvar->XCNPJ))<=1 .AND. memvar->XUF="EX"      
+      memvar->XCNPJ    := "99999999999999"
    ENDIF   
-   IF (XCNPJ="0" .or. empty(XCNPJ)) .and. len(ALLTRIM(XCNPJ))<=1 .AND. len(ALLTRIM(XCPF))>1            
-      XCNPJ    := XCPF
+   IF (memvar->XCNPJ="0" .or. empty(memvar->XCNPJ)) .and. len(ALLTRIM(memvar->XCNPJ))<=1 .AND. len(ALLTRIM(memvar->XCPF))>1            
+      memvar->XCNPJ    := memvar->XCPF
    ENDIF   
-return 
+return  .t.
 
 Function PegaDados(cProc, cLinha, cPADRAO, cTexto2)
  Local InicioDoDado 
