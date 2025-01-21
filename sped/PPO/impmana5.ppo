@@ -1,0 +1,100 @@
+#line 54 "C:\devprg\HMGDES~1\IDE\Tools\Minigui\include\i_var.ch"
+  MEMVAR _HMG_SYSDATA
+#line 14 "C:\devprg\HMGDES~1\IDE\Tools\Minigui\include\miniprint.ch"
+  MEMVAR _HMG_MINIPRINT
+#line 2 "impmana5.prg"
+function ImportaMana5()
+cCAMINHO   := PROFILESTRING( "sped.ini","SINTCERT.DBF","CAMINHO",HB_CWD())+"SINTCERT"
+IF ! NETUSE(cCAMINHO)
+   RETURN
+ENDIF
+cCAMINHO   := PROFILESTRING( "sped.ini","MA01.DBF","CAMINHO",HB_CWD())+"MA01"
+IF ! NETUSE(cCAMINHO)
+   DBCLOSEALL()
+   RETURN
+ENDIF
+cCAMINHO   := PROFILESTRING( "sped.ini","MB01.DBF","CAMINHO",HB_CWD())+"MB01"
+IF ! NETUSE(cCAMINHO)
+   DBCLOSEALL()
+   RETURN
+ENDIF
+dbselectar("MA01")
+DBGOTOP()
+WHILE ! EOF()
+   MDS(CGC)
+   IF MA01->PESSOA="J"
+      aDADOS:={MA01->CGC,MA01->INSCR,MA01->IMUNICIPI,MA01->ESTADO,MA01->CIDADE,MA01->NOME,"MA01",TIRAOUT(MA01->CEP),MA01->DDD,MA01->SUFRAMA,MA01>CNAE,MA01->EMAIL,MA01->TELEFONE}
+      gravacert(aDADOS)
+   ENDIF
+   DBSELECTAR("MA01")
+   DBSKIP()
+ENDDO
+dbselectar("MB01")
+DBGOTOP()
+WHILE ! EOF()
+   MDS(CGC)
+   IF MB01->PESSOA="J"
+      aDADOS:={MB01->CGC,MB01->IESTADUAL,MB01->IMUNICIPI,MB01->ESTADO,MB01->CIDADE,MB01->NOME,"MB01",TIRAOUT(MB01->CEP),MB01->DDD,MB01->SUFRAMA,MB01->CNAE,MA01->EMAIL,MA01->TELEFONE}
+      gravacert(aDADOS)
+   ENDIF
+   DBSELECTAR("MB01")
+   DBSKIP()
+ENDDO
+DBCLOSEALL()
+msginfo("Concluido")
+
+
+function ImportaSintDbf()
+LOCAL X
+cCAMINHO   := PROFILESTRING( "sped.ini","SINTCERT.DBF","CAMINHO",HB_CWD())+"SINTCERT"
+IF ! NETUSE(cCAMINHO)
+   RETURN
+ENDIF
+
+aUSO:={"SINT50","SINT51","SINT55","SINT71","SINT74","SINT76"}
+FOR X=1 TO LEN(aUSO)
+   cALIAS:=aUSO[X]
+   cCAMINHO   := PROFILESTRING( "sped.ini",cALIAS+".DBF","CAMINHO",HB_CWD())+cALIAS
+   IF ! NETUSE(cCAMINHO)
+      DBCLOSEALL()
+      RETURN
+   ENDIF
+   dbselectar(cALIAS)
+   DBGOTOP()
+   WHILE ! EOF()
+      MDS(CGC)
+      aDADOS:={CGC,IE,"",UF,"","",cALIAS,"","","","","",""}
+      gravacert(aDADOS)
+      if CALIAS="SINT71"
+         aDADOS:={CNPJREM,INSCREM,"",UFREM,"","",cALIAS,"","","","","",""}
+         gravacert(aDADOS)
+      endif
+      DBSELECTAR(cALIAS)
+      DBSKIP()
+   ENDDO
+   DBCLOSEAREA()
+next
+msginfo("Concluido")
+
+function ImportaCnpjXml()
+cCAMINHO   := PROFILESTRING( "sped.ini","CNPJXML.DBF","CAMINHO",HB_CWD())+"CNPJXML"
+IF ! NETUSE(cCAMINHO,"DBFCDX")
+   return
+endif
+CCAMINHO   := PROFILESTRING( "sped.ini","SINTCERT.DBF","CAMINHO",HB_CWD())+"SINTCERT"
+IF ! NETUSE(cCAMINHO)
+   DBCLOSEALL()
+   RETURN
+ENDIF
+dbselectar("CNPJXML")
+DBGOTOP()
+WHILE ! EOF()
+   MDS(Cnpj)
+
+   aDADOS:={cnpjxml->CNPJ,cnpjxml->IE,cnpjxml->IMUNICIPAL,cnpjxml->UF,cnpjxml->CIDADE,cnpjxml->NOME,"CNPJXML",TIRAOUT(cnpjxml->CEP),cnpjxml->DDD,  cnpjxml->SUFRAMA,cnpjxml->CNAE,cnpjxml->EMAIL,cnpjxml->TELEFONE }
+   gravacert(aDADOS)
+   DBSELECTAR("CNPJXML")
+   DBSKIP()
+ENDDO
+DBCLOSEALL()
+msginfo("Concluido")

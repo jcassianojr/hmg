@@ -13,7 +13,7 @@
 -inc
 
 #Flag de compilação informado em configuração
--exitstr -info -jobs=10 -trace -q -map -w3 -es2 -p.\PPO\
+-exitstr -info -jobs=10 -trace -q -map -es2 -p.\PPO\
 
 #Configuração dos Paths
 sped.hbc

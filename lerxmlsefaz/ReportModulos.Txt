@@ -1,0 +1,11 @@
+Ord    Arquivo;date;Size
+1    consulte.prg {20/01/2025;1286}
+1    
+2    funcoesnfe.PRG {20/01/2025;10336}
+2    
+3    main.PRG {03/01/2025;153726}
+3    1    [Ok]    Main(136)    Main
+3    2    [  ]    Win1(2359)    Win1
+3    
+4    nfeview.prg {18/06/2024;5522}
+4    

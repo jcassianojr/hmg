@@ -2,12 +2,11 @@
 Main=
 TipoProjeto=1
 nomeprojeto=lerxml
-database=
 flag=-exitstr -info -jobs=10 -trace -q  -es2 -p.\PPO\
 comments=
 companyname=
 filedescription=
-fileversion=   1,   1,   1,   1
+fileversion=   0,   0,   0,   0
 internalname=lerxml
 legalcopyright=Copyright © 2025
 legaltrademarks=
@@ -17,7 +16,7 @@ productname=
 productversion=
 specialbuild=
 
-seticonepadrao=
+seticonepadrao=None
 setlanguage=Portugues BR
 setcodepage=850
 setdate=BRITISH

@@ -10,7 +10,7 @@ Este programa é distribuído na esperança de que seja útil, mas SEM QUALQUER GARA
 implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO PARA UM PROPÓSITO ESPECÍFICO.
 -------------------------------------------------------------------------------------------------------------
 SOBRE ESTE CÓDIGO GERADO:
-Criado em : 20/01/2025 15:00:23 Máquina: DESKTOP-CAIAD50 Usuário:jcass
+Criado em : 20/01/2025 19:42:09 Máquina: DESKTOP-CAIAD50 Usuário:jcass
 
 
 --------------------------------------------------------------------------------------------------------------

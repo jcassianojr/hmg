@@ -1,0 +1,261 @@
+         cFOLDER:=GetFolder ( "Pasta Arquivos XML" )
+         cFOLDER+="\"
+         mListaArq := Directory(cFOLDER+"*.xml","D")
+
+         cARQSPED:=cFOLDER+"SPED_"+ArqLogDataHora("txt")
+         nSPED:=fcreate(cARQSPED)
+         cARQSPED2:=cFOLDER+"SPEDXML_"+ArqLogDataHora("txt")
+         nSPEDXML:=fcreate(cARQSPED2)
+
+
+         nLENX:=LEN(mListaArq)
+         aCNPJ:={}
+         FOR I= 1 TO nLENX
+             cARQUIVO:= UPPER(mListaArq[i,1])
+             mds("reg0150 "+cARQUIVO+str(i)+"/"+str(nLENX))
+             cLinhaTxt:=hb_MEMOREAD(cFOLDER+cARQUIVO)
+             lCTE:=.F.
+             nFIMZ:=2
+             nPos1 := At("cteProc",CLinhaTXT)
+             If nPos1>0
+                lCTE:=.T.
+                nFIMZ:=4
+             ENDIF
+
+             FOR Z=1 TO nFIMZ
+                DO CASE
+                  CASE Z=1
+                      cLidos2 := PegaDados("emit",Alltrim(cLinhaTxt),,"emit")
+                  CASE Z=2
+                      cLidos2 := PegaDados("dest",Alltrim(cLinhaTxt),,"dest")
+                  CASE Z=3
+                      cLidos2 := PegaDados("dest",Alltrim(cLinhaTxt),,"rem")
+                  CASE Z=4
+                      cLidos2 := PegaDados("dest",Alltrim(cLinhaTxt),,"exped")
+                ENDCASE
+                Linha2 := cLidos2
+                XCNPJ  := PegaDados( "CNPJ"  ,Alltrim(Linha2) )
+                IF ASCAN(aCNPJ,XCNPJ)=0.AND.(VALCGC(Xcnpj,,.F.).OR.Valcpf( XCNPJ ,.F.))
+                   AADD(aCNPJ,XCNPJ)
+                   aSPED:=ARRAY(14)
+                   aSPED[1]:=""
+                   aSPED[2]:="0150"
+                   aSPED[3]:=XCNPJ
+                   aSPED[4]:=PegaDados( "xNome" ,Alltrim(Linha2) )
+                   aSPED[5]:=PegaDados( "cPais" ,Alltrim(Linha2) )
+                   aSPED[6]:=XCNPJ
+                   aSPED[7]:=PegaDados( "CPF"  ,Alltrim(Linha2) )
+                   aSPED[8]:=PegaDados( "IE"   ,Alltrim(Linha2) )
+                   aSPED[9]:=PegaDados( "cMun"  ,Alltrim(Linha2) )
+                   aSPED[10]:=PegaDados( "ISUF"  ,Alltrim(Linha2) )
+                   aSPED[11]:=PegaDados( "xLgr"  ,Alltrim(Linha2))
+                   aSPED[12]:=PegaDados( "nro"  ,Alltrim(Linha2) )
+                   aSPED[13]:=PegaDados( "xcpl"  ,Alltrim(Linha2) )
+                   aSPED[14]:=PegaDados( "xBairro" ,Alltrim(Linha2) )
+                   gerarr(aSPED,nSPED)
+
+
+
+
+
+
+
+
+
+
+
+
+                   AADD(aSPED,PegaDados( "xFANT" ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "xMun"  ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "UF"   ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "CEP"  ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "xPais" ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "fone"  ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "IEST"   ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "email"   ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "IM"   ,Alltrim(Linha2) ))
+                   AADD(aSPED,PegaDados( "cnae"   ,Alltrim(Linha2) ))
+                  gerarr(aSPED,nSPEDXML)
+                ENDIF
+             next
+         next
+
+         FOR I= 1 TO nLENX
+             cARQUIVO:= UPPER(mListaArq[i,1])
+             mds("regC100 "+cARQUIVO+str(i)+"/"+str(nLENX))
+             cLinhaTxt:=hb_MEMOREAD(cFOLDER+cARQUIVO)
+             nPOS1:=AT("nfeProc",ClinhaTXT)
+             IF nPOS1>0
+                nPOS1:=AT("chNFe",ClinhaTXT)
+                aSPED:=ARRAY(30)
+                cID:= Substr(clinhatxt,nPOS1+6,44)
+                cCNPJ:=SubStr(cID,7,14)
+                cUFCOD:=SUBSTR(cID,1,2)
+                cANO:=SUBSTR(cID,3,2)
+                cMES:=SUBSTR(cID,5,2)
+                CNNF:= alltrim(str(val(SUBsTR(cID,26,9))))
+                CSERIE:=alltrim(str(val(SUBsTR(cID,23,3))))
+                cMODELO:=SUBSTR(cID,21,2)
+                LINHA2:=PegaDados("TOTAL" ,Alltrim(CLinhaTXT) )
+                LINHA2:=PegaDados("ICMSTOT" ,Alltrim(Linha2) )
+                aTAGS:={"VNF","VPROD","VBC","VICMS","VIPI","VPIS","VCOFINS","VBCST","VST","VOUTRO","VDESC","VSEG","VFRETE"}
+                aPOS  :={13,17,22,23,26,27,28,24,25,21,15,20,19}
+                FOR K=1 TO LEN(aTAGS)
+                    aSPED[aPOS[K]]:=PegaDados(aTAGs[K],Alltrim(Linha2) )
+                next
+                 cDATA:=DTOC(STOD(STRTRAN(PegaDados("dEmi" ,Alltrim(CLinhaTXT) ),"-","")))
+                 cDATA:=STRTRAN(cDATA,"/","")
+                 aSPED[1]:=""
+                 aSPED[2]:="C100"
+                 aSPED[3]:="0"
+                 aSPED[4]:="1"
+                 aSPED[5]:=cCNPJ
+                 aSPED[6]:=cMODELO
+                 aSPED[7]:="00"
+                 aSPED[8]:=cSERIE
+                 aSPED[9]:=cNNF
+                 aSPED[10]:=cID
+                 aSPED[11]:=cDATA
+                 aSPED[12]:=""
+                 aSPED[14]:="9"
+                 aSPED[16]:=0
+                 aSPED[18]:=PegaDados("modFrete" ,Alltrim(CLinhaTXT) )
+                 aSPED[29]:=0
+                 aSPED[30]:=0
+                 gerarr(aSPED,nSPED)
+                 gerarr(aSPED,nSPEDXML)
+
+                  nCONTA:=1
+                  while .T.
+                      IF nCONTA<10
+                         cCHAVE:="det nItem="+CHR(34)+STRZERO(nCONTA,1)+CHR(34)
+                      Else
+                         cCHAVE:="det nItem="+CHR(34)+STRZERO(nCONTA,2)+CHR(34)
+                      endif
+                      nPOSINI:=AT(cCHAVE,cLINHATXT)
+                      LINHA2:=SUBSTR(cLINHATXT,nPOSINI-1)
+                      LINHA2:=PegaDados(cCHAVE ,Alltrim(Linha2), ,"det")
+                      IF lINHA2="0".AND.len(linha2)=1
+                         Exit
+                      ENDIF
+
+                      aSPED:=ARRAY(38)
+                      aSPED[1]=""
+                      aSPED[2]="C170"
+                      aSPED[3]=ALLTRIM(STR(nCONTA))
+                      aSPED[4]:=PegaDados("CPROD" ,Alltrim(Linha2) )
+                      aSPED[5]:=PegaDados("XPROD" ,Alltrim(Linha2) )
+                      aSPED[6]:=PegaDados("qCom" ,Alltrim(Linha2) )
+                      aSPED[7]:=PegaDados("uCom" ,Alltrim(Linha2) )
+                      aSPED[8]:=PegaDados("vUnCom" ,Alltrim(Linha2))
+                      aSPED[9]:=""
+                      aSPED[10]:=""
+
+                      LINHA3:=PegaDados("ICMS" ,Alltrim(Linha2) )
+                      aSPED[11]:=PegaDados("CST" ,Alltrim(Linha3) )
+                      aSPED[12]:=PegaDados("CFOP" ,Alltrim(Linha3) )
+                      aSPED[13]:=""
+                      aSPED[14]:=PegaDados("VBC" ,Alltrim(Linha3) )
+                      aSPED[15]:=PegaDados("pICMS" ,Alltrim(Linha3))
+                      aSPED[16]:=PegaDados("vICMS" ,Alltrim(Linha3) )
+
+
+                      aSPED[17]:=PegaDados("vBCST" ,Alltrim(Linha2) )
+                      aSPED[18]:=PegaDados("pICMSST" ,Alltrim(Linha2) )
+                      aSPED[19]:=PegaDados("vICMSST" ,Alltrim(Linha2) )
+
+                      aSPED[20]:=""
+
+                      LINHA3:=PegaDados("IPI" ,Alltrim(Linha2) )
+                      aSPED[21]:=PegaDados("CST" ,Alltrim(Linha3) )
+                      aSPED[22]:=PegaDados("CENQ" ,Alltrim(Linha3) )
+                      aSPED[23]:=PegaDados("VBC" ,Alltrim(Linha3) )
+                      aSPED[24]:=PegaDados("pIPI" ,Alltrim(Linha3) )
+                      aSPED[25]:=PegaDados("vIPI" ,Alltrim(Linha3) )
+
+                      LINHA3:=PegaDados("PIS" ,Alltrim(Linha2) )
+                      aSPED[26]:=PegaDados("CST" ,Alltrim(Linha3) )
+                      aSPED[27]:=PegaDados("VBC" ,Alltrim(Linha3) )
+                      aSPED[28]:=PegaDados("PPIS" ,Alltrim(Linha3) )
+                      aSPED[29]:=PegaDados("qBCProd" ,Alltrim(Linha3) )
+                      aSPED[30]:=PegaDados("vAliqProd" ,Alltrim(Linha3) )
+                      aSPED[31]:=PegaDados("VPIS" ,Alltrim(Linha3) )
+
+                      LINHA3:=PegaDados("COFINS" ,Alltrim(Linha2) )
+                      aSPED[32]:=PegaDados("CST" ,Alltrim(Linha3) )
+                      aSPED[33]:=PegaDados("VBC" ,Alltrim(Linha3) )
+                      aSPED[34]:=PegaDados("PCOFINS" ,Alltrim(Linha3) )
+                      aSPED[35]:=PegaDados("qBCProd" ,Alltrim(Linha3) )
+                      aSPED[36]:=PegaDados("vAliqProd" ,Alltrim(Linha3) )
+                      aSPED[37]:=PegaDados("VCOFINS" ,Alltrim(Linha3) )
+                      aSPED[38]:=""
+
+                     gerarr(aSPED,nSPED)
+                     gerarr(aSPED,nSPEDXML)
+
+
+
+
+                      nCONTA++
+                  enddo
+            ENDIF
+         next
+
+         FOR I= 1 TO nLENX
+             cARQUIVO:= UPPER(mListaArq[i,1])
+             mds("REGD100 "+cARQUIVO+str(i)+"/"+str(nLENX))
+             cLinhaTxt:=hb_MEMOREAD(cFOLDER+cARQUIVO)
+             nPOS1:=AT("cteProc",ClinhaTXT)
+             IF nPOS1>0
+                nPOS1:=AT("Id=",clinhaTXT)
+                aSPED:=ARRAY(24)
+                cID:= Substr(clinhatxt,nPOS1+7,44)
+                cCNPJ:=SubStr(cID,7,14)
+                cUFCOD:=SUBSTR(cID,1,2)
+                cANO:=SUBSTR(cID,3,2)
+                cMES:=SUBSTR(cID,5,2)
+                CNNF:= alltrim(str(val(SUBsTR(cID,26,9))))
+                CSERIE:=alltrim(str(val(SUBsTR(cID,23,3))))
+                cMODELO:=SUBSTR(cID,21,2)
+                LINHA2:=PegaDados("VPREST" ,Alltrim(cLinhaTXT) )
+                cVTPREST:=PegaDados("VTPREST" ,Alltrim(Linha2) )
+                LINHA2:=PegaDados("IMP" ,Alltrim(cLinhaTXT) )
+                LINHA2:=PegaDados("ICMS" ,Alltrim(Linha2) )
+                cVBC  :=PegaDados("VBC" ,Alltrim(Linha2) )
+                cVICMS :=PegaDados("VICMS" ,Alltrim(Linha2) )
+                cCST  :=PegaDados("CST" ,Alltrim(Linha2) )
+                cDATA:=DTOC(STOD(STRTRAN(SUBSTR(PegaDados("dhEmi" ,Alltrim(CLinhaTXT),.F. ),1,10),"-","")))
+                cDATA:=STRTRAN(cDATA,"/","")
+                aSPED[1]:=""
+                aSPED[2]:="D100"
+                aSPED[3]:=""
+                aSPED[4]:="1"
+                aSPED[5]:=cCNPJ
+                aSPED[6]:=cMODELO
+                aSPED[7]:=""
+                aSPED[8]:=cSERIE
+                aSPED[9]:=""
+                aSPED[10]:=cNNF
+                aSPED[11]:=cID
+                aSPED[12]:=cDATA
+                aSPED[13]:=""
+                aSPED[14]:=PegaDados("tpCTe" ,Alltrim(CLinhaTXT) )
+                aSPED[15]:=PegaDados("refCTE" ,Alltrim(CLinhaTXT) )
+                aSPED[16]:=cVTPREST
+                aSPED[17]:=""
+                aSPED[18]:=""
+                aSPED[19]:=""
+                aSPED[20]:=CVBC
+                aSPED[21]:=CVICMS
+                aSPED[22]:=""
+                aSPED[23]:=""
+                aSPED[24]:=""
+                gerarr(aSPED,nSPED)
+                gerarr(aSPED,nSPEDXML)
+             ENDIF
+         next
+
+
+         FCLOSE(nSPED)
+         FCLOSE(nSPEDXML)
+         mds("concluido ...")
