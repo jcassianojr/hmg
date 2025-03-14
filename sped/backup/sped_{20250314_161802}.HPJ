@@ -2,7 +2,6 @@
 Main=
 TipoProjeto=1
 nomeprojeto=sped
-database=
 flag=-exitstr -info -jobs=10 -trace -q -es2 -p.\PPO\
 comments=
 companyname=
