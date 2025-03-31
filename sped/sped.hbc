@@ -1,33 +1,8 @@
-# hmg paths
-
-incpaths=.\ .\Form .\Include ${HMGRPATH}\include  ${HMGRHARBOUR}\Contrib\xhb
-
-libpaths=${HMGRPATH}\lib ${BaseDir}\Tools\Addons
-
-# gui mode windows
-gt=gtgui
-
-# Addons
-libs=addons
-
-# core
-libs=minigui hbprinter miniprint2 hbxml hbxlsxml tsbrowse bostaurus libhpdf hbhpdf png 
-
-#libs additional ADDONS/core binary for database 
-libs=adordd calldll hbsqlit3 sqlite3 libmysqlz hbmysqlz hbfbirdz fbclientz libpqz hbpgsqlz
-
-# Harbour needed contribs
-libs=hbct hbtip hbvpdf
-
-# Harbour additional contribs
-libs=hbmisc hbziparc hbmzip minizip hbwin xhb socket
-
-# system
-libs=msvfw32 vfw32
-
-#URL
-libs=urlmon
-
-#RDDSQL
-libs=sqlrdd odbc32
-
+incpaths=d:\develop\harbour\sefazclass\include\
+libpaths=
+libs=
+gt=
+mt=no
+instpaths=
+inc=yes
+head=native

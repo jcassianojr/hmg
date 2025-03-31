@@ -37,4 +37,4 @@ endif
          checasituacao()     
         EXIT  
    ENDSWITCH
-return .t.
+return
