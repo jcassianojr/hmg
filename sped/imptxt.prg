@@ -171,6 +171,42 @@ FUNCTION imptxt(cTIPO)
            cARQUIVO:= UPPER(mListaArq[i,1])
            cNOMEORI:= cARQUIVO  
            cARQIMP:=cFOLDER+cARQUIVO
+           
+           IF  AT("SEFAZCEPUF",CNOMEORI)>0
+              //a faixa de ceps e tratadas por funcao e campos do md10
+              filedelete(cARQIMP)
+           ENDIF
+           IF  AT("SEFAZUF",CNOMEORI)>0
+              //tratada por funcao e campos do md05
+              filedelete(cARQIMP)
+           ENDIF
+		   
+		   IF  AT("SEFAZUNIDADE",CNOMEORI)>0
+              //tabela personalizada pelo cliente
+              filedelete(cARQIMP)
+           ENDIF
+		 
+		   //Estrutura do código: Geralmente, os códigos são representados no formato 0000-0/00 (4 dígitos, hífen, 1 dígito verificador, barra, 2 dígitos da subclasse).
+           //como aqui so traz o codigo rais nao sera importado
+		   //talvez futuramente criar uma tabela fo_cnae_base se houver necessidade
+		   //apagando por hora
+		   IF  AT("SEFAZCNAE",CNOMEORI)>0
+              filedelete(cARQIMP)
+           ENDIF
+           //IF  AT("SEFAZMODFRETE",CNOMEORI)>0
+              //filedelete(cARQIMP)
+           //ENDIF
+           //IF  AT("SEFAZMODFRETE",CNOMEORI)>0
+              //filedelete(cARQIMP)
+           //ENDIF
+           
+           
+           
+           
+           
+           
+           
+           
            cARQUIVO:=STRTRAN(cARQUIVO,"SPEDCONTABIL_GLOBAL$SPEDCONTABIL_UF$","SPEDCONTABIL_GLOBAL$SPEDCONTABIL_UF_SIGLA_NOME$")
            cARQUIVO:=STRTRAN(cARQUIVO,"SPEDPISCOFINS_","")
            cARQUIVO:=STRTRAN(cARQUIVO,"SPEDCONTABIL_","")		
@@ -202,7 +238,22 @@ FUNCTION imptxt(cTIPO)
                CASE cARQUIVO="QUALIFICACAO" .OR. AT("SEFAZQUALIFICACAO",cARQUIVO)>0 
                     cARQUIVO:="QUALIF_ASSINANTE"
                CASE AT("SEFAZMODFRETE",cARQUIVO)>0 
-                    cARQUIVO:="MODALIDADE_FRETE"     
+                    cARQUIVO:="MODALIDADE_FRETE"  
+               CASE AT("SEFAZTBAND",cARQUIVO)>0 
+                    cARQUIVO:="CARTAOBANDEIRA"   
+					
+		       CASE AT("SEFAZMODBCST",cARQUIVO)>0 
+                    cARQUIVO:="MODELO_COBRANCA_CST"  
+					
+               CASE AT("SEFAZMODBC",cARQUIVO)>0 
+                    cARQUIVO:="MODELO_COBRANCA"  					
+					
+			   CASE AT("SEFAZINDPRES",cARQUIVO)>0 
+                    cARQUIVO:="indicador_presenca"  		
+				CASE AT("SEFAZANPPROD",cARQUIVO)>0 
+                    cARQUIVO:="ANP"  		
+               CASE AT("SEFAZTPAG",cARQUIVO)>0 
+                    cARQUIVO:="TIPO_PAGAMENTO"        
                CASE cARQUIVO="UF_COD_SIG"
                     cARQUIVO:="UF_CODIGO_SIGLA"
                CASE cARQUIVO="UNIDADES_DA_FEDERACAO"
@@ -229,7 +280,8 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="SISCOMEX_PAISES"
                 CASE cARQUIVO="CNAE21"
                     cARQUIVO:="FO_CNAE2"
-                CASE cARQUIVO="COD_CEST"
+			   
+			   CASE cARQUIVO="COD_CEST"
                     cARQUIVO:="CEST"
                 CASE cARQUIVO="CBC_MOEDA"
                     cARQUIVO:="MOEDA"
@@ -480,7 +532,25 @@ FUNCTION imptxt(cTIPO)
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())
               CASE upper(cARQUIVO)="MODALIDADE_FRETE"
 			       lZAP:=.F.
-				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())       
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())   
+             CASE upper(cARQUIVO)="CARTAOBANDEIRA"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 
+			CASE upper(cARQUIVO)="MODELO_COBRANCA_CST"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 
+			CASE upper(cARQUIVO)="MODELO_COBRANCA"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 	   
+			 CASE upper(cARQUIVO)="INDICADOR_PRESENCA"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 	   
+			 CASE upper(cARQUIVO)="ANP"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 	   
+             CASE upper(cARQUIVO)="TIPO_PAGAMENTO"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())                     
  		      CASE upper(cARQUIVO)="FI_NBMS"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())                  
@@ -569,28 +639,21 @@ FUNCTION imptxt(cTIPO)
                               .OR. AT("SEFAZCEST",CNOMEORI)>0 .OR. AT("SEFAZCESTPORTA",CNOMEORI)>0 .OR. AT("SEFAZCFOP",CNOMEORI)>0 ;
                               .OR. AT("SEFAZCIDADE",CNOMEORI)>0 .OR. AT("SEFAZICMCST",CNOMEORI)>0 .OR. AT("SEFAZINDPRES",CNOMEORI)>0 ;
                               .OR. AT("SEFAZIPICST",CNOMEORI)>0 .OR. AT("SEFAZIPIENQ",CNOMEORI)>0 .OR. AT("SEFAZMODBC",CNOMEORI)>0 ;
-                              .OR. AT("SEFAZMODBCST",CNOMEORI)>0 .OR. AT("SEFAZMODFIS",CNOMEORI)>0 .OR. AT("SEFAZMODFRETE",CNOMEORI)>0 ;
+                              .OR. AT("SEFAZMODBCST",CNOMEORI)>0 .OR. AT("SEFAZMODFRETE",CNOMEORI)>0 ;
                               .OR. AT("SEFAZNCMEXTERIOR",CNOMEORI)>0 .OR. AT("SEFAZORIGEM",CNOMEORI)>0 .OR. AT("SEFAZPISCST",CNOMEORI)>0 ;
                               .OR. AT("SEFAZPISENQ",CNOMEORI)>0 .OR. AT("SEFAZQUALIFICACAO",CNOMEORI)>0 .OR. AT("SEFAZUNIDADE",CNOMEORI)>0 
-                              aCAMPOS:=SplitCommaAspas(cLINHA,"|")
+                              //aCAMPOS:=SplitCommaAspas(cLINHA,"|")
+							  //usando versao nova jason.prg nao gerou aspas
+							  aCAMPOS:=HB_ATokens(cLINHA,"|") 
                          OTHERWISE
                              aCAMPOS:=HB_ATokens(cLINHA,"|") 
                       ENDCASE
-                      /*
-                      IF AT("CNAECSV",CNOMEORI)>0          .OR. AT("NATJUCSV",CNOMEORI)>0 .OR. AT("QUALSCSV",CNOMEORI)>0 ; 
-                        .OR. AT("PAISCSV",CNOMEORI)>0      .OR. AT("MOTICSV",CNOMEORI)>0  .OR. AT("MUNICCSV",CNOMEORI)>0 ;
-                        .OR. AT("SEFAZMODFIS",cNOMEORI)>0 
-                         cLINHA:=TIRACe2(cLINHA)
-                         aCAMPOS:=SplitCommaAspas(cLINHA)
-                      ELSE
-                          aCAMPOS:=HB_ATokens(cLINHA,"|")                            
-                      ENDIF  
-                      */
+                     
                       MDS(cLINHA)
                       cSUBLINHA:=""
                       GravaRegEFD(cARQUIVO,1)
                       cTEXTO:="insert into "+cARQUIVO +" values ("
-                      cTEXTO+=STRVAL(nLINHA)+","  //cTEXTO+=STRVAL(hb_FRecNo()-1)+"," //1o. linha reader                            
+                      cTEXTO+=STRVAL(nLINHA)+","                           
                       cTEXTO+=cSUBLINHA
                       cTEXTO+="1) ;"
                       
@@ -1367,6 +1430,7 @@ dbselectar(cALIAS)
 aEFD:=DBSTRUCT()
 nFIM:=LEN(aEFD)
 cALIAS:=UPPER(cALIAS)
+ALTD()
 //case para upgrade cnae cfo ncm cidades paises outros podera ter return ou array adequada linclui podera virar false nFIM ajustado
 //criar seek e escolher ordem
 //cria so estrutura necessaria
@@ -1429,7 +1493,39 @@ DO CASE
     CASE cALIAS="MODALIDADE_FRETE"
         lINCLUI:=.F.
         dbsetorder(1) // codigo
-        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",55,0}}       
+        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",55,0}}  
+  
+   CASE cALIAS="CARTAOBANDEIRA"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",20,0}}  
+   CASE cALIAS="INDICADOR_PRESENCA"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",50,0}}  	
+
+ CASE cALIAS="MODELO_COBRANCA_CST"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",50,0}}  	
+ CASE cALIAS="MODELO_COBRANCA"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",50,0}}  			
+		
+		
+		
+    CASE cALIAS="ANP"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 30,0},{"DESCRICAO" ,"C",254,0}} 		
+    
+    CASE cALIAS="TIPO_PAGAMENTO"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 1,0},{"DESCRICAO" ,"C",60,0}}             
+        
+             
     CASE cALIAS="FI_NBMS"
        lINCLUI:=.F.
 	   dbsetorder(1) // codigo
