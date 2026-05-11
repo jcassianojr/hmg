@@ -241,7 +241,10 @@ FUNCTION imptxt(cTIPO)
                     cARQUIVO:="MODALIDADE_FRETE"  
                CASE AT("SEFAZTBAND",cARQUIVO)>0 
                     cARQUIVO:="CARTAOBANDEIRA"   
-					
+				CASE AT("SEFAZMUNICIPIOS",cARQUIVO)>0 
+                    cARQUIVO:="MD10"  	
+				CASE AT("SEFAZPAISES",cARQUIVO)>0 
+                    cARQUIVO:="PAISES"	
 		       CASE AT("SEFAZMODBCST",cARQUIVO)>0 
                     cARQUIVO:="MODELO_COBRANCA_CST"  
 					
@@ -1435,6 +1438,12 @@ ALTD()
 //criar seek e escolher ordem
 //cria so estrutura necessaria
 DO CASE
+    CASE cALIAS="MD10" .AND. AT("SEFAZMUNICIPIOS.CSV",cARQIMP)>0 
+       lINCLUI:=.F.  
+	   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
+	   	   			   
+	   aEFD:={{"UF" ,"C",2,0},{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},}
+	   
     CASE cALIAS="MD10"
        lINCLUI:=.F.  
 	   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
@@ -1444,6 +1453,13 @@ DO CASE
 	       AADD(aCAMPOS,coduf(aCAMPOS[1],"UF"))
        ENDIF				   
 	   aEFD:={{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},{"UF" ,"C",2,0}}
+	 CASE cALIAS="PAISES" .AND. AT("SEFAZPAISES",cARQIMP)=0
+       lINCLUI:=.F.
+	   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
+	   aCAMPOS[1]:="EX" 
+	   aCAMPOS[2]:=VAL(aCAMPOS[2])
+       aEFD:={{"UF" ,"C",2,0},{"BACEN","N", 4,0},{"NOME" ,"C",35,0}}  
+	   
     CASE cALIAS="PAISES" .AND. AT("EFDFINANCEIRA_PAISES",cARQIMP)=0
        lINCLUI:=.F.
 	   dbsetorder(5) //bacen n4 quando bacen grava paises senao grava sped_paises
