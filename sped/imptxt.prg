@@ -240,10 +240,17 @@ FUNCTION imptxt(cTIPO)
                CASE AT("SEFAZMODFRETE",cARQUIVO)>0 
                     cARQUIVO:="MODALIDADE_FRETE"  
                CASE AT("SEFAZTBAND",cARQUIVO)>0 
-                    cARQUIVO:="CARTAOBANDEIRA"   
+                    cARQUIVO:="CARTAOBANDEIRA"
+
+				CASE AT("SEFAZCORRECAO",cARQUIVO)>0 
+                   cARQUIVO:="NFECORRECAO"
+					
+				CASE AT("SEFAZNFESTATUS",cARQUIVO)>0 
+                    cARQUIVO:="NFECRET"
+					
 				CASE AT("SEFAZMUNICIPIOS",cARQUIVO)>0 
                     cARQUIVO:="MD10"  	
-				CASE AT("SEFAZPAISES",cARQUIVO)>0 
+				CASE AT("SEFAZPAISES",cARQUIVO)>0
                     cARQUIVO:="PAISES"	
 		       CASE AT("SEFAZMODBCST",cARQUIVO)>0 
                     cARQUIVO:="MODELO_COBRANCA_CST"  
@@ -539,6 +546,12 @@ FUNCTION imptxt(cTIPO)
              CASE upper(cARQUIVO)="CARTAOBANDEIRA"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 
+			 CASE upper(cARQUIVO)="NFECORRECAO"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())   //analisar melhor deixar em fiscal  ou NFE
+           CASE upper(cARQUIVO)="NFECRET"
+			       lZAP:=.F.
+				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD())   //analisar melhor deixar em fiscal  ou NFE
 			CASE upper(cARQUIVO)="MODELO_COBRANCA_CST"
 			       lZAP:=.F.
 				   cCAM   := PROFILESTRING( "sped.ini","PATH","FISCAL",HB_CWD()) 
@@ -1517,6 +1530,15 @@ DO CASE
         lINCLUI:=.F.
         dbsetorder(1) // codigo
         aEFD:={{"CODIGO","C", 2,0},{"NOME" ,"C",20,0}}  
+	
+	CASE cALIAS="NFECORRECAO"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 2,0},{"DESCRICAO" ,"C",30,0}}  
+	CASE cALIAS="NFECRET"
+        lINCLUI:=.F.
+        dbsetorder(1) // codigo
+        aEFD:={{"CODIGO","C", 2,0},{"DESCRICAO" ,"C",120,0}}  	
    CASE cALIAS="INDICADOR_PRESENCA"
         lINCLUI:=.F.
         dbsetorder(1) // codigo
