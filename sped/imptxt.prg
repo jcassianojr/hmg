@@ -1436,14 +1436,16 @@ cALIAS:=UPPER(cALIAS)
 ALTD()
 //case para upgrade cnae cfo ncm cidades paises outros podera ter return ou array adequada linclui podera virar false nFIM ajustado
 //criar seek e escolher ordem
-//cria so estrutura necessaria
+//cria so estrutura necessaria como as vezes o arquivos de importacao tem menos campos que a tabela definir aEDF com a sequencia acampos
+//o seek usa sempre acampo[1] caso esteja em outro posicao ou chave agregadas campo1+campo2 tratar antes do seek
 DO CASE
     CASE cALIAS="MD10" .AND. AT("SEFAZMUNICIPIOS.CSV",cARQIMP)>0 
        lINCLUI:=.F.  
 	   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
 	   	   			   
 	   aEFD:={{"UF" ,"C",2,0},{"CODIBGE","C", 7,0},{"NOME" ,"C",35,0},}
-	   
+	   //abaixo troca o seek para e campo´[2]
+
     CASE cALIAS="MD10"
        lINCLUI:=.F.  
 	   dbsetorder(3) // codigo ibge c7  //pegar uf pelo 2 digitos do ibge
@@ -1623,6 +1625,9 @@ else
    IF cALIAS="FI_NBMS"
       eVALOR:=STRZERO(VAL(eVALOR),4)
    ENDIF
+   if cALIAS="MD10" .AND. AT("SEFAZMUNICIPIOS.CSV",cARQIMP)>0  
+      evalor:=aCAMPOS[2] 
+   endif
    dbgotop()
    if ! dbseek(eVALOR)
       netrecapp()
