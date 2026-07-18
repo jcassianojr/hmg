@@ -4,10 +4,10 @@ https://github.com/harbour/core.git
 harbour vszakats
 https://github.com/vszakats/hb.git
 
-sefazclass
+sefazclass JoseQuintas
 https://github.com/JoseQuintas/sefazclass
 
-sefazclass fork
+sefazclass malcarli1
 https://github.com/malcarli1/sefazclass
 
 harbour sqlrddpp
