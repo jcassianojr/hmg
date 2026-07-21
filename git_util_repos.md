@@ -16,13 +16,13 @@ https://github.com/marcosgambeta/sqlrddpp.git
 harbour hbxlswriter
 https://github.com/diegofazio/hbxlsxwriter
 
-lib xlswriter
+harbour libxlswriter
 https://github.com/jmcnamara/libxlsxwriter.git
 
 harbour xlsx
 https://github.com/digikv/xlsx.git
 
-openads
+harbour openads
 https://github.com/FiveTechSoft/OpenADS
 
 xharbour
@@ -30,5 +30,19 @@ https://github.com/xHarbour-org/xharbour
 
 ocilib 
 https://github.com/vrogier/ocilib
+
+harbour builder tdclass
+https://github.com/FiveTechSoft/HarbourBuilder
+
+
+hmg
+https://www.hmgextended.com/
+
+
+firebird
+
+https://github.com/FirebirdSQL
+
+http://www.flamerobin.org/
 
 
