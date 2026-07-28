@@ -123,7 +123,7 @@ Set( _SET_DATEFORMAT, "dd/mm/yyyy" )
    cTMP     := PROFILESTRING( "LERXML.INI","ACNPJAVB","CNPJ")   
    aCNPJAVB:=HB_ATOKENS(cTMP,",")   
 
-   aCNPJITA:={"61381323000248","61381323000167","61381323000329","61381323000400","61381323000590"}
+   aCNPJITA:={"NSNEDEPB000170","1BPB353W000168","1HNW4X2G000129","0LAY7SJX000104","JEEZGKM6000191"}
       
    aACOES:=AcoesDanfe()
    
@@ -2570,11 +2570,11 @@ endif
 dbsetorder(2) //cnpj + nff
 cLOGEMAIL:="nfsaida"+ArqLogDataHora()
 nUSO:=fcreate(cLOGEMAIL)
-faz01("61381323000167",'05')  //05 logix
-faz01("61381323000248",'01')  //01 logix
-//faz01("61381323000329",'10')  //10 logix empresa 10 encerrada fiscalmente
-faz01("61381323000400",'11')  //11 logix
-faz01("61381323000590",'12')  //11 logix
+faz01("1BPB353W000168",'05')  //05 logix
+faz01("NSNEDEPB000170",'01')  //01 logix
+//faz01("1HNW4X2G000129",'10')  //10 logix empresa 10 encerrada fiscalmente
+faz01("0LAY7SJX000104",'11')  //11 logix
+faz01("JEEZGKM6000191",'12')  //11 logix
 FCLOSE(nUSO)
 IF FILESIZE(cLOGEMAIL)=0
    ferase(cLOGEMAIL)
@@ -3410,18 +3410,18 @@ function gravaelec()
          
         
         IF val(cPROTOCOLO)>0 .AND. val(cNNF)>0
-           cCNPJ2:='61381323000167'
-           IF AT("61381323000248",cARQUIVO)>0
-              cCNPJ2:='61381323000248'
+           cCNPJ2:='1BPB353W000168'
+           IF AT("NSNEDEPB000170",cARQUIVO)>0
+              cCNPJ2:='NSNEDEPB000170'
            ENDIF
-           IF AT("61381323000329",cARQUIVO)>0
-              cCNPJ2:='61381323000329'
+           IF AT("1HNW4X2G000129",cARQUIVO)>0
+              cCNPJ2:='1HNW4X2G000129'
            ENDIF
-           IF AT("61381323000400",cARQUIVO)>0
-              cCNPJ2:='61381323000400'
+           IF AT("0LAY7SJX000104",cARQUIVO)>0
+              cCNPJ2:='0LAY7SJX000104'
            ENDIF           
-           IF AT("61381323000590",cARQUIVO)>0
-              cCNPJ2:='61381323000590'
+           IF AT("JEEZGKM6000191",cARQUIVO)>0
+              cCNPJ2:='JEEZGKM6000191'
            ENDIF           
 		   
            IF Z=1 //xml
@@ -3505,18 +3505,18 @@ while ! eof()
             ! file(cmemorizados + 'Recebidos\'+cCNPJDEST+"\"+cANO+"\"+cMES+"\"+cARQUIVO) 
             
             
-            cDEST:="61381323000248" 
-            IF cCNPJ="61381323000167" .OR. cCNPJDEST="61381323000167"
-               cDEST="61381323000167"
+            cDEST:="NSNEDEPB000170" 
+            IF cCNPJ="1BPB353W000168" .OR. cCNPJDEST="1BPB353W000168"
+               cDEST="1BPB353W000168"
             ENDIF
-            IF cCNPJ="61381323000329" .OR. cCNPJDEST="61381323000329"
-               cDEST="61381323000329"
+            IF cCNPJ="1HNW4X2G000129" .OR. cCNPJDEST="1HNW4X2G000129"
+               cDEST="1HNW4X2G000129"
             ENDIF
-            IF cCNPJ="61381323000400" .OR. cCNPJDEST="61381323000400"
-               cDEST="61381323000400"
+            IF cCNPJ="0LAY7SJX000104" .OR. cCNPJDEST="0LAY7SJX000104"
+               cDEST="0LAY7SJX000104"
             ENDIF            
-            IF cCNPJ="61381323000590" .OR. cCNPJDEST="61381323000590"
-               cDEST="61381323000590"
+            IF cCNPJ="JEEZGKM6000191" .OR. cCNPJDEST="JEEZGKM6000191"
+               cDEST="JEEZGKM6000191"
             ENDIF            
 
             IF EMPTY(DANFEVIEW)            //1a. tentativa grava na pasta memorizar para o danfeview automemorizar
@@ -4217,19 +4217,19 @@ RETURN ascan(aCNPJITA,cCNPJ)>0
 FUNCTION CNPJEmpLogix(cCNPJ)
 LOCAL cEMPLOG
 cEMPLOG:="01"
-IF cCNPJ="61381323000248"
+IF cCNPJ="NSNEDEPB000170"
    cEMPLOG:="01"
 ENDIF
-IF cCNPJ="61381323000167"
+IF cCNPJ="1BPB353W000168"
    cEMPLOG:="05"
 ENDIF
-IF cCNPJ="61381323000329"
+IF cCNPJ="1HNW4X2G000129"
    cEMPLOG:="10"
 ENDIF
-IF cCNPJ="61381323000400"
+IF cCNPJ="0LAY7SJX000104"
    cEMPLOG:="11"
 ENDIF
-IF cCNPJ="61381323000590"
+IF cCNPJ="JEEZGKM6000191"
    cEMPLOG:="12"
 ENDIF
 RETURN cEMPLOG
@@ -4237,21 +4237,21 @@ RETURN cEMPLOG
 
 FUNCTION EmpLogixCnpj(cEMPLOG)
 LOCAL cCNPJ
-cCNPJ:="61381323000167"
+cCNPJ:="1BPB353W000168"
 IF cEMPLOG="01"
-    cCNPJ:="61381323000248"   
+    cCNPJ:="NSNEDEPB000170"   
 ENDIF
 IF cEMPLOG="05"
-    cCNPJ:="61381323000167"   
+    cCNPJ:="1BPB353W000168"   
 ENDIF
 IF cEMPLOG="10"
-    cCNPJ:="61381323000329"   
+    cCNPJ:="1HNW4X2G000129"   
 ENDIF
 IF cEMPLOG="11"
-    cCNPJ:="61381323000400"   
+    cCNPJ:="0LAY7SJX000104"   
 ENDIF
 IF cEMPLOG="12"
-    cCNPJ:="61381323000590"   
+    cCNPJ:="JEEZGKM6000191"   
 ENDIF
 RETURN cCNPJ
 
@@ -4259,7 +4259,7 @@ FUNCTION IsRaizIta(cCNPJ)
 RETURN LEFT(cCNPJ,8)="61381323" 
 
 FUNCTION ArquivoIta(cFILEDANFE) 
-RETURN AT("61381323000248",cFILEDANFE)>0  .OR. AT("61381323000167",cFILEDANFE)>0  .OR. AT("61381323000329",cFILEDANFE) >0  .OR. AT("61381323000400",cFILEDANFE) >0 .OR. AT("61381323000590",cFILEDANFE) >0
+RETURN AT("NSNEDEPB000170",cFILEDANFE)>0  .OR. AT("1BPB353W000168",cFILEDANFE)>0  .OR. AT("1HNW4X2G000129",cFILEDANFE) >0  .OR. AT("0LAY7SJX000104",cFILEDANFE) >0 .OR. AT("JEEZGKM6000191",cFILEDANFE) >0
 
 
 
@@ -4443,7 +4443,7 @@ cFileName:="c:\temp\"+cCHAVE+".zip"
 if file(cFileName)  
   Lerunzip(cFILENAME)
 else
-	oSefaz:NfeDownload( "61381323000248", cChave, oSefaz:cCertificado, oSefaz:cAmbiente  )
+	oSefaz:NfeDownload( "NSNEDEPB000170", cChave, oSefaz:cCertificado, oSefaz:cAmbiente  )
 //	msginfO(oSefaz:cXmlRetorno)
 	IF oSefaz:cStatus == "138"	   
 	   hb_MemoWrit(cFileName, hb_Base64Decode( XmlNode( oSefaz:cXmlRetorno, "docZip" ) ) )	

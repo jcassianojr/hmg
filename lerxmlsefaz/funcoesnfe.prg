@@ -158,23 +158,23 @@ ENDIF
 aCAMARQ:= {cLOGIX,cLOGIX2,cLOGIX3,cLOGIX4,cNFECNPJ, cLOGIXARQ}
 //            1       2         3     4        5          6
 			
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000167\')		// 7
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000248\')		// 8
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000329\')		// 9
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000400\')		// 10
-aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\61381323000590\')		// 11
+aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\1BPB353W000168\')		// 7
+aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\NSNEDEPB000170\')		// 8
+aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\1HNW4X2G000129\')		// 9
+aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\0LAY7SJX000104\')		// 10
+aadd(aCAMARQ,cmemorizados+'EmitidosPorMim\JEEZGKM6000191\')		// 11
 
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000167\')	// 12 
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000248\')	// 13
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000329\')	// 14
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000400\')	// 15
-aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\61381323000590\')	// 16
+aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\1BPB353W000168\')	// 12 
+aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\NSNEDEPB000170\')	// 13
+aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\1HNW4X2G000129\')	// 14
+aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\0LAY7SJX000104\')	// 15
+aadd(aCAMARQ,cmemorizados+'Recebidos\XTIPOX\JEEZGKM6000191\')	// 16
 
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000167\')			// 17
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000248\')			// 18
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000329\')			// 19
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000400\')			// 20
-aadd(aCAMARQ,cmemorizados+'cSLFProfile\61381323000590\')			// 21
+aadd(aCAMARQ,cmemorizados+'cSLFProfile\1BPB353W000168\')			// 17
+aadd(aCAMARQ,cmemorizados+'cSLFProfile\NSNEDEPB000170\')			// 18
+aadd(aCAMARQ,cmemorizados+'cSLFProfile\1HNW4X2G000129\')			// 19
+aadd(aCAMARQ,cmemorizados+'cSLFProfile\0LAY7SJX000104\')			// 20
+aadd(aCAMARQ,cmemorizados+'cSLFProfile\JEEZGKM6000191\')			// 21
 
 
 FOR ZK=1 TO LEN(aCAMARQ)      
